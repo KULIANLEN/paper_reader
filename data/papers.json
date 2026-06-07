@@ -43,6 +43,50 @@
         "level": "medium",
         "notes": "论文给出 prompts、任务 split、温度和重试设置，并提供代码仓库；但缺少精确模型快照、随机种子、token/延迟统计和完整 API 漂移控制。"
       }
+    },
+    {
+      "id": "2307.09288",
+      "slug": "llama-2-open-foundation-chat-models",
+      "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
+      "titleZh": "Llama 2：开放基础模型与微调聊天模型",
+      "authors": [
+        "Hugo Touvron",
+        "Louis Martin",
+        "Kevin Stone",
+        "Peter Albert",
+        "Amjad Almahairi",
+        "Thomas Scialom",
+        "Meta AI"
+      ],
+      "year": 2023,
+      "venue": "arXiv",
+      "category": "Post-training / Alignment",
+      "tags": [
+        "open-model",
+        "rlhf",
+        "safety",
+        "instruction-tuning",
+        "gqa"
+      ],
+      "status": "精读",
+      "priority": 5,
+      "readingDate": "2026-06-07",
+      "updatedAt": "2026-06-07",
+      "summary": "Llama 2 发布 7B/13B/70B 开放基础模型和 Llama 2-Chat，并系统公开预训练、SFT、reward modeling、RLHF、Ghost Attention、安全微调、red teaming 与 responsible release 流程。论文的最大价值是把开放 chat model 的工程栈和评测边界讲清楚，而不是只报告一个 benchmark 分数。",
+      "takeaways": [
+        "高质量少量 SFT 加大规模偏好数据/RLHF，比堆叠低质指令数据更关键。",
+        "安全对齐需要独立 reward model、长尾红队数据、false refusal 监控和多轮评测。"
+      ],
+      "arxivId": "2307.09288",
+      "paperUrl": "https://arxiv.org/abs/2307.09288",
+      "pdfUrl": "https://arxiv.org/pdf/2307.09288",
+      "pageUrl": "papers/llama-2-open-foundation-chat-models/index.html",
+      "codeUrl": "https://github.com/facebookresearch/llama",
+      "repro": {
+        "available": true,
+        "level": "low",
+        "notes": "权重和推理代码可用，部分评测可复现；但预训练数据混合、SFT/RLHF 标注数据、red-team 数据、内部训练库和大规模集群环境不可完整复现。"
+      }
     }
   ]
 }

@@ -1,0 +1,39 @@
+{
+  "images": [
+    {
+      "page": 3,
+      "path": "assets/figures/page_003_img_01.jpeg",
+      "xref": 208
+    },
+    {
+      "page": 4,
+      "path": "assets/figures/page_004_img_01.png",
+      "xref": 192
+    },
+    {
+      "page": 5,
+      "path": "assets/figures/page_005_img_01.jpeg",
+      "xref": 242
+    },
+    {
+      "page": 16,
+      "path": "assets/figures/page_016_img_01.png",
+      "xref": 850
+    },
+    {
+      "page": 19,
+      "path": "assets/figures/page_019_img_01.png",
+      "xref": 938
+    },
+    {
+      "page": 34,
+      "path": "assets/figures/page_034_img_01.png",
+      "xref": 1494
+    },
+    {
+      "page": 48,
+      "path": "assets/figures/page_048_img_01.png",
+      "xref": 1731
+    }
+  ]
+}

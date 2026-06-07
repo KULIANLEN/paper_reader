@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Llama 2: Open Foundation and Fine-Tuned Chat Models · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .llama-page * { letter-spacing: 0 !important; }
+    .llama-page .paper-article { width: min(calc(100% - 36px), 1140px); }
+    .llama-page .paper-hero { padding: 3.5rem 0 2.2rem; border-bottom: 1px solid var(--line); }
+    .llama-page .paper-hero h1 { max-width: 1080px; font-size: clamp(2.25rem, 5vw, 4.6rem); line-height: 1.04; }
+    .llama-page .hero-subtitle { max-width: 920px; font-size: clamp(1.02rem, 2vw, 1.25rem); }
+    .llama-page .content-card { margin: 0; padding: clamp(2.2rem, 5vw, 4.2rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .llama-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.7rem, 3.2vw, 2.55rem); line-height: 1.12; }
+    .llama-page .section-lead { max-width: 900px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.04rem; line-height: 1.85; }
+    .llama-page .meta-row, .llama-page .link-row, .llama-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .llama-page .meta-row { margin-top: 1.2rem; color: var(--muted); font-size: 0.94rem; }
+    .llama-page .link-row { margin-top: 1rem; }
+    .llama-page .link-row a, .llama-page .tag-pill { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.3rem 0.65rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .llama-page .grid-2, .llama-page .grid-3, .llama-page .metric-grid, .llama-page .figure-grid, .llama-page .flow-grid { display: grid; gap: 1rem; }
+    .llama-page .grid-2, .llama-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .llama-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .llama-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .llama-page .flow-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 1rem; }
+    .llama-page .note-box, .llama-page .metric, .llama-page .table-wrap, .llama-page .figure-card, .llama-page .formula-box, .llama-page .flow-step, .llama-page .critique-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .llama-page .note-box, .llama-page .formula-box, .llama-page .flow-step, .llama-page .critique-box { padding: 1rem; }
+    .llama-page .note-box h3, .llama-page .formula-box h3, .llama-page .flow-step h3, .llama-page .critique-box h3 { margin: 0 0 0.45rem; font-size: 1.05rem; }
+    .llama-page .note-box p, .llama-page .formula-box p, .llama-page .flow-step p, .llama-page .critique-box p { margin: 0.45rem 0 0; }
+    .llama-page .metric { padding: 1rem; }
+    .llama-page .metric strong { display: block; font-size: 1.55rem; line-height: 1.15; }
+    .llama-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .llama-page .flow-step b { display: inline-grid; width: 1.7rem; height: 1.7rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .llama-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .llama-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .llama-page table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 0.91rem; }
+    .llama-page th, .llama-page td { padding: 0.72rem 0.75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .llama-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .llama-page td { color: var(--text-soft); }
+    .llama-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .llama-page .figure-card { margin: 0; overflow: hidden; }
+    .llama-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .llama-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .llama-page .figure-card figcaption strong { color: var(--text); }
+    .llama-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .llama-page .compact-list li { margin: 0.28rem 0; }
+    .llama-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .llama-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .llama-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .llama-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .llama-page .grid-2, .llama-page .grid-3, .llama-page .metric-grid, .llama-page .figure-grid, .llama-page .flow-grid { grid-template-columns: 1fr; }
+      .llama-page .paper-hero { padding-top: 2.4rem; }
+    }
+  </style>
+</head>
+<body class="paper-page llama-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2307.09288</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Post-training / Alignment · arXiv 2023</div>
+      <h1>Llama 2: Open Foundation and Fine-Tuned Chat Models</h1>
+      <p class="hero-subtitle">这篇论文发布 Llama 2 和 Llama 2-Chat，并罕见地公开了从 2T-token 预训练、SFT、reward modeling、RLHF、Ghost Attention、安全微调、red teaming 到 responsible release 的完整工程路线图。</p>
+      <div class="meta-row">
+        <span>Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, et al.</span>
+        <span>Meta AI</span>
+        <span>Published: 2023-07-18</span>
+        <span>Updated: 2023-07-19</span>
+        <span>77 pages</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">open-model</span>
+        <span class="tag-pill">rlhf</span>
+        <span class="tag-pill">safety</span>
+        <span class="tag-pill">instruction-tuning</span>
+        <span class="tag-pill">gqa</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2307.09288">arXiv</a>
+        <a href="https://arxiv.org/pdf/2307.09288.pdf">PDF</a>
+        <a href="https://github.com/facebookresearch/llama">Code</a>
+        <a href="https://ai.meta.com/resources/models-and-libraries/llama/">Model Release</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>7B / 13B / 70B</strong><span>公开的 base 与 chat 模型规模；34B 在论文中报告但当时未发布</span></div>
+        <div class="metric"><strong>2T tokens</strong><span>公开来源数据预训练；不使用 Meta 产品或服务数据</span></div>
+        <div class="metric"><strong>4k context</strong><span>相对 Llama 1 上下文长度翻倍；34B 和 70B 使用 GQA</span></div>
+        <div class="metric"><strong>1.4M+</strong><span>Meta 收集的 safety/helpfulness 偏好比较样本</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机</h2>
+      <p class="section-lead">Llama 2 的核心定位是填补“开放预训练模型”和“闭源产品级 chat 模型”之间的空白。Llama 1、BLOOM、Falcon 等开放模型已经在基础能力上接近强闭源 base model，但缺少透明且高质量的对话对齐、安全微调和发布流程。</p>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>开放模型能力差距</h3>
+          <p>论文认为 ChatGPT、Bard、Claude 等产品模型之所以更可用，很大一部分来自大量 SFT、RLHF 和安全工程，而这些过程通常不透明、难复现。</p>
+        </div>
+        <div class="note-box">
+          <h3>透明对齐流程</h3>
+          <p>作者公开描述 Llama 2-Chat 的 SFT 数据质量策略、二元偏好标注、helpfulness/safety reward models、rejection sampling、PPO 和 GAtt。</p>
+        </div>
+        <div class="note-box">
+          <h3>安全发布</h3>
+          <p>论文不只报告 benchmark，还分析预训练数据语言与毒性分布、红队攻击、安全人评、false refusal、使用边界和 responsible use guide。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 方法：从 base model 到 Llama 2-Chat</h2>
+      <p class="section-lead">Llama 2 的技术路线可以分成五层：大规模自监督预训练、少量高质量 SFT、分离的 helpfulness/safety reward modeling、rejection sampling + PPO 的迭代 RLHF、多轮一致性的 Ghost Attention，以及专门的 safety tuning。</p>
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Pretraining</h3><p>优化 transformer 架构，2T tokens，4M tokens global batch，4k context，34B/70B 使用 GQA。</p></div>
+        <div class="flow-step"><b>2</b><h3>SFT</h3><p>先用公开 instruction data bootstrap，再用 27,540 条高质量人工 SFT annotation 对齐对话风格。</p></div>
+        <div class="flow-step"><b>3</b><h3>Reward Models</h3><p>分别训练 Helpfulness RM 与 Safety RM，输入 prompt/response 输出 scalar reward，避免单一 RM 混淆有用性和安全性。</p></div>
+        <div class="flow-step"><b>4</b><h3>RLHF</h3><p>先用 rejection sampling 从多个候选中选 reward 最高样本，再在后期叠加 PPO；70B 采样结果蒸馏给小模型。</p></div>
+        <div class="flow-step"><b>5</b><h3>Safety + GAtt</h3><p>安全 SFT、Safety RLHF、context distillation、red teaming；GAtt 用于让系统指令在多轮对话中持续生效。</p></div>
+      </div>
+
+      <div class="formula-box">
+        <h3>训练目标与奖励函数</h3>
+        <p>预训练仍是标准 autoregressive language modeling，对 token 序列 $x_{1:T}$ 最小化 next-token negative log-likelihood：</p>
+        $$\mathcal{L}_{\mathrm{LM}}=-\sum_{t=1}^{T}\log p_{\theta}(x_t\mid x_{<t}).$$
+        <p>SFT 使用 autoregressive objective，但对 user prompt token 的 loss 置零，只在 assistant answer token 上反传。Reward model 使用二元排序损失，并加入偏好强度 margin：</p>
+        $$\mathcal{L}_{\mathrm{RM}}=-\log\sigma(r_{\theta}(x,y_c)-r_{\theta}(x,y_r)-m(r)).$$
+        <p>PPO 阶段优化带 KL penalty 的 reward，防止策略远离原始模型并降低 reward hacking 风险：</p>
+        $$\arg\max_{\pi}\mathbb{E}_{p\sim D,g\sim\pi}[R(g\mid p)],\qquad R(g\mid p)=\widetilde{R}_c(g\mid p)-\beta D_{\mathrm{KL}}(\pi_{\theta}(g\mid p)\Vert\pi_0(g\mid p)).$$
+        <p>组合 reward 以 safety 优先：若 prompt 被标记为 safety prompt，或 Safety RM 分数低于阈值 0.15，则使用 safety reward；否则使用 helpfulness reward。</p>
+        $$R_c(g\mid p)=\begin{cases}R_s(g\mid p), & \mathrm{is\_safety}(p)\ \mathrm{or}\ R_s(g\mid p)<0.15,\\ R_h(g\mid p), & \mathrm{otherwise}.\end{cases}$$
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Family</th><th>Params</th><th>Context</th><th>GQA</th><th>Tokens</th><th>Peak LR</th></tr></thead>
+          <tbody>
+            <tr><td>Llama 2</td><td>7B</td><td>4k</td><td>No</td><td>2.0T</td><td>$3.0\times10^{-4}$</td></tr>
+            <tr><td>Llama 2</td><td>13B</td><td>4k</td><td>No</td><td>2.0T</td><td>$3.0\times10^{-4}$</td></tr>
+            <tr><td>Llama 2</td><td>34B</td><td>4k</td><td>Yes</td><td>2.0T</td><td>$1.5\times10^{-4}$</td></tr>
+            <tr><td>Llama 2</td><td>70B</td><td>4k</td><td>Yes</td><td>2.0T</td><td>$1.5\times10^{-4}$</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 1 摘要。所有模型预训练 global batch size 为 4M tokens。优化器为 AdamW，$\beta_1=0.9$、$\beta_2=0.95$、$\epsilon=10^{-5}$、weight decay 0.1、gradient clipping 1.0、warmup 2000 steps。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>Quality Is All You Need</h3>
+          <p>作者发现高质量、少量 SFT annotation 比大量第三方低质 instruction data 更有效。SFT annotation 达到数万级后，模型输出已接近人工 SFT 答案质量，因此后续资源转向偏好标注。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>GAtt 的实质</h3>
+          <p>GAtt 不是新 attention layer，而是数据构造 hack：把系统指令合成到多轮用户消息中，再只对最后回答计 loss，让模型在长对话中继续关注最初约束。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">论文的实验覆盖 base model benchmark、闭源模型对比、reward model accuracy、RLHF 迭代进展、人类 helpfulness 评价、安全人评、自动安全 benchmark、工具使用和多个架构/对齐消融。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>预训练与评估</h3>
+          <p>基础模型与 MPT、Falcon、Llama 1 对比；benchmark 包括 code、commonsense、world knowledge、reading comprehension、math、MMLU、BBH、AGI Eval。</p>
+        </div>
+        <div class="note-box">
+          <h3>Fine-tuning 数据</h3>
+          <p>SFT 共 27,540 条人工 annotation。Reward modeling 结合开源偏好数据与 Meta 自收集的 1,418,091 条 safety/helpfulness 二元比较。</p>
+        </div>
+        <div class="note-box">
+          <h3>人评设置</h3>
+          <p>Helpfulness 人评覆盖约 4,000 个 single-turn 与 multi-turn prompts，每个 prompt 三名评审；safety 人评约 2,000 adversarial prompts。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>关键设置</th><th>复现风险</th></tr></thead>
+          <tbody>
+            <tr><td>SFT</td><td>Cosine LR，初始 $2\times10^{-5}$，batch size 64，sequence length 4096，2 epochs。</td><td>高质量 annotation 未公开，vendor/platform 差异会影响结果。</td></tr>
+            <tr><td>Reward Model</td><td>1 epoch，70B LR $5\times10^{-6}$，其他 LR $1\times10^{-5}$，effective batch size 512 pairs。</td><td>Meta 偏好数据、batch curriculum 和最新 chat model 分布不可完全复现。</td></tr>
+            <tr><td>PPO</td><td>Constant LR $10^{-6}$，batch size 512，clip 0.2，mini-batch 64，每 mini-batch 一步；7B/13B 的 $\beta=0.01$，34B/70B 的 $\beta=0.005$。</td><td>70B PPO 每 iteration 约 330 秒，依赖 FSDP、大规模 A100 和内部训练库。</td></tr>
+            <tr><td>Safety</td><td>Safety SFT、Safety RM、Safety RLHF、context distillation、红队迭代。</td><td>风险分类、标注规范、红队样本和 safety content standard 会显著改变结果。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note-box warn">
+        <h3>复现定位</h3>
+        <p>这篇论文适合复现推理、评测、prompting、安全测试和部分 post-training 思路，不适合端到端复现预训练。缺口包括：完整数据混合、清洗规则、标注数据、reward model 数据、内部训练库、集群拓扑、模型 checkpoint 中间版本和红队语料。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">Llama 2 70B 是当时最强开放基础模型之一：开放 benchmark 上显著超过 Llama 1、MPT、Falcon；Llama 2-Chat 在人类 helpfulness 评价中接近 ChatGPT-0301，在安全人评和自动毒性指标上明显优于多数开放 chat baseline。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Model</th><th>Size</th><th>Code</th><th>Commonsense</th><th>World Knowledge</th><th>Reading</th><th>Math</th><th>MMLU</th><th>BBH</th><th>AGI Eval</th></tr></thead>
+          <tbody>
+            <tr><td>MPT</td><td>30B</td><td>28.9</td><td>64.9</td><td>50.0</td><td>64.7</td><td>9.1</td><td>46.9</td><td>38.0</td><td>33.8</td></tr>
+            <tr><td>Falcon</td><td>40B</td><td>15.2</td><td>69.2</td><td>56.7</td><td>65.7</td><td>12.6</td><td>55.4</td><td>37.1</td><td>37.0</td></tr>
+            <tr><td>Llama 1</td><td>65B</td><td>30.7</td><td>70.7</td><td>60.5</td><td>68.6</td><td>30.8</td><td>63.4</td><td>43.5</td><td>47.6</td></tr>
+            <tr><td>Llama 2</td><td>70B</td><td>37.5</td><td>71.9</td><td>63.6</td><td>69.4</td><td>35.2</td><td>68.9</td><td>51.2</td><td>54.2</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 3 摘要。Llama 2 70B 相对 Llama 1 65B 在 MMLU 提升约 5.5 分，在 BBH 提升约 7.7 分；coding 和 math 也提升明显。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Benchmark</th><th>GPT-3.5</th><th>GPT-4</th><th>PaLM</th><th>PaLM-2-L</th><th>Llama 2 70B</th></tr></thead>
+          <tbody>
+            <tr><td>MMLU 5-shot</td><td>70.0</td><td>86.4</td><td>69.3</td><td>78.3</td><td>68.9</td></tr>
+            <tr><td>TriviaQA 1-shot</td><td>-</td><td>-</td><td>81.4</td><td>86.1</td><td>85.0</td></tr>
+            <tr><td>Natural Questions 1-shot</td><td>-</td><td>-</td><td>29.3</td><td>37.5</td><td>33.0</td></tr>
+            <tr><td>GSM8K 8-shot</td><td>57.1</td><td>92.0</td><td>56.5</td><td>80.7</td><td>56.8</td></tr>
+            <tr><td>HumanEval 0-shot</td><td>48.1</td><td>67.0</td><td>26.2</td><td>-</td><td>29.9</td></tr>
+            <tr><td>BIG-Bench Hard 3-shot</td><td>-</td><td>-</td><td>52.3</td><td>65.7</td><td>51.2</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 4 重建。Llama 2 70B 接近 GPT-3.5 的 MMLU 与 GSM8K，但 coding 与 GPT-3.5/GPT-4 差距明显；与 PaLM 540B 在多数 benchmark 上接近或更好，但落后 GPT-4 和 PaLM-2-L。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Reward model / baseline</th><th>Meta Helpful</th><th>Meta Safety</th><th>Anthropic Helpful</th><th>Anthropic Harmless</th><th>OpenAI Summ.</th><th>Stanford SHP</th><th>Avg</th></tr></thead>
+          <tbody>
+            <tr><td>SteamSHP-XL</td><td>52.8</td><td>43.8</td><td>66.8</td><td>34.2</td><td>54.7</td><td>75.7</td><td>55.3</td></tr>
+            <tr><td>Open Assistant</td><td>53.8</td><td>53.4</td><td>67.7</td><td>68.4</td><td>71.7</td><td>55.0</td><td>63.0</td></tr>
+            <tr><td>GPT-4 judge</td><td>58.6</td><td>58.1</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            <tr><td>Safety RM</td><td>56.2</td><td>64.5</td><td>55.4</td><td>74.7</td><td>71.7</td><td>65.2</td><td>64.3</td></tr>
+            <tr><td>Helpfulness RM</td><td>63.2</td><td>62.8</td><td>72.0</td><td>71.0</td><td>75.5</td><td>80.0</td><td>70.6</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 7 重建。两个专用 RM 在 Meta 自有 test set 和整体平均上超过开源 RM baseline；Helpfulness RM 平均 accuracy 70.6。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fine-tuned model</th><th>TruthfulQA ↑</th><th>ToxiGen ↓</th></tr></thead>
+          <tbody>
+            <tr><td>ChatGPT</td><td>78.46</td><td>0.20</td></tr>
+            <tr><td>Falcon-instruct 7B</td><td>28.03</td><td>7.89</td></tr>
+            <tr><td>MPT-instruct 7B</td><td>29.99</td><td>16.33</td></tr>
+            <tr><td>Llama 2-Chat 7B</td><td>57.04</td><td>0.00</td></tr>
+            <tr><td>Llama 2-Chat 13B</td><td>62.18</td><td>0.00</td></tr>
+            <tr><td>Llama 2-Chat 34B</td><td>67.20</td><td>0.02</td></tr>
+            <tr><td>Llama 2-Chat 70B</td><td>64.14</td><td>0.01</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 14 重建。Fine-tuning 后 Llama 2-Chat 70B 相比 base Llama 2 70B 在 TruthfulQA 上从 50.18 提升到 64.14，ToxiGen 从 24.60 降到 0.01。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Model</th><th>ASDiv</th><th>SVAMP</th><th>MAWPS</th></tr></thead>
+          <tbody>
+            <tr><td>Toolformer</td><td>40.4</td><td>29.4</td><td>44.0</td></tr>
+            <tr><td>Llama 2-Chat</td><td>67.1</td><td>69.2</td><td>82.4</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 15 摘要。作者认为 Llama 2-Chat 出现 zero-shot tool use emergence：没有显式工具使用标注，也能理解工具语义和 API 参数。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">这里嵌入的图覆盖训练流程、helpfulness、安全、多轮一致性、工具使用和 GQA 推理效率。大部分数值表格已在上文重建，完整长表请回到 PDF 附录核对。</p>
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/page_005_img_01.jpeg" alt="Training of Llama 2-Chat" loading="lazy" />
+          <figcaption><strong>Figure 4.</strong> Llama 2-Chat 训练流程：pretraining、SFT、reward models、rejection sampling、PPO 和 human feedback 形成闭环。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_003_img_01.jpeg" alt="Helpfulness human evaluation summary" loading="lazy" />
+          <figcaption><strong>Figure 1.</strong> Helpfulness 人评摘要。Llama 2-Chat 70B 对 ChatGPT-0301 的 win/tie/loss 为 35.9/31.5/32.5，对 PaLM-Bison 为 53.0/24.6/22.4。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_004_img_01.png" alt="Safety human evaluation" loading="lazy" />
+          <figcaption><strong>Figure 3.</strong> Safety 人评摘要。Llama 2-Chat 系列的 violation percentage 低于多数开放 chat baseline，并接近或优于 ChatGPT-0301。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_016_img_01.png" alt="Ghost Attention illustration" loading="lazy" />
+          <figcaption><strong>Figure 9.</strong> GAtt 解决多轮对话中系统指令遗忘问题，让初始约束能跨多轮持续影响回答。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_019_img_01.png" alt="Human evaluation by single-turn and multi-turn" loading="lazy" />
+          <figcaption><strong>Figure 12.</strong> Helpfulness 人评按 single-turn / multi-turn 拆解；Llama 2-Chat 对开放 baseline 优势明显，对 ChatGPT 更接近。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_034_img_01.png" alt="Tool use emergence" loading="lazy" />
+          <figcaption><strong>Figure 23.</strong> Tool use emergence 示例：模型通过工具说明理解 SEARCH 与 CALCULATOR 的调用方式，并组合多步 API。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_048_img_01.png" alt="GQA and MQA throughput" loading="lazy" />
+          <figcaption><strong>Figure 24.</strong> MQA/GQA 在大 batch 与长上下文下缓解 KV cache 瓶颈；论文最终为 34B/70B 选择 GQA。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">严格复现完整 Llama 2 训练几乎不可行，但可以分层复现：模型推理、公开 benchmark、安全评测、GAtt 数据技巧、小规模 RLHF pipeline、以及使用开源模型复刻论文中的分析方法。</p>
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>可以直接复现</h3>
+          <ul class="compact-list">
+            <li>下载公开 7B/13B/70B base 与 chat 权重，运行论文中的 prompt examples。</li>
+            <li>按 Table 3/4/14/15 的 benchmark 重新评测，但要固定 tokenizer、prompt 模板、shot 数、decoding 设置。</li>
+            <li>复现 GAtt：构造多轮对话，把 system constraint 合成到每轮 user message，再只对最后回答计 loss。</li>
+            <li>复现安全评测框架：构建 adversarial prompt set，按 5-point Likert 标 violation。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>难以完整复现</h3>
+          <ul class="compact-list">
+            <li>2T token 数据混合和清洗策略只描述原则，不发布完整 corpus。</li>
+            <li>Meta SFT、helpfulness/safety preference data、red team samples 未完整开放。</li>
+            <li>训练依赖 3.3M A100 GPU hours、Meta RSC/production clusters 与内部训练库。</li>
+            <li>RLHF 的每个中间版本、reward model 迭代、annotation curriculum 不完全公开。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="note-box good">
+          <h3>最小工程复刻</h3>
+          <p>用较小开源 base model，收集数千条高质量 SFT，训练 helpfulness/safety RM，再做 rejection sampling fine-tuning；最后用固定 held-out prompts 做人评或 GPT-4 judge。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>评测注意</h3>
+          <p>论文人评不包含 coding/reasoning prompts，且 safety content standard 可能偏向 Llama 2-Chat。复现实验必须报告 prompt 分布和评审指南。</p>
+        </div>
+        <div class="note-box danger">
+          <h3>部署注意</h3>
+          <p>论文明确指出测试主要在 English 上，非英语能力脆弱；base model 未 safety tuned，部署前需要应用场景级安全测试、输入输出过滤和额外微调。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">这篇论文的价值不只是“发了一个模型”，而是把开放 chat model 需要的工程要素系统化。但它也有典型工业论文的局限：透明度远高于闭源模型，却仍不足以完整复现。</p>
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>模型、论文和代码 release 对开放生态影响极大，推动了后续 open LLM 研究。</li>
+            <li>对 SFT、RM、RLHF、GAtt、安全微调和 red teaming 的描述具体，工程信息量很高。</li>
+            <li>将 helpfulness 和 safety RM 分离，是务实且可迁移的 alignment 设计。</li>
+            <li>明确报告 human evaluation 的噪声、prompt 覆盖不足和 content standard 偏差。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>训练数据和偏好数据不可公开，导致社区无法完整审计或复现实验。</li>
+            <li>人评 prompt 不覆盖 coding/reasoning，不能推出 Llama 2-Chat 整体等价于 ChatGPT。</li>
+            <li>安全评估主要英文，非英语、多模态、工具调用后的安全风险覆盖不足。</li>
+            <li>34B 模型报告但未发布，影响论文中部分规模比较的可验证性。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>Missing Ablations</h3>
+          <ul class="compact-list">
+            <li>SFT 数据量、质量、来源与 RLHF 数据量之间的更细粒度 trade-off。</li>
+            <li>Safety RM 与 Helpfulness RM 合并、门控、加权方式的系统比较。</li>
+            <li>GAtt 相对更正式 long-context / system prompt 方法的对照。</li>
+            <li>不同语言和跨语言 jailbreak 场景下的 safety scaling 曲线。</li>
+          </ul>
+        </div>
+        <div class="critique-box danger">
+          <h3>Failure Modes</h3>
+          <ul class="compact-list">
+            <li>过度安全微调导致 false refusal，尤其是含敏感词但合法的 borderline prompts。</li>
+            <li>reward model 与人类偏好分布漂移，导致 RLHF 后的 reward hacking。</li>
+            <li>工具使用能力 emergent 但未系统训练，容易产生错误 API 调用或安全绕过。</li>
+            <li>预训练数据中的语言、地域和人口统计偏差会进入下游模型行为。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究的启发</h2>
+      <p class="section-lead">对 agent、RLVR、自进化和 evaluation 来说，Llama 2 论文最值得迁移的是“迭代式数据飞轮”：模型版本、reward model、偏好数据、红队数据、评测集共同演化，而不是一次性训练完。</p>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>RLVR</h3>
+          <p>把 helpfulness/safety RM 换成 verifiable reward 后，可以复用 rejection sampling + PPO + curriculum 的结构，让 questioner 生成更难但可验证的题。</p>
+        </div>
+        <div class="note-box">
+          <h3>Agent Memory</h3>
+          <p>GAtt 提示我们：长期指令保持不一定先改架构，数据构造和 loss masking 就能显著改变模型注意模式。</p>
+        </div>
+        <div class="note-box">
+          <h3>Replay</h3>
+          <p>RLHF-V3 遗忘写诗能力后，作者把历史高质量样本混回训练。这与 replay buffer 防遗忘的思想完全一致。</p>
+        </div>
+        <div class="note-box">
+          <h3>Safety Evaluation</h3>
+          <p>安全不是一个总分，而是风险类别、攻击向量、single/multi-turn、人评一致性、false refusal 和红队回归测试的组合。</p>
+        </div>
+        <div class="note-box">
+          <h3>Tool Use</h3>
+          <p>Llama 2-Chat 的 zero-shot tool use emergence 说明 tool semantics 可以被对齐训练激活；后续 agent 可以把工具文档、调用轨迹和错误反馈纳入训练数据。</p>
+        </div>
+        <div class="note-box">
+          <h3>Open Model Strategy</h3>
+          <p>开源权重不是全部。真正可复用的是模型卡、评测协议、风险边界、responsible use guide 和可持续的反馈通道。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
