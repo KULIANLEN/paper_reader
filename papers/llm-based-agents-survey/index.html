@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>The Rise and Potential of Large Language Model Based Agents: A Survey · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .llm-agent-survey-page * { letter-spacing: 0 !important; }
+    .llm-agent-survey-page .paper-article { width: min(calc(100% - 36px), 1160px); }
+    .llm-agent-survey-page .paper-hero { padding: 3.35rem 0 2.25rem; border-bottom: 1px solid var(--line); }
+    .llm-agent-survey-page .paper-hero h1 { max-width: 1080px; font-size: clamp(2.15rem, 4.7vw, 4.15rem); line-height: 1.05; }
+    .llm-agent-survey-page .hero-subtitle { max-width: 940px; margin: 1.05rem 0 0; font-size: clamp(1.02rem, 2vw, 1.24rem); line-height: 1.76; }
+    .llm-agent-survey-page .content-card { margin: 0; padding: clamp(2.15rem, 5vw, 4.25rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .llm-agent-survey-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.62rem, 3.2vw, 2.5rem); line-height: 1.14; }
+    .llm-agent-survey-page .content-card h3 { margin: 0 0 0.48rem; font-size: 1.06rem; line-height: 1.35; }
+    .llm-agent-survey-page .section-lead { max-width: 930px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.04rem; line-height: 1.86; }
+    .llm-agent-survey-page .meta-row, .llm-agent-survey-page .link-row, .llm-agent-survey-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .llm-agent-survey-page .meta-row { margin-top: 1.25rem; color: var(--muted); font-size: 0.94rem; }
+    .llm-agent-survey-page .paper-tags, .llm-agent-survey-page .link-row { margin-top: 1rem; }
+    .llm-agent-survey-page .tag-pill, .llm-agent-survey-page .link-row a, .llm-agent-survey-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .llm-agent-survey-page .grid-2, .llm-agent-survey-page .grid-3, .llm-agent-survey-page .metric-grid, .llm-agent-survey-page .figure-grid, .llm-agent-survey-page .flow-grid { display: grid; gap: 1rem; }
+    .llm-agent-survey-page .grid-2, .llm-agent-survey-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .llm-agent-survey-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .llm-agent-survey-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .llm-agent-survey-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .llm-agent-survey-page .note-box, .llm-agent-survey-page .metric, .llm-agent-survey-page .table-wrap, .llm-agent-survey-page .figure-card, .llm-agent-survey-page .formula-box, .llm-agent-survey-page .flow-step, .llm-agent-survey-page .critique-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .llm-agent-survey-page .note-box, .llm-agent-survey-page .formula-box, .llm-agent-survey-page .flow-step, .llm-agent-survey-page .critique-box { padding: 1rem; }
+    .llm-agent-survey-page .note-box p, .llm-agent-survey-page .formula-box p, .llm-agent-survey-page .flow-step p, .llm-agent-survey-page .critique-box p { margin: 0.45rem 0 0; }
+    .llm-agent-survey-page .metric { padding: 1rem; }
+    .llm-agent-survey-page .metric strong { display: block; font-size: 1.5rem; line-height: 1.15; }
+    .llm-agent-survey-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .llm-agent-survey-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .llm-agent-survey-page .flow-step:nth-child(2) b { background: #6d5dfc; }
+    .llm-agent-survey-page .flow-step:nth-child(3) b { background: #c2410c; }
+    .llm-agent-survey-page .flow-step:nth-child(4) b { background: #0f766e; }
+    .llm-agent-survey-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .llm-agent-survey-page .formula-box .MathJax, .llm-agent-survey-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .llm-agent-survey-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .llm-agent-survey-page table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 0.91rem; }
+    .llm-agent-survey-page th, .llm-agent-survey-page td { padding: 0.72rem 0.75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .llm-agent-survey-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .llm-agent-survey-page td { color: var(--text-soft); }
+    .llm-agent-survey-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .llm-agent-survey-page .figure-card { margin: 0; overflow: hidden; }
+    .llm-agent-survey-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .llm-agent-survey-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .llm-agent-survey-page .figure-card figcaption strong { color: var(--text); }
+    .llm-agent-survey-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .llm-agent-survey-page .compact-list li { margin: 0.28rem 0; }
+    .llm-agent-survey-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .llm-agent-survey-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .llm-agent-survey-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .llm-agent-survey-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .llm-agent-survey-page .grid-2, .llm-agent-survey-page .grid-3, .llm-agent-survey-page .metric-grid, .llm-agent-survey-page .figure-grid, .llm-agent-survey-page .flow-grid { grid-template-columns: 1fr; }
+      .llm-agent-survey-page .paper-hero { padding-top: 2.4rem; }
+      .llm-agent-survey-page table { min-width: 680px; }
+    }
+  </style>
+</head>
+<body class="paper-page llm-agent-survey-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2309.07864v3</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">证据</a>
+      <a href="#results">讨论</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Survey / Agent Systems · arXiv 2023</div>
+      <h1>The Rise and Potential of Large Language Model Based Agents: A Survey</h1>
+      <p class="hero-subtitle">这篇 86 页 survey 把 LLM-based agent 从“LLM 会调用工具”提升到一个完整系统问题：agent 的 brain、perception、action 如何构造，单智能体、多智能体、人机协作和 agent society 如何落地，以及评价、安全、规模化和 Agent as a Service 还缺什么。</p>
+      <div class="meta-row">
+        <span>Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yiwen Ding, et al.</span>
+        <span>Fudan NLP Group</span>
+        <span>Published: 2023-09-14</span>
+        <span>Updated: 2023-09-19</span>
+        <span>arXiv:2309.07864v3</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">survey</span>
+        <span class="tag-pill">multi-agent</span>
+        <span class="tag-pill">evaluation</span>
+        <span class="tag-pill">safety</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2309.07864">arXiv</a>
+        <a href="https://arxiv.org/pdf/2309.07864.pdf">PDF</a>
+        <a href="https://github.com/WooooDyy/LLM-Agent-Paper-List">Paper List</a>
+        <a href="https://xuanjing-huang.github.io/files/agent.pdf">Author PDF mirror</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>86 pages</strong><span>正文加参考文献，作者备注为 12 figures；覆盖从 agent 历史到 agent society 的长链路综述。</span></div>
+        <div class="metric"><strong>3 modules</strong><span>construction framework：brain、perception、action，是全文最核心的系统分解。</span></div>
+        <div class="metric"><strong>3 regimes</strong><span>applications：single agent、multiple agents、human-agent interaction，对应不同协作边界。</span></div>
+        <div class="metric"><strong>4 eval axes</strong><span>utility、sociability、values、continual evolution，作者认为 agent 评估不能只看任务成功率。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机</h2>
+      <p class="section-lead">论文把 agent 定义为能够感知环境、做决策并采取行动的人工实体。传统 agent 往往依赖特定任务算法，难以同时具备知识记忆、长期规划、泛化、自然语言交互和社会协作。LLM 的出现改变了这个边界：它既能作为“brain”理解任务与生成计划，又能通过 multimodal perception 和 tools/embodiment 扩展输入输出通道。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>为什么不是普通 LLM？</h3>
+          <p>纯 LLM 主要在文本世界里读写互联网语料。agent 把 LLM 接到传感器、工具、机器人或其他 agent 上，目标是进入更广的 world scope。</p>
+        </div>
+        <div class="note-box">
+          <h3>为什么是现在？</h3>
+          <p>LLM 同时提供 instruction following、knowledge、planning/reasoning、few-shot generalization 和 natural language interaction，使过去分散的 agent 能力有了统一控制器。</p>
+        </div>
+        <div class="note-box">
+          <h3>这篇 survey 的定位</h3>
+          <p>它不是提出单个 benchmark，而是给出一个 2023 年 agent 生态地图：构造、应用、社会模拟、评估、安全和开放问题。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Agent 技术阶段</th>
+              <th>核心机制</th>
+              <th>优势</th>
+              <th>瓶颈</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Symbolic agent</td>
+              <td>显式符号、规则、逻辑推理。</td>
+              <td>可解释、可控，适合结构化问题。</td>
+              <td>面对开放环境、不确定输入和大规模知识时脆弱。</td>
+            </tr>
+            <tr>
+              <td>Reactive agent</td>
+              <td>感知到行动的快速映射。</td>
+              <td>响应快，适合动态环境。</td>
+              <td>缺少高层规划与抽象推理。</td>
+            </tr>
+            <tr>
+              <td>RL-based agent</td>
+              <td>通过环境交互学习 policy 或 value。</td>
+              <td>能从反馈中优化行动，AlphaGo 是标志案例。</td>
+              <td>训练时间长、样本效率低、稳定性与泛化困难。</td>
+            </tr>
+            <tr>
+              <td>Transfer / meta-learning agent</td>
+              <td>把既有经验迁移到新任务，或学习如何快速学习。</td>
+              <td>提升适应速度和泛化潜力。</td>
+              <td>负迁移、预训练成本和样本需求仍然存在。</td>
+            </tr>
+            <tr>
+              <td>LLM-based agent</td>
+              <td>LLM 作为 brain，外接 perception/action modules。</td>
+              <td>语言交互、知识、推理、规划、few-shot transfer 和社会沟通能力同时增强。</td>
+              <td>幻觉、工具误用、长程记忆、真实世界安全和大规模协作仍未解决。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-caption">这张表是对论文 2.2 节技术趋势的压缩。作者真正想强调的是：LLM-based agent 并不是完全替代前几代 agent，而是把符号推理、学习、规划和交互能力重新组合到一个更通用的控制器周围。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 论文的核心框架</h2>
+      <p class="section-lead">全文最重要的“方法”不是算法公式，而是 construction taxonomy。作者把一个 LLM-based agent 拆成 brain、perception、action 三部分：perception 把外部多模态环境转成模型可理解的表示；brain 进行记忆、知识调用、推理、规划和决策；action 通过文本、工具或具身动作影响环境，并把反馈带回下一轮。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-02-framework.png" alt="Conceptual framework of LLM-based agent with brain, perception, and action" />
+          <figcaption><strong>Figure 2.</strong> LLM-based agent 的概念框架：brain 负责 memorizing、thinking、decision-making；perception 接收多模态信息；action 通过文本、tool using 和 embodiment 执行。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-01-envisioned-society.png" alt="Envisioned society composed of LLM-based agents and humans" />
+          <figcaption><strong>Figure 1.</strong> 作者设想的 AI agent society：agent 与人共同存在于厨房、演出、户外等场景中，协作使用工具、规划任务并解决问题。</figcaption>
+        </figure>
+      </div>
+
+      <div class="formula-box">
+        <h3>阅读抽象：agent 闭环</h3>
+        <p>下面是我用来组织论文内容的抽象，不是论文给出的新定理。设环境状态为 $e_t$、目标为 $g$、记忆为 $M_t$、知识为 $K_t$，一个 agent step 可以写成：</p>
+        $$o_t=\mathcal{P}(e_t),\qquad z_t=\mathcal{B}(o_t,M_t,K_t,g),\qquad a_t=\mathcal{A}(z_t),\qquad e_{t+1}=T(e_t,a_t).$$
+        <p>$\mathcal{P}$ 对应 perception module，$\mathcal{B}$ 对应 brain，$\mathcal{A}$ 对应 action module。论文的 taxonomy 可以理解为分别研究这三个函数如何实现、如何组合、如何评价。</p>
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Perception</h3><p>文本、视觉、听觉、触觉、位置、运动、AR/VR、brainwave 等信号进入 agent，被转成 LLM 可处理的表示。</p></div>
+        <div class="flow-step"><b>2</b><h3>Brain</h3><p>LLM 负责自然语言交互、知识调用、memory、reasoning/planning、transfer/generalization。</p></div>
+        <div class="flow-step"><b>3</b><h3>Action</h3><p>输出文本、调用工具、制造工具或执行 embodied action；关键是让行动能改变环境并产生反馈。</p></div>
+        <div class="flow-step"><b>4</b><h3>Feedback</h3><p>行动结果回到 perception/brain，形成持续交互、反思、计划修正和长期学习。</p></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Brain 子模块</th>
+              <th>论文中的能力定义</th>
+              <th>系统设计含义</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Natural Language Interaction</td>
+              <td>高质量生成、深层语义理解、对指令和隐含意图的解析。</td>
+              <td>agent 的接口首先是语言接口，prompt、dialogue state 和 response style 都会影响任务执行。</td>
+            </tr>
+            <tr>
+              <td>Knowledge</td>
+              <td>预训练知识、linguistic/common-sense/actionable knowledge，以及知识编辑和 hallucination 缓解。</td>
+              <td>真实 agent 不能只依赖参数知识，需要 retrieval、tool lookup、版本控制和过时知识修正。</td>
+            </tr>
+            <tr>
+              <td>Memory</td>
+              <td>长上下文、摘要记忆、向量/结构化压缩、自动或交互式检索。</td>
+              <td>memory 是 agent 跨任务、跨会话和跨时间形成连续性的基础，但也是隐私风险来源。</td>
+            </tr>
+            <tr>
+              <td>Reasoning and Planning</td>
+              <td>推理、计划生成、计划反思、任务分解和动态修正。</td>
+              <td>LLM 不应只生成下一句，而要生成可执行、可检查、可回滚的行动序列。</td>
+            </tr>
+            <tr>
+              <td>Transferability and Generalization</td>
+              <td>zero/few-shot、in-context learning、continual learning、跨任务迁移。</td>
+              <td>agent 的价值在于少样本适应新环境，而不是只在单一 benchmark 上优化。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-caption">对应论文 Figure 3。Brain 部分说明了为什么 LLM 可以承担 agent controller：它把语言、知识、推理、记忆和泛化放到了同一个可提示的接口中。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Perception 类型</th>
+                <th>代表路线</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Textual input</td>
+                <td>显式文本、隐藏 beliefs/desires/intentions；instruction tuning 提升 zero-shot 理解。</td>
+              </tr>
+              <tr>
+                <td>Visual input</td>
+                <td>captioning、visual encoder、query-based Q-Former、projection-based LLaVA/MiniGPT-4、video temporal modeling。</td>
+              </tr>
+              <tr>
+                <td>Auditory input</td>
+                <td>cascading ASR/audio tools，或把 spectrogram 当作视觉输入迁移 ViT 结构。</td>
+              </tr>
+              <tr>
+                <td>Other input</td>
+                <td>触觉、温湿度、亮度、pointing instruction、eye tracking、AR/VR、body motion、brainwave、lidar/GPS/IMU。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Action 类型</th>
+                <th>代表路线</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Textual output</td>
+                <td>LLM 的天然行动空间，用于回复、解释、计划、协商和角色扮演。</td>
+              </tr>
+              <tr>
+                <td>Tool using</td>
+                <td>learning tools、using tools、making tools；包括 Toolformer、WebGPT、Visual ChatGPT、SayCan、LATM、CREATOR 等路线。</td>
+              </tr>
+              <tr>
+                <td>Embodied action</td>
+                <td>通过机器人 API、Minecraft、导航和操作任务把语言计划转成物理或虚拟世界动作。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 证据地图：Agent in Practice</h2>
+      <p class="section-lead">这篇论文是 survey，所以没有统一实验设置、baseline 或消融。它的“实验设计”更准确地说是文献证据地图：作者按 single agent、multiple agents、human-agent interaction 三种实践形态组织案例，再进一步把 agent society 作为从 individuality 到 sociality 的扩展。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>实践形态</th>
+              <th>子类</th>
+              <th>论文关注的问题</th>
+              <th>主要风险</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Single Agent</td>
+              <td>task-oriented、innovation-oriented、lifecycle-oriented</td>
+              <td>网页/生活任务、科学助手、代码、化学/材料、Minecraft/Voyager 式 lifelong skill library。</td>
+              <td>工具选择错误、环境反馈稀疏、长程任务分解失败、离线知识过时。</td>
+            </tr>
+            <tr>
+              <td>Multiple Agents</td>
+              <td>cooperative interaction、adversarial interaction</td>
+              <td>互补分工、ordered/disordered cooperation、CAMEL、AgentVerse、MetaGPT、debate/evaluation。</td>
+              <td>频繁交互放大 hallucination、上下文窗口不足、计算开销高、错误 consensus。</td>
+            </tr>
+            <tr>
+              <td>Human-Agent</td>
+              <td>instructor-executor、equal partnership</td>
+              <td>人给 instruction/feedback，或与 agent 形成陪伴、协作、共创关系。</td>
+              <td>过度依赖、角色误导、隐私暴露、责任归属不清。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-caption">对应论文第 4 节。作者对应用的判断比较克制：agent 的目标不是替代所有人类工作，而是“better equip humans with agents”。</p>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-08-single-agent.png" alt="Practical applications of single LLM-based agent" />
+          <figcaption><strong>Figure 8.</strong> 单智能体应用：task-oriented、innovation-oriented、lifecycle-oriented 三类，覆盖具体任务、科学/创造性工作和长期生存/学习任务。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-09-multi-agent.png" alt="Multi-agent cooperative and adversarial interactions" />
+          <figcaption><strong>Figure 9.</strong> 多智能体交互：cooperative interaction 追求互补，adversarial interaction 通过辩论、对抗或评价推动能力提升。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Agent society 维度</th>
+              <th>论文的分类</th>
+              <th>为什么重要</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Behavior and Personality</td>
+              <td>individual behavior、group behavior、cognition、emotion、character。</td>
+              <td>社会模拟不只看单个任务成功率，还要看 agent 是否能形成稳定行为和可辨人格。</td>
+            </tr>
+            <tr>
+              <td>Environment</td>
+              <td>text-based、virtual sandbox、physical environment。</td>
+              <td>环境决定 agent 的感知、行动和反馈真实性；从文本到物理世界会显著增加安全约束。</td>
+            </tr>
+            <tr>
+              <td>Simulation properties</td>
+              <td>open、persistent、situated、organized。</td>
+              <td>好的 agent society 需要开放进入、长期运行、情境化行动和组织结构，而不是一次性聊天。</td>
+            </tr>
+            <tr>
+              <td>Insights and risks</td>
+              <td>生产协作、传播机制、伦理决策、政策模拟；同时有 social harm、bias、privacy/security、addictiveness。</td>
+              <td>agent society 可以作为社会科学工具，也可能制造真实的伦理和安全伤害。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 讨论：评价、安全与开放问题</h2>
+      <p class="section-lead">第 6 节是这篇 survey 最值得反复看的部分。作者没有停在“agent 很有潜力”，而是把 mutual benefit、evaluation、security/trustworthiness、agent number scaling 和 open problems 逐项展开。这些讨论在今天仍然是 agent 系统落地的主要约束。</p>
+
+      <div class="formula-box">
+        <h3>阅读抽象：agent 评估向量</h3>
+        <p>作者提出 agent evaluation 至少覆盖 utility、sociability、values、ability to evolve continually。可把一个 agent policy $\pi$ 的评估写成向量：</p>
+        $$\mathrm{Eval}(\pi)=\langle U(\pi),S(\pi),V(\pi),E(\pi)\rangle.$$
+        <p>$U$ 是任务成功率、基础能力和资源效率；$S$ 是自然语言沟通、合作/谈判和角色一致性；$V$ 是 honesty、harmlessness 与情境价值；$E$ 是 continual learning、autotelic learning 和泛化适应能力。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>LLM 对 agent 的贡献</h3>
+          <p>LLM 提供语言理解、intent parsing、reasoning、memory、planning、feedback/reflection、unseen task transfer、多语言与跨域能力。换句话说，它让 agent controller 从专用策略变成通用可提示接口。</p>
+        </div>
+        <div class="critique-box good">
+          <h3>Agent 对 LLM 的反向推动</h3>
+          <p>agent 迫使 LLM 接收更丰富的 input modalities、输出更广的 action space、使用外部世界知识、操作 tool/robotic APIs，并在社会协作中接受反馈。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>评价维度</th>
+              <th>应测什么</th>
+              <th>为什么单独重要</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Utility</td>
+              <td>任务成功率、基础能力、效率、资源消耗。</td>
+              <td>agent 最终要完成任务，但成功率必须和成本、延迟、稳定性一起看。</td>
+            </tr>
+            <tr>
+              <td>Sociability</td>
+              <td>语言理解/生成、合作、谈判、角色扮演 fidelity。</td>
+              <td>multi-agent 和 human-agent 场景里，沟通失败会直接变成执行失败。</td>
+            </tr>
+            <tr>
+              <td>Values</td>
+              <td>honesty、harmlessness、context-specific values、jailbreak resistance。</td>
+              <td>agent 有行动能力，价值错配比普通 chatbot 更容易造成外部伤害。</td>
+            </tr>
+            <tr>
+              <td>Continual Evolution</td>
+              <td>continual learning、autotelic learning、adaptability、generalization。</td>
+              <td>真实环境不断变化，agent 不能只在固定数据集上通过一次性训练。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>风险或开放问题</th>
+              <th>论文观点</th>
+              <th>我的读法</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Adversarial robustness</td>
+              <td>文本、图像/音频、action module 和 tool instructions 都可能被攻击。</td>
+              <td>agent 的攻击面比 LLM 更大，因为输入通道和执行通道都外接真实系统。</td>
+            </tr>
+            <tr>
+              <td>Trustworthiness</td>
+              <td>需要处理 calibration、uncertainty、bias、hallucination，并结合解释、外部知识、causal/robust features、process supervision。</td>
+              <td>只做 answer-level alignment 不够，agent 需要 process-level trace 和 action-level guardrail。</td>
+            </tr>
+            <tr>
+              <td>Scaling number of agents</td>
+              <td>可以预先设定或动态扩展 agent 数量；好处是专业化、效率和社会模拟真实性，挑战是计算、通信、错误传播和协调。</td>
+              <td>多 agent 不天然产生 collective intelligence，通信协议和验证机制比 agent 数量更关键。</td>
+            </tr>
+            <tr>
+              <td>Virtual to physical</td>
+              <td>从虚拟环境走向物理世界需要硬件支持、环境泛化、长上下文、开放世界安全和监管。</td>
+              <td>physical embodiment 是 agent 最激动人心也最危险的一步，安全边界必须先于大规模部署。</td>
+            </tr>
+            <tr>
+              <td>Agent as a Service</td>
+              <td>AaaS / LLM-based Agent as a Service 提供灵活按需能力，但有数据安全、隐私、可见性、可控性、迁移、鲁棒性和滥用问题。</td>
+              <td>这已经是现代 agent 产品化的核心问题：谁持有 memory，谁批准 action，谁承担失败责任。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. 图表导读</h2>
+      <p class="section-lead">这里保留论文中最关键的 10 张图页截图。由于 ar5iv 转换失败，图像来自 PDF 页面渲染；每张图都保留原文上下文，方便核对 caption 与段落。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-03-brain.png" alt="Typology of brain module" />
+          <figcaption><strong>Figure 3.</strong> Brain module taxonomy：language interaction、knowledge、memory、reasoning/planning、transfer/generalization。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-04-perception.png" alt="Typology of perception module" />
+          <figcaption><strong>Figure 4.</strong> Perception module taxonomy：textual、visual、auditory 和 other sensory input。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-05-action.png" alt="Typology of action module" />
+          <figcaption><strong>Figure 5.</strong> Action module taxonomy：textual output、tool using、embodied action。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-10-human-agent.png" alt="Human-agent interaction paradigms" />
+          <figcaption><strong>Figure 10.</strong> Human-agent interaction：instructor-executor paradigm 与 equal partnership paradigm。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-11-agent-society-taxonomy.png" alt="Typology of society of LLM-based agents" />
+          <figcaption><strong>Figure 11.</strong> Agent society taxonomy：behavior/personality、environment、society simulation、insights 和 risks。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-12-simulated-society.png" alt="Overview of simulated agent society" />
+          <figcaption><strong>Figure 12.</strong> Simulated agent society：agent 在环境中内化行为和人格，群体产生协作，环境提供资源、关系和反馈。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现与核对清单</h2>
+      <p class="section-lead">作为 survey，这篇论文没有可复现实验流水线。可复现性主要体现在：能否复核文献集合、分类标准、图表归纳和更新路径。作者提供了相关 paper list 仓库，这对持续维护 taxonomy 有帮助。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>可核对项</h3>
+          <ul class="compact-list">
+            <li>以 arXiv:2309.07864v3 为版本基准，记录更新时间为 2023-09-19。</li>
+            <li>对照作者维护的 <code>LLM-Agent-Paper-List</code>，检查文献是否覆盖 construction、applications、society、evaluation、safety。</li>
+            <li>把新增论文映射到 brain/perception/action 或 single/multiple/human-agent 等 taxonomy 中，观察是否需要扩展分类。</li>
+            <li>重画关键图表时保留原始 caption 与章节语境，避免把 survey taxonomy 误读成因果证明。</li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <h3>不可完整复现项</h3>
+          <ul class="compact-list">
+            <li>论文没有给出系统化检索协议、纳入/排除标准、时间切片统计或 PRISMA-style 流程。</li>
+            <li>许多判断依赖 2023 年 agent 系统状态，今天复核时需要区分历史结论和仍然成立的结构性问题。</li>
+            <li>agent society 与安全讨论主要是概念和案例归纳，不是统一 benchmark 下的实证比较。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note-box" style="margin-top: 1rem;">
+        <h3>本页生成说明</h3>
+        <p>arXiv metadata 来自 arXiv API；直接下载 arXiv PDF 时出现网络/TLS 中断和低速问题，因此正文读取使用作者之一 Xuanjing Huang 页面上的 PDF 镜像，并用 arXiv v3 metadata 校准题名、作者和日期。ar5iv HTML 转换返回 fatal 页面，所以图像采用 PDF 页面截图。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer 式评价</h2>
+      <p class="section-lead">这篇 survey 的价值在于把 agent 系统、应用和社会模拟放到同一个地图里；局限也来自同一个原因：覆盖面很广，但文献选择和证据强度没有被同等严格地量化。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>优点</h3>
+          <ul class="compact-list">
+            <li>Brain / perception / action 三分法非常实用，适合做 agent 系统设计 checklist。</li>
+            <li>从 single agent 到 agent society 的层级组织清楚，能解释为什么 agent 不是单纯 tool calling。</li>
+            <li>第 6 节对 evaluation、security、scaling 和 open problems 的讨论仍然有现实指导意义。</li>
+            <li>把社会模拟的收益和伦理风险并置，避免把 multi-agent society 讲成单向乐观叙事。</li>
+          </ul>
+        </div>
+        <div class="critique-box danger">
+          <h3>不足</h3>
+          <ul class="compact-list">
+            <li>缺少系统综述常见的检索式、数据库、筛选流程、纳入/排除标准和 inter-annotator consistency。</li>
+            <li>许多 taxonomy 边界会随工具和模型快速变化，2023 年的分类需要持续版本化维护。</li>
+            <li>缺少横向量化表格，例如不同 agent framework 在 memory、tool safety、multi-agent protocol 上的可比较打分。</li>
+            <li>对失败案例、工程成本、数据隐私责任和部署治理的具体机制讨论还不够细。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="critique-box warn" style="margin-top: 1rem;">
+        <h3>如果重写这篇 survey，我会补什么</h3>
+        <p>我会加入 PRISMA-style search protocol、按季度更新的 timeline、benchmark matrix、failure-case taxonomy、action permission model、安全事件分级，以及 memory ownership / audit logging / rollback 这类 agent product governance 维度。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对后续研究的启发</h2>
+      <p class="section-lead">这篇论文适合作为 agent 研究的框架底座。它不告诉你某个模型一定更强，但会提醒你：真正的 agent 能力来自感知、记忆、规划、行动、反馈和社会协作的闭环，而不是一次 LLM completion。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>做系统</h3>
+          <p>先画出 brain、perception、action、memory、tool permission、feedback loop，再决定 prompt 或模型微调。agent 的失败往往发生在模块边界。</p>
+        </div>
+        <div class="note-box">
+          <h3>做评估</h3>
+          <p>不要只报告 task success。至少同时记录 utility、sociability、values、continual evolution，以及 tool/action 级别的错误类型。</p>
+        </div>
+        <div class="note-box">
+          <h3>做产品</h3>
+          <p>Agent as a Service 的关键不是包装 UI，而是 memory 归属、动作授权、审计、回滚、隐私和滥用防控。</p>
+        </div>
+      </div>
+
+      <div class="note-box" style="margin-top: 1rem;">
+        <h3>和自进化 / verifiable learning 的连接</h3>
+        <p>如果把 agent action 视为可验证对象，brain 的计划、tool call、环境反馈和 memory update 都可以变成训练信号。后续 RLVR、self-debugging、tool-maker、multi-agent debate 等路线，都可以放进这个闭环里重新理解。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

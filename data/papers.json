@@ -138,6 +138,72 @@
         "level": "medium",
         "notes": "代码、数据入口和模型页面可用，适合复现框架、tool registration、tool retrieval、Weighted LM 和自动评测；但严格复现论文数字依赖 2023 年在线 API、ChatGPT 合成数据过程、ModelScope 服务环境、具体训练超参和评测集细节。"
       }
+    },
+    {
+      "id": "2309.07864",
+      "slug": "llm-based-agents-survey",
+      "title": "The Rise and Potential of Large Language Model Based Agents: A Survey",
+      "titleZh": "基于大语言模型的智能体的兴起与潜力：综述",
+      "authors": [
+        "Zhiheng Xi",
+        "Wenxiang Chen",
+        "Xin Guo",
+        "Wei He",
+        "Yiwen Ding",
+        "Boyang Hong",
+        "Ming Zhang",
+        "Junzhe Wang",
+        "Senjie Jin",
+        "Enyu Zhou",
+        "Rui Zheng",
+        "Xiaoran Fan",
+        "Xiao Wang",
+        "Limao Xiong",
+        "Yuhao Zhou",
+        "Weiran Wang",
+        "Changhao Jiang",
+        "Yicheng Zou",
+        "Xiangyang Liu",
+        "Zhangyue Yin",
+        "Shihan Dou",
+        "Rongxiang Weng",
+        "Wensen Cheng",
+        "Qi Zhang",
+        "Wenjuan Qin",
+        "Yongyan Zheng",
+        "Xipeng Qiu",
+        "Xuanjing Huang",
+        "Tao Gui"
+      ],
+      "year": 2023,
+      "venue": "arXiv",
+      "category": "Survey / Position",
+      "tags": [
+        "agent",
+        "survey",
+        "multi-agent",
+        "evaluation",
+        "safety"
+      ],
+      "status": "精读",
+      "priority": 5,
+      "readingDate": "2026-06-07",
+      "updatedAt": "2026-06-07",
+      "summary": "这篇 86 页 survey 把 LLM-based agent 系统化为 brain、perception、action 三个模块，并进一步梳理 single agent、multiple agents、human-agent interaction 与 agent society。它的长期价值不在某个实验分数，而在 evaluation、安全、规模化和 Agent as a Service 等开放问题的结构化地图。",
+      "takeaways": [
+        "agent 不是一次 LLM completion，而是 perception、brain、action、feedback 和 memory 的闭环系统。",
+        "评估 LLM-based agent 至少要同时看 utility、sociability、values 和 continual evolution。"
+      ],
+      "arxivId": "2309.07864",
+      "paperUrl": "https://arxiv.org/abs/2309.07864",
+      "pdfUrl": "https://arxiv.org/pdf/2309.07864",
+      "pageUrl": "papers/llm-based-agents-survey/index.html",
+      "codeUrl": "https://github.com/WooooDyy/LLM-Agent-Paper-List",
+      "repro": {
+        "available": true,
+        "level": "low",
+        "notes": "作为综述论文，没有可复现实验流水线；可复核的是 arXiv v3 版本、作者维护的 LLM-Agent-Paper-List、分类法映射和图表归纳。缺少系统综述式检索协议、纳入/排除标准和定量文献统计。"
+      }
     }
   ]
 }
