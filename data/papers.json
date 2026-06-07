@@ -87,6 +87,57 @@
         "level": "low",
         "notes": "权重和推理代码可用，部分评测可复现；但预训练数据混合、SFT/RLHF 标注数据、red-team 数据、内部训练库和大规模集群环境不可完整复现。"
       }
+    },
+    {
+      "id": "2309.00986",
+      "slug": "modelscope-agent",
+      "title": "ModelScope-Agent: Building Your Customizable Agent System with Open-source Large Language Models",
+      "titleZh": "ModelScope-Agent：用开源大模型构建可定制智能体系统",
+      "authors": [
+        "Chenliang Li",
+        "Hehong Chen",
+        "Ming Yan",
+        "Weizhou Shen",
+        "Haiyang Xu",
+        "Zhikai Wu",
+        "Zhicheng Zhang",
+        "Wenmeng Zhou",
+        "Yingda Chen",
+        "Chen Cheng",
+        "Hongzhu Shi",
+        "Ji Zhang",
+        "Fei Huang",
+        "Jingren Zhou"
+      ],
+      "year": 2023,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "tool-use",
+        "open-model",
+        "tool-learning",
+        "retrieval"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-07",
+      "updatedAt": "2026-06-07",
+      "summary": "ModelScope-Agent 把 open-source LLM controller、tool registry、tool retrieval、memory、tool-use 数据生成、Weighted LM 训练和 MSAgent-Eval 放进一个可定制 agent 框架。论文发布 598K dialogues 的 MSAgent-Bench，并展示 ModelScopeGPT 可连接 1000+ ModelScope AI models 与本地社区知识。",
+      "takeaways": [
+        "可定制 agent 系统需要把 LLM controller、tool registry、retrieval、memory、training 和 evaluation 一起设计。",
+        "Weighted LM 把 API 名称、参数、URL 等可验证关键 token 加权，是训练 tool-use agent 的简单有效思路。"
+      ],
+      "arxivId": "2309.00986",
+      "paperUrl": "https://arxiv.org/abs/2309.00986",
+      "pdfUrl": "https://arxiv.org/pdf/2309.00986",
+      "pageUrl": "papers/modelscope-agent/index.html",
+      "codeUrl": "https://github.com/modelscope/modelscope-agent",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "代码、数据入口和模型页面可用，适合复现框架、tool registration、tool retrieval、Weighted LM 和自动评测；但严格复现论文数字依赖 2023 年在线 API、ChatGPT 合成数据过程、ModelScope 服务环境、具体训练超参和评测集细节。"
+      }
     }
   ]
 }
