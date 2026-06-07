@@ -1,0 +1,53 @@
+{
+  "id": "2310.10634",
+  "slug": "openagents",
+  "title": "OpenAgents: An Open Platform for Language Agents in the Wild",
+  "titleZh": "OpenAgents：面向真实场景语言智能体的开放平台",
+  "authors": [
+    "Tianbao Xie",
+    "Fan Zhou",
+    "Zhoujun Cheng",
+    "Peng Shi",
+    "Luoxuan Weng",
+    "Yitao Liu",
+    "Toh Jing Hua",
+    "Junning Zhao",
+    "Qian Liu",
+    "Che Liu",
+    "Leo Z. Liu",
+    "Yiheng Xu",
+    "Hongjin Su",
+    "Dongchan Shin",
+    "Caiming Xiong",
+    "Tao Yu"
+  ],
+  "year": 2023,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "platform",
+    "web-agent",
+    "evaluation"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-07",
+  "updatedAt": "2026-06-07",
+  "summary": "OpenAgents 是一个开源语言智能体平台，把 Data Agent、Plugins Agent 和 Web Agent 放进可在线使用、可本地部署、可研究扩展的系统中。论文的核心价值是把真实部署中的 UI、streaming、error handling、token overflow、sandbox、plugin scaling 和 human-in-the-loop evaluation 系统化，而不是只展示 agent prompt demo。",
+  "takeaways": [
+    "可部署 agent system 必须同时设计 UI、后端状态、tool execution、sandbox、失败恢复和用户可接管机制。",
+    "in-the-wild agent evaluation 需要记录 latency、tool/API failure、parser error、用户中断和失败归因，而不只是任务成功率。"
+  ],
+  "arxivId": "2310.10634",
+  "paperUrl": "https://arxiv.org/abs/2310.10634",
+  "pdfUrl": "https://arxiv.org/pdf/2310.10634",
+  "pageUrl": "papers/openagents/index.html",
+  "codeUrl": "https://github.com/xlang-ai/OpenAgents",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "代码、demo、docs 和关键 prompts 可用，适合复现平台结构和三类 agent；但严格复现依赖外部 LLM API、第三方 plugins、浏览器扩展、API 可用性、网站状态和未固定的模型快照/decoding 设置。"
+  }
+}

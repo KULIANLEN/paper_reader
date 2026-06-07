@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>OpenAgents: An Open Platform for Language Agents in the Wild · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .openagents-page * { letter-spacing: 0 !important; }
+    .openagents-page .paper-article { width: min(calc(100% - 36px), 1160px); }
+    .openagents-page .paper-hero { padding: 3.35rem 0 2.25rem; border-bottom: 1px solid var(--line); }
+    .openagents-page .paper-hero h1 { max-width: 1080px; font-size: clamp(2.15rem, 4.6vw, 4.1rem); line-height: 1.05; }
+    .openagents-page .hero-subtitle { max-width: 940px; margin: 1.05rem 0 0; font-size: clamp(1.02rem, 2vw, 1.24rem); line-height: 1.76; }
+    .openagents-page .content-card { margin: 0; padding: clamp(2.15rem, 5vw, 4.25rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .openagents-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.62rem, 3.2vw, 2.5rem); line-height: 1.14; }
+    .openagents-page .content-card h3 { margin: 0 0 0.48rem; font-size: 1.06rem; line-height: 1.35; }
+    .openagents-page .section-lead { max-width: 940px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.04rem; line-height: 1.86; }
+    .openagents-page .meta-row, .openagents-page .link-row, .openagents-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .openagents-page .meta-row { margin-top: 1.25rem; color: var(--muted); font-size: 0.94rem; }
+    .openagents-page .paper-tags, .openagents-page .link-row { margin-top: 1rem; }
+    .openagents-page .tag-pill, .openagents-page .link-row a, .openagents-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .openagents-page .grid-2, .openagents-page .grid-3, .openagents-page .metric-grid, .openagents-page .figure-grid, .openagents-page .flow-grid { display: grid; gap: 1rem; }
+    .openagents-page .grid-2, .openagents-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .openagents-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .openagents-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .openagents-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .openagents-page .note-box, .openagents-page .metric, .openagents-page .table-wrap, .openagents-page .figure-card, .openagents-page .formula-box, .openagents-page .flow-step, .openagents-page .critique-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .openagents-page .note-box, .openagents-page .formula-box, .openagents-page .flow-step, .openagents-page .critique-box { padding: 1rem; }
+    .openagents-page .note-box p, .openagents-page .formula-box p, .openagents-page .flow-step p, .openagents-page .critique-box p { margin: 0.45rem 0 0; }
+    .openagents-page .metric { padding: 1rem; }
+    .openagents-page .metric strong { display: block; font-size: 1.5rem; line-height: 1.15; }
+    .openagents-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .openagents-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .openagents-page .flow-step:nth-child(2) b { background: #6d5dfc; }
+    .openagents-page .flow-step:nth-child(3) b { background: #c2410c; }
+    .openagents-page .flow-step:nth-child(4) b { background: #0f766e; }
+    .openagents-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .openagents-page .formula-box .MathJax, .openagents-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .openagents-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .openagents-page table { width: 100%; min-width: 780px; border-collapse: collapse; font-size: 0.9rem; }
+    .openagents-page th, .openagents-page td { padding: 0.72rem 0.75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .openagents-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .openagents-page td { color: var(--text-soft); }
+    .openagents-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .openagents-page .figure-card { margin: 0; overflow: hidden; }
+    .openagents-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .openagents-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .openagents-page .figure-card figcaption strong { color: var(--text); }
+    .openagents-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .openagents-page .compact-list li { margin: 0.28rem 0; }
+    .openagents-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .openagents-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .openagents-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .openagents-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .openagents-page .grid-2, .openagents-page .grid-3, .openagents-page .metric-grid, .openagents-page .figure-grid, .openagents-page .flow-grid { grid-template-columns: 1fr; }
+      .openagents-page .paper-hero { padding-top: 2.4rem; }
+      .openagents-page table { min-width: 700px; }
+    }
+  </style>
+</head>
+<body class="paper-page openagents-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2310.10634</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">证据</a>
+      <a href="#results">结果</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Agent / Tool Use · arXiv 2023</div>
+      <h1>OpenAgents: An Open Platform for Language Agents in the Wild</h1>
+      <p class="hero-subtitle">OpenAgents 不是再做一个 console agent demo，而是把 Data Agent、Plugins Agent、Web Agent 放进一个可在线使用、可本地部署、可研究扩展的开放平台。论文最有价值的部分是把真实用户场景里的 UI、streaming、error handling、token overflow、sandbox、plugin scaling 和 human-in-the-loop evaluation 摆到了 agent 研究前台。</p>
+      <div class="meta-row">
+        <span>Tianbao Xie, Fan Zhou, Zhoujun Cheng, Peng Shi, Luoxuan Weng, et al.</span>
+        <span>The University of Hong Kong · XLang Lab · Sea AI Lab · Salesforce Research</span>
+        <span>Submitted: 2023-10-16</span>
+        <span>34 pages · 8 figures</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">tool-use</span>
+        <span class="tag-pill">platform</span>
+        <span class="tag-pill">web-agent</span>
+        <span class="tag-pill">evaluation</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2310.10634">arXiv</a>
+        <a href="https://arxiv.org/pdf/2310.10634.pdf">PDF</a>
+        <a href="https://github.com/xlang-ai/OpenAgents">Code</a>
+        <a href="https://chat.xlang.ai">Demo</a>
+        <a href="https://docs.xlang.ai/">Docs</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>3 agents</strong><span>Data Agent、Plugins Agent、Web Agent，分别面向数据分析、200+ tools/API 和真实网页浏览。</span></div>
+        <div class="metric"><strong>200+</strong><span>Plugins Agent 集成的日常 API tools，来自 RapidAPI、OpenAI plugin store 等来源。</span></div>
+        <div class="metric"><strong>2 layers</strong><span>User Interface 与 Language Agent 双层架构，把前端体验、后端逻辑、模型、工具和环境串起来。</span></div>
+        <div class="metric"><strong>Wild</strong><span>论文强调真实用户、真实网站、真实 API 故障与反馈，而不是只在 controlled benchmark 里评测。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机</h2>
+      <p class="section-lead">作者观察到 2023 年的语言 agent 大多还是 proof-of-concept：框架偏开发者、界面偏 CLI、环境偏 controlled benchmark。真实用户却需要一个能直接上传数据、调用日常 API、浏览网页，并能在失败、延迟、格式错误和安全问题中保持可用的 agent 产品。OpenAgents 的目标就是把 agent 从研究原型推进到“in the wild”的开放平台。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>现有框架的问题</h3>
+          <p>LangChain、AutoGPT、BabyAGI 等框架证明了 prompting + tools 的潜力，但通常面向开发者，缺少面向普通用户的 Web UI、错误恢复、流式体验和多用户数据管理。</p>
+        </div>
+        <div class="note-box">
+          <h3>闭源产品的缺口</h3>
+          <p>OpenAI Advanced Data Analysis、Plugins、Browse with Bing 证明了产品形态，但模型与业务逻辑不开源，限制了用户免费访问，也限制了研究者审计和改进。</p>
+        </div>
+        <div class="note-box">
+          <h3>论文的定位</h3>
+          <p>OpenAgents 是系统/平台论文：贡献不是新训练算法，而是开放 UI、后端、agent 组件和真实部署经验，让 agent 能被使用、部署、观察和评估。</p>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>语言 agent 的 POMDP 视角</h3>
+        <p>论文用 POMDP 形式化语言 agent：自然语言历史空间 $H$、状态空间 $S$、动作空间 $A$、观测空间 $O$、转移函数 $T:S\times A\to S$、奖励函数 $R:S\times A\to[0,1]$。</p>
+        $$\mathcal{M}=(H,S,A,O,T,R),\qquad h\in H,\qquad a_t\in A,\qquad s_{t+1}=T(s_t,a_t),\qquad o_{t+1}\in O.$$
+        <p>当前多数 LLM-based language agents 不需要训练，所以 reward 往往不直接使用；系统核心变成如何让 LLM 生成 executable action，并在环境反馈后继续循环。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 系统架构与算法流程</h2>
+      <p class="section-lead">OpenAgents 架构可以拆成两部分：User Interface 是用户和 agent 的桥，处理前端、后端、用户系统、database、streaming、error handling；Language Agent 则包含 language model、tools、environment，负责 prompting、action parsing、agent method、API calling、tool scaling/selection、web extension 和 sandbox。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-02-system-architecture.png" alt="OpenAgents system architecture with user interface and language agent" />
+          <figcaption><strong>Figure 2.</strong> OpenAgents 系统架构：User Interface 管理用户沟通和后端操作；Language Agent 管理模型、工具和环境，并将用户需求转成动作。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-01-platform-overview.png" alt="OpenAgents platform overview for users, developers, and researchers" />
+          <figcaption><strong>Figure 1.</strong> 平台面向三类对象：普通用户通过 Web UI 使用 agent，开发者本地部署前后端，研究者基于共享组件构建和评估新 agent。</figcaption>
+        </figure>
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Observation</h3><p>用户输入、文件、网页 DOM、API 返回、代码执行结果和历史对话进入系统，被 DataModel 转成不同接收方可用的表示。</p></div>
+        <div class="flow-step"><b>2</b><h3>Deliberation</h3><p>LLM 通过 ReAct-style prompting 进行计划、参数整理、工具选择、任务分解和失败后的下一步判断。</p></div>
+        <div class="flow-step"><b>3</b><h3>Action</h3><p>action parser 把文本解析成 Python/SQL、API call、plugin call 或 Chrome Debugger action，并在 sandbox 或浏览器中执行。</p></div>
+        <div class="flow-step"><b>4</b><h3>Feedback</h3><p>执行结果作为 observation 返回，系统按 prompt 模板判断是否继续 tool use、retry、终止或给用户最终答案。</p></div>
+      </div>
+
+      <div class="formula-box">
+        <h3>从 LLM 文本到可执行动作</h3>
+        <p>一个实用抽象是把 agent policy 写成 $\pi_\theta(a_t\mid h_t,o_t,c_t)$，其中 $c_t$ 包含 tool specs、UI state、grounding files、system prompt 和 history truncation 后的上下文。action parser $P$ 把模型文本 $y_t$ 映射为可执行动作：</p>
+        $$y_t\sim p_\theta(\cdot\mid h_t,o_t,c_t),\qquad a_t=P(y_t),\qquad o_{t+1}=E(a_t).$$
+        <p>OpenAgents 的工程重点就在 $c_t$、$P$ 和 $E$：如何构造上下文、如何让输出可解析、如何在真实环境里安全执行并恢复失败。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>模块</th>
+              <th>论文实现</th>
+              <th>工程含义</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>DataModel</td>
+              <td>将 text、code、image、table、database 等 raw data 转成给 human、frontend、computational system、LLM 各自适合的格式。</td>
+              <td>agent 平台不能只把所有东西转成字符串；不同数据要有多视图表示和持久化策略。</td>
+            </tr>
+            <tr>
+              <td>Strategic storage</td>
+              <td>临时变量在内存，global variables 放 Redis，用户对话和用户数据放 MongoDB。</td>
+              <td>真实多用户平台必须区分 ephemeral state、global state 和 user-owned persistent state。</td>
+            </tr>
+            <tr>
+              <td>Streaming parser</td>
+              <td>用 streaming API 和 pushdown automata 思路识别 token role，边生成边渲染或解析 tool call。</td>
+              <td>用户体验不是只看最终正确率；长输出必须尽早可见，同时内部 action token 不能误显示。</td>
+            </tr>
+            <tr>
+              <td>Robustness</td>
+              <td>处理 API failure、LLM API key pool、stop/retry、remote API timeout、错误分类、history truncation 和 token overflow。</td>
+              <td>部署 agent 要把 rate limit、失败重试、用户中断和上下文长度当成一等设计对象。</td>
+            </tr>
+            <tr>
+              <td>Executable environments</td>
+              <td>SQLite、Kaggle Docker-based Python sandbox、RESTful API wrapper、Chrome extension + Chrome Debugger。</td>
+              <td>action space 越真实，sandbox、权限、可见性和用户可接管能力越重要。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="formula-box">
+        <h3>Streaming 角色识别</h3>
+        <p>Appendix A.1.4 把实时 token role parsing 关联到 pushdown automata。论文给出的状态转移形式为：</p>
+        $$\delta:Q\times(\Sigma\cup\{\epsilon\})\times\Gamma\to\mathcal{P}(Q\times\Gamma^*).$$
+        <p>直观含义是：每读入一个字符或空转移，parser 根据当前状态和栈顶判断新状态。新状态代表当前 token 属于 plain text、tool call、参数、内部 thought 或特殊标记，从而决定前端如何渲染、后端如何执行。</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Data Agent</h3>
+          <p>支持 Python、SQL、Kaggle Data Search、Data Profiling、ECharts Tool。作者刻意让 Python/SQL/ECharts tool 内部调用 LLM 生成代码，以减轻 agent controller 负担。</p>
+        </div>
+        <div class="note-box">
+          <h3>Plugins Agent</h3>
+          <p>集成 200+ plugins，用户可手动选一个或多个插件，也可通过 Instructor embedding 自动选最相关工具；实现时特别关注 API ping、function calling interface 和 API response length。</p>
+        </div>
+        <div class="note-box">
+          <h3>Web Agent</h3>
+          <p>Chat agent 负责理解需求、整理 URL/参数和分解任务，Web Agent 负责实际浏览。Chrome extension 让用户看到、打断或接管浏览动作。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 证据与复现细节</h2>
+      <p class="section-lead">这篇论文没有传统意义上的 benchmark leaderboard。它的证据由三类组成：Table 1 横向比较平台能力，Figures 3-8 展示三个 agent 的 pipeline/use cases，第 5 节和 Appendix 解释真实部署中遇到的系统问题。复现时应把它当成可部署系统，而不是单个模型算法。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Online</th>
+              <th>Human Feedback</th>
+              <th>UI</th>
+              <th>Coding Env.</th>
+              <th>#Tools</th>
+              <th>Web</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>AutoGPT</td><td>✗</td><td>✓</td><td>CLI</td><td>Wild</td><td>15</td><td>✓</td></tr>
+            <tr><td>BMTools</td><td>✗</td><td>✗</td><td>-</td><td>Controlled</td><td>32</td><td>✗*</td></tr>
+            <tr><td>BabyAGI</td><td>✗</td><td>✗</td><td>-</td><td>Controlled</td><td>-</td><td>✗*</td></tr>
+            <tr><td>Gentopia</td><td>✗</td><td>✓</td><td>CLI</td><td>Controlled</td><td>15</td><td>✗*</td></tr>
+            <tr><td>Open Interpreter</td><td>✗</td><td>✓</td><td>CLI</td><td>Wild</td><td>1</td><td>✗</td></tr>
+            <tr><td>Generative Agents</td><td>✗</td><td>✗</td><td>Web</td><td>-</td><td>-</td><td>✗</td></tr>
+            <tr><td>AgentVerse</td><td>✗</td><td>✗</td><td>Web</td><td>-</td><td>-</td><td>✗</td></tr>
+            <tr><td>CAMEL</td><td>✓</td><td>✗</td><td>Web</td><td>-</td><td>-</td><td>✗</td></tr>
+            <tr><td>Agents</td><td>✓</td><td>✓</td><td>Web</td><td>Wild</td><td>11</td><td>✗*</td></tr>
+            <tr><td>OpenAgents</td><td>✓</td><td>✓</td><td>Web</td><td>Controlled & Wild</td><td>≥200+</td><td>✓+</td></tr>
+            <tr><td>ChatGPT Plus closed-source</td><td>✓</td><td>✓</td><td>Web</td><td>Controlled & Wild</td><td>≥500</td><td>✓</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">复刻自 Table 1。星号表示仅有 basic web browsing 或依赖外部 API；加号表示 OpenAgents 在统计数量之外还提供自动工具选择等额外能力。统计截至 2023 年 9 月。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>环境与依赖</h3>
+          <ul class="compact-list">
+            <li>LLM backend 理论上支持开放 API 或开源 LLM；论文明确提到 GPT-4 和 Claude。</li>
+            <li>Data Agent 使用 Python、SQL、Kaggle Data Search、Data Profiling、ECharts Tool。</li>
+            <li>Python sandbox 参考 Kaggle Dockerfile，SQL 执行使用 SQLite。</li>
+            <li>Plugins Agent 从 RapidAPI、OpenAI plugins store 等来源扩展到 200+ plugins。</li>
+            <li>Web Agent 通过 Chrome extension 和 Chrome Debugger API 控制用户侧浏览器。</li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <h3>论文没有给出的内容</h3>
+          <ul class="compact-list">
+            <li>没有统一 benchmark 数字、成功率、延迟分布或用户研究统计。</li>
+            <li>没有列出完整 prompt 变量展开、API key 管理、服务端部署拓扑和安全策略细节。</li>
+            <li>没有完整比较不同 LLM backend 在三个 agent 中的性能差异。</li>
+            <li>use cases 主要是演示，不能替代严格评测。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-03-data-agent.png" alt="Data Agent pipeline and demonstrations" />
+          <figcaption><strong>Figure 3.</strong> Data Agent pipeline：Generate、Execute、Program、Data Tools；可处理上传文件、查询、可视化和数据操作。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-04-05-plugins-web-agent.png" alt="Plugins Agent and Web Agent pipelines" />
+          <figcaption><strong>Figures 4-5.</strong> Plugins Agent 调 API tools；Web Agent 被 chat agent 调用以执行真实网页浏览，并支持多轮导航和对话穿插。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 核心结论与真实部署教训</h2>
+      <p class="section-lead">OpenAgents 的核心结论是：agent 研究如果要进入真实世界，必须把应用级需求纳入评估。prompt 格式、前端渲染、流式输出、API timeout、用户中断、CAPTCHA、广告、上下文溢出、数据存储和工具选择都会影响用户感知到的 agent 能力。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>真实部署问题</th>
+              <th>论文观察</th>
+              <th>对 agent 研究的含义</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Prompt burden</td>
+              <td>为了 backend parse、输出美观、防攻击、工具使用和错误处理，system prompt 会积累到数百 tokens。</td>
+              <td>instruction tracking 和 long context 是产品能力，不只是 benchmark 能力；专门训练 agent model 可能比纯 prompt 固定大模型更可控。</td>
+            </tr>
+            <tr>
+              <td>Uncontrollable factors</td>
+              <td>API crash、用户中断、CAPTCHA、广告改变网页结构都会破坏研究中常见的 deterministic 假设。</td>
+              <td>controlled environment 不能覆盖真实 web/API 的随机性，评估应包含故障注入和恢复能力。</td>
+            </tr>
+            <tr>
+              <td>Experience metrics</td>
+              <td>streaming 让用户更早看到响应，格式化 prompt 影响输出观感；准确率高但响应慢可能产品体验差。</td>
+              <td>agent evaluation 需要 latency、time-to-first-token、error transparency、user interruption、retry rate 等指标。</td>
+            </tr>
+            <tr>
+              <td>System attribution</td>
+              <td>失败可能来自 LLM，也可能来自业务逻辑不支持下载、API 接口变更、parser 错误或 frontend 限制。</td>
+              <td>评测需要 failure taxonomy，把 model limitation 和 system bug 分开归因。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>为什么它有意义</h3>
+          <p>论文把 agent 的“可用性”具体化为一批工程对象：DataModel、stream parser、tool selector、sandbox、Chrome extension、API wrapper、timeout、retry、history truncation。很多 agent 论文只在方法图中出现的灰色模块，这里被展开成真实代码要解决的问题。</p>
+        </div>
+        <div class="critique-box warn">
+          <h3>为什么它还不够</h3>
+          <p>它证明了平台设计思路和 demo 可行性，但没有给出严谨用户研究、失败率统计、成本/延迟曲线、安全红队结果或与闭源产品的可控对比。作为系统论文，它更像 blueprint 与经验报告。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">PDF 图像提取会把很多图拆成碎片，所以本页使用完整页截图，保留图注与上下文。关键图覆盖平台、架构、三类 agent 和 Appendix use cases。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/table-01-comparison.png" alt="Comparison table between OpenAgents and existing agent works" />
+          <figcaption><strong>Table 1.</strong> OpenAgents 相比 AutoGPT、BMTools、Gentopia、Open Interpreter、Agents、ChatGPT Plus 等系统的在线能力、反馈、UI、环境、工具数和 web browsing 支持。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-06-data-use-cases.png" alt="Data Agent use cases" />
+          <figcaption><strong>Figure 6.</strong> Data Agent use cases：Kaggle 搜索、Python/SQL 执行、ECharts 可视化、图片操作和趣味数据任务。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-07-plugins-use-cases.png" alt="Plugins Agent use cases" />
+          <figcaption><strong>Figure 7.</strong> Plugins Agent use cases：购物、天气、概念图、Wolfram Alpha、Zapier、旅行规划和自动插件选择。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-08-web-use-cases.png" alt="Web Agent use cases" />
+          <figcaption><strong>Figure 8.</strong> Web Agent use cases：找航班、总结 IMDb 评论、Google Maps 导航、发 Twitter、填写 Google Form。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">复现 OpenAgents 的重点不是跑一个固定脚本，而是部署一个多组件系统并核对三个 agent 的行为。论文提供代码、demo 和 docs；Appendix C/D 给了关键 prompts，但严格复现还依赖外部 LLM API、第三方插件、浏览器权限和服务端部署环境。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>最小复现路径</h3>
+          <ul class="compact-list">
+            <li>拉取 <code>xlang-ai/OpenAgents</code>，按 docs 配置 frontend、backend、MongoDB、Redis 和 LLM API。</li>
+            <li>先跑 Data Agent：上传 CSV/Excel，测试 Python、SQL、Data Profiling、ECharts，检查 sandbox 和 DataModel 渲染。</li>
+            <li>再跑 Plugins Agent：配置若干插件 API，测试手动选择和 embedding-based auto selection。</li>
+            <li>最后跑 Web Agent：安装 Chrome extension，测试 click/type/finish、用户中断和失败恢复。</li>
+            <li>记录每一步的 latency、API failure、parser failure、tool success、user interruption 和 final answer quality。</li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <h3>复现风险</h3>
+          <ul class="compact-list">
+            <li>论文依赖 2023 年的 API 生态，RapidAPI/OpenAI plugin store/第三方网站可能已经变化。</li>
+            <li>真实网页会出现 CAPTCHA、广告、DOM 变化和地区限制，导致结果不稳定。</li>
+            <li>LLM backend 未固定具体 snapshot 和 decoding 设置，prompt 效果可能随模型版本变化。</li>
+            <li>安全边界需要额外审计，尤其是 Python sandbox、浏览器控制、用户文件和 API key 管理。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>组件</th>
+              <th>论文给出的线索</th>
+              <th>复现时应补的日志</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Prompting</td>
+              <td>Appendix C/D 展示 Data/Plugins/Web agents 和 SQL/API/WeBot executor prompts。</td>
+              <td>完整变量展开、prompt 版本、上下文长度、截断策略、模型输出原文。</td>
+            </tr>
+            <tr>
+              <td>Tools/API</td>
+              <td>200+ plugins、Kaggle、SQLite、ECharts、RESTful API wrapper。</td>
+              <td>API endpoint 版本、timeout、retry 次数、失败原因、响应长度。</td>
+            </tr>
+            <tr>
+              <td>Browser</td>
+              <td>Chrome extension + Chrome Debugger，用户可见、可打断、可接管。</td>
+              <td>DOM snapshot、action trace、失败 action、用户介入时间点。</td>
+            </tr>
+            <tr>
+              <td>User feedback</td>
+              <td>论文设想 in-the-wild human-in-the-loop evaluation。</td>
+              <td>显式满意度、任务完成标签、纠错轨迹、会话后人工标注。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">作为 reviewer，我会把这篇论文视为“开放 agent 平台与部署经验报告”，而不是算法论文。它的重要性在于揭示了真实系统约束；证据薄弱点在于缺少量化评估。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>优点</h3>
+          <ul class="compact-list">
+            <li>把普通用户 Web UI、本地部署、研究扩展三个目标统一起来，平台定位清楚。</li>
+            <li>Appendix 的 DataModel、streaming、failure handling、token overflow、Chrome extension 细节对后续系统很有参考价值。</li>
+            <li>三类 agent 选得有代表性：数据分析、API tool use、web browsing 基本覆盖 2023 年最重要的 agent 产品形态。</li>
+            <li>明确指出真实部署指标和 controlled benchmark 之间的差距，这一点在今天仍然成立。</li>
+          </ul>
+        </div>
+        <div class="critique-box danger">
+          <h3>不足</h3>
+          <ul class="compact-list">
+            <li>没有严谨定量结果：缺少成功率、延迟、成本、用户满意度、失败归因和安全评测。</li>
+            <li>与 ChatGPT Plus 的比较主要是功能表，不是同任务、同用户、同时间窗口下的可控对比。</li>
+            <li>安全讨论不足：Python sandbox、浏览器控制、用户文件、API keys 和第三方插件都需要 threat model。</li>
+            <li>prompt 依赖很重，论文没有说明跨模型迁移、prompt drift 和模型版本升级时如何回归测试。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="critique-box warn" style="margin-top: 1rem;">
+        <h3>我会要求补充的实验</h3>
+        <p>至少补一个 50-100 个真实任务的 human-in-the-loop study：报告任务完成率、time-to-first-token、总耗时、用户中断率、API/tool failure rate、LLM/parser/system bug 归因、用户满意度，并按 Data/Plugins/Web 三类 agent 分别统计。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对后续研究的启发</h2>
+      <p class="section-lead">OpenAgents 对 agent、自进化、RLVR 和 evaluation 的启发很直接：只训练会“想”的模型不够，还要训练或约束它在真实系统边界内“做得稳”。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Agent evaluation</h3>
+          <p>把 evaluation 拆成 model、parser、tool、environment、UI、user feedback 六层。失败归因比一个最终分数更有价值。</p>
+        </div>
+        <div class="note-box">
+          <h3>RLVR / 自进化</h3>
+          <p>OpenAgents 的 action traces、tool outputs、retry history、user interruption 都可转成可验证训练信号，用来训练更稳的 action policy。</p>
+        </div>
+        <div class="note-box">
+          <h3>Replay 与多样性</h3>
+          <p>真实用户任务天然提供多样 replay buffer，但必须保存环境快照、API 响应和网页 DOM，否则无法复盘和做离线评估。</p>
+        </div>
+      </div>
+
+      <div class="note-box" style="margin-top: 1rem;">
+        <h3>一句话带走</h3>
+        <p>如果一篇 agent 论文没有讲清楚 UI、state、tool permissions、failure recovery、latency、human takeover 和 logging，它还只是 agent demo，不是可部署 agent system。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
