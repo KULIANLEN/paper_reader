@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Paper Reading Atlas Manifest",
+  "type": "object",
+  "required": ["schemaVersion", "papers"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "papers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "category", "tags", "status", "html"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "titleZh": { "type": "string" },
+          "authors": { "type": "array", "items": { "type": "string" } },
+          "year": { "type": "integer" },
+          "venue": { "type": "string" },
+          "dateAdded": { "type": "string" },
+          "category": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "status": { "enum": ["queued", "reading", "done", "skimmed"] },
+          "priority": { "enum": ["high", "medium", "low"] },
+          "difficulty": { "enum": ["easy", "medium", "hard"] },
+          "summary": { "type": "string" },
+          "html": { "type": "string" },
+          "arxiv": { "type": "string" },
+          "pdf": { "type": "string" },
+          "code": { "type": "string" }
+        }
+      }
+    }
+  }
+}

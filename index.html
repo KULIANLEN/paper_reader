@@ -1,229 +1,196 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="auto">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="一个面向 arXiv 论文精读、分类、标签检索与增量同步的 GitHub Pages 静态阅读站。" />
-  <meta name="color-scheme" content="light dark" />
-  <title>Paper Atlas · 论文阅读地图</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <meta name="description" content="一个面向 arXiv / 学术论文精读的静态知识库首页，支持模块分页、论文分页、分类、标签、搜索和增量添加。" />
+  <meta name="theme-color" content="#f7f7fb" />
+  <title>Paper Reading Atlas · 论文精读地图</title>
   <link rel="stylesheet" href="assets/css/styles.css" />
-  <script defer src="assets/js/app.js"></script>
 </head>
 <body>
-  <div class="site-ambient" aria-hidden="true">
-    <span class="orb orb-a"></span>
-    <span class="orb orb-b"></span>
-    <span class="orb orb-c"></span>
-  </div>
+  <div class="site-shell">
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
 
-  <header class="topbar" data-elevate>
-    <a class="brand" href="./" aria-label="回到首页">
-      <span class="brand-mark">∫</span>
-      <span>
-        <strong>Paper Atlas</strong>
-        <small>arXiv Reading Hub</small>
-      </span>
-    </a>
-
-    <nav class="topnav" aria-label="站点导航">
-      <a href="#library">论文库</a>
-      <a href="#taxonomy">分类</a>
-      <a href="#index">索引</a>
-      <a href="#workflow">Workflow</a>
-    </nav>
-
-    <div class="top-actions">
-      <button class="icon-button" id="themeToggle" type="button" aria-label="切换明暗主题">
-        <span class="sun">☀</span><span class="moon">☾</span>
-      </button>
-      <a class="ghost-button" href="README.md">README</a>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero section-shell">
-      <div class="hero-copy">
-        <div class="eyebrow"><span></span> 面向深度论文阅读的静态知识库</div>
-        <h1>把每篇论文沉淀成<br><em>可搜索、可分类、可复现</em>的网页资产。</h1>
-        <p>
-          这里是后续 Codex Skill 自动增量写入的 GitHub Pages 本体：主页只依赖静态
-          <code>data/papers.json</code>，每篇论文可以拥有自己的 <code>papers/&lt;slug&gt;/index.html</code>。
-        </p>
-        <div class="hero-actions">
-          <a class="primary-button" href="#library">开始浏览</a>
-          <button class="secondary-button" id="copySchemaButton" type="button">复制论文 JSON 模板</button>
-        </div>
+    <header class="topbar" aria-label="站点导航">
+      <a class="brand" href="#overview" data-view="overview" aria-label="返回总览">
+        <span class="brand-mark">P</span>
+        <span>
+          <strong>Paper Reading Atlas</strong>
+          <em>论文精读地图</em>
+        </span>
+      </a>
+      <nav class="topnav" aria-label="主要模块">
+        <button class="nav-link" type="button" data-view="overview">总览</button>
+        <button class="nav-link" type="button" data-view="library">论文库</button>
+        <button class="nav-link" type="button" data-view="categories">分类</button>
+        <button class="nav-link" type="button" data-view="tags">标签</button>
+        <button class="nav-link" type="button" data-view="index">索引</button>
+        <button class="nav-link" type="button" data-view="workflow">同步</button>
+      </nav>
+      <div class="top-actions">
+        <button class="ghost-button" id="themeToggle" type="button" aria-label="切换深浅色">🌗</button>
+        <a class="ghost-button json-link" href="data/papers.json" aria-label="查看论文数据 JSON">JSON</a>
       </div>
-      <aside class="hero-panel" aria-label="站点统计">
-        <div class="glass-card hero-stat hero-stat-main">
-          <span class="stat-label">Total Papers</span>
-          <strong id="statTotal">—</strong>
-          <small>已沉淀的精读页面</small>
-        </div>
-        <div class="mini-stat-grid">
-          <div class="glass-card hero-stat">
-            <span class="stat-label">Categories</span>
-            <strong id="statCategories">—</strong>
-          </div>
-          <div class="glass-card hero-stat">
-            <span class="stat-label">Tags</span>
-            <strong id="statTags">—</strong>
-          </div>
-          <div class="glass-card hero-stat">
-            <span class="stat-label">This Month</span>
-            <strong id="statMonth">—</strong>
-          </div>
-          <div class="glass-card hero-stat">
-            <span class="stat-label">Repro Notes</span>
-            <strong id="statRepro">—</strong>
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="hero-copy">
+          <p class="eyebrow">arXiv Reading · HTML Notes · GitHub Pages</p>
+          <h1>把论文精读，沉淀成一个可搜索、可复盘、可增量同步的知识库。</h1>
+          <p class="hero-desc">
+            首页已改成“模块分页 + 论文列表分页”的结构。总览、论文库、分类、标签、名称索引和同步流程会按模块切换显示，避免所有内容挤在一个长页面里；后续自动化流程仍只需要写入 <code>papers/&lt;slug&gt;/index.html</code> 和 <code>data/papers.json</code>。
+          </p>
+          <div class="hero-actions">
+            <button class="primary-button" type="button" data-open-view="library">进入论文库</button>
+            <button class="secondary-button" id="focusSearch" type="button">搜索论文 <span>/</span></button>
           </div>
         </div>
-      </aside>
-    </section>
-
-    <section class="section-shell highlight-strip" id="workflow" aria-label="推荐工作流">
-      <article>
-        <span>01</span>
-        <h2>读论文</h2>
-        <p>Codex Skill 生成单篇论文 HTML，并保存到 <code>papers/&lt;slug&gt;/index.html</code>。</p>
-      </article>
-      <article>
-        <span>02</span>
-        <h2>写索引</h2>
-        <p>把标题、分类、标签、摘要、路径和复现状态写入 <code>data/papers.json</code>。</p>
-      </article>
-      <article>
-        <span>03</span>
-        <h2>同步 Pages</h2>
-        <p>push 到 GitHub 后，主页自动读取 JSON 并更新搜索、分类、标签云和索引。</p>
-      </article>
-    </section>
-
-    <section class="section-shell library-layout" id="library">
-      <aside class="filter-panel glass-card" aria-label="论文筛选器">
-        <div class="filter-head">
-          <h2>筛选</h2>
-          <button class="text-button" id="resetFilters" type="button">重置</button>
-        </div>
-
-        <label class="search-box" for="searchInput">
-          <span>⌕</span>
-          <input id="searchInput" type="search" autocomplete="off" placeholder="搜索标题、作者、标签、摘要…  /" />
-        </label>
-
-        <div class="filter-group">
-          <div class="filter-title">阅读状态</div>
-          <div class="segmented" id="statusFilters" role="tablist" aria-label="按阅读状态筛选">
-            <button class="active" type="button" data-status="all">全部</button>
-            <button type="button" data-status="精读">精读</button>
-            <button type="button" data-status="复现中">复现中</button>
-            <button type="button" data-status="待读">待读</button>
+        <aside class="hero-panel" aria-label="站点概览">
+          <div class="panel-glass">
+            <div class="metric-row">
+              <div><span id="statPapers">0</span><small>篇论文</small></div>
+              <div><span id="statCategories">0</span><small>个分类</small></div>
+              <div><span id="statTags">0</span><small>个标签</small></div>
+            </div>
+            <div class="mini-timeline" id="miniTimeline" aria-label="最近更新"></div>
           </div>
-        </div>
+        </aside>
+      </section>
 
-        <div class="filter-group">
-          <div class="filter-title">研究方向</div>
-          <div class="chip-stack" id="categoryFilters"></div>
-        </div>
+      <section class="module-switcher" aria-label="模块切换">
+        <button type="button" data-view="overview"><span>01</span>总览</button>
+        <button type="button" data-view="library"><span>02</span>论文库</button>
+        <button type="button" data-view="categories"><span>03</span>分类地图</button>
+        <button type="button" data-view="tags"><span>04</span>标签浏览</button>
+        <button type="button" data-view="index"><span>05</span>名称索引</button>
+        <button type="button" data-view="workflow"><span>06</span>同步流程</button>
+      </section>
 
-        <div class="filter-group">
-          <div class="filter-title">高频标签</div>
-          <div class="tag-cloud" id="tagFilters"></div>
-        </div>
+      <section class="view-shell" aria-live="polite">
+        <section class="view-panel" id="view-overview" data-view-panel="overview">
+          <div class="page-hero mini">
+            <p>Overview</p>
+            <h2>今天应该从哪里读？</h2>
+            <span>总览只保留最近更新、研究方向和热门标签，作为轻量入口；真正的论文列表、分类和索引都放到独立模块里。</span>
+          </div>
+          <div class="overview-grid">
+            <article class="overview-card wide-card">
+              <div class="section-heading compact"><p>Latest</p><h2>最近更新</h2></div>
+              <div id="latestList" class="compact-list"></div>
+            </article>
+            <article class="overview-card">
+              <div class="section-heading compact"><p>Tracks</p><h2>研究方向</h2></div>
+              <div id="trackCards" class="track-list"></div>
+            </article>
+            <article class="overview-card">
+              <div class="section-heading compact"><p>Top Tags</p><h2>热门标签</h2></div>
+              <div id="topTags" class="tag-cloud large"></div>
+            </article>
+          </div>
+        </section>
 
-        <div class="filter-group">
-          <div class="filter-title">排序</div>
-          <select id="sortSelect" class="select-input" aria-label="排序方式">
-            <option value="updated-desc">最近更新</option>
-            <option value="read-desc">最近阅读</option>
-            <option value="year-desc">年份新到旧</option>
-            <option value="priority-desc">优先级高到低</option>
-            <option value="title-asc">标题 A-Z</option>
-          </select>
-        </div>
-      </aside>
-
-      <div class="library-main">
-        <div class="section-title-row">
-          <div>
-            <span class="section-kicker">Library</span>
+        <section class="view-panel" id="view-library" data-view-panel="library" hidden>
+          <div class="page-hero mini">
+            <p>Library</p>
             <h2>论文库</h2>
-            <p id="resultSummary">正在读取论文数据…</p>
+            <span>支持搜索、分类/标签/状态筛选、排序和分页。筛选条件改变后自动回到第一页。</span>
           </div>
-          <div class="view-switch" aria-label="视图切换">
-            <button class="active" type="button" data-view="cards">卡片</button>
-            <button type="button" data-view="compact">紧凑</button>
+
+          <section class="control-card" aria-label="论文筛选">
+            <div class="search-wrap">
+              <label for="searchInput">搜索</label>
+              <div class="search-box">
+                <span aria-hidden="true">⌘</span>
+                <input id="searchInput" type="search" placeholder="搜索标题、作者、标签、摘要、arXiv ID……" autocomplete="off" />
+              </div>
+            </div>
+            <div class="filter-grid">
+              <label>分类<select id="categoryFilter"><option value="">全部分类</option></select></label>
+              <label>标签<select id="tagFilter"><option value="">全部标签</option></select></label>
+              <label>状态<select id="statusFilter"><option value="">全部状态</option></select></label>
+              <label>排序<select id="sortSelect"><option value="updated-desc">最近更新</option><option value="created-desc">最近加入</option><option value="year-desc">年份从新到旧</option><option value="title-asc">标题 A-Z</option></select></label>
+              <label>每页<select id="pageSizeSelect"><option value="4">4 篇</option><option value="6" selected>6 篇</option><option value="8">8 篇</option><option value="12">12 篇</option></select></label>
+            </div>
+            <div class="filter-actions">
+              <span id="resultCount" class="result-count">0 篇</span>
+              <button class="secondary-button small" id="clearFilters" type="button">清空筛选</button>
+            </div>
+          </section>
+
+          <div class="library-layout">
+            <aside class="filter-rail" aria-label="快速筛选">
+              <section class="side-card compact-card">
+                <div class="section-heading compact"><p>Categories</p><h2>快速分类</h2></div>
+                <div id="categoryList" class="stack-list"></div>
+              </section>
+              <section class="side-card compact-card">
+                <div class="section-heading compact"><p>Tags</p><h2>常用标签</h2></div>
+                <div id="tagCloud" class="tag-cloud"></div>
+              </section>
+            </aside>
+            <div class="paper-list-area">
+              <div id="paperGrid" class="paper-grid" aria-live="polite"></div>
+              <nav class="pagination" id="pagination" aria-label="论文分页"></nav>
+              <div id="emptyState" class="empty-state" hidden><strong>没有找到匹配的论文</strong><span>可以换一个关键词，或者清空分类和标签过滤。</span></div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div class="paper-grid" id="paperGrid" aria-live="polite"></div>
-        <div class="empty-state hidden" id="emptyState">
-          <div>⌁</div>
-          <h3>没有匹配的论文</h3>
-          <p>试试减少标签筛选，或者搜索更宽泛的关键词。</p>
-        </div>
-      </div>
-    </section>
+        <section class="view-panel" id="view-categories" data-view-panel="categories" hidden>
+          <div class="page-hero mini"><p>Browse by Topic</p><h2>分类地图</h2><span id="categoryCount">0 个分类</span></div>
+          <div id="categorySections" class="category-sections"></div>
+        </section>
 
-    <section class="section-shell taxonomy" id="taxonomy">
-      <div class="section-title-row">
-        <div>
-          <span class="section-kicker">Taxonomy</span>
-          <h2>分类地图</h2>
-          <p>分类和标签均由 <code>data/papers.json</code> 自动统计，适合后续自动增量维护。</p>
-        </div>
-      </div>
-      <div class="taxonomy-grid" id="taxonomyGrid"></div>
-    </section>
+        <section class="view-panel" id="view-tags" data-view-panel="tags" hidden>
+          <div class="page-hero mini"><p>Tag Explorer</p><h2>标签浏览</h2><span id="tagCount">0 个标签</span></div>
+          <div id="tagExplorer" class="tag-explorer"></div>
+        </section>
 
-    <section class="section-shell index-section" id="index">
-      <div class="section-title-row">
-        <div>
-          <span class="section-kicker">Index</span>
-          <h2>论文名称索引</h2>
-          <p>按年份和标题组织，方便快速定位已有阅读页面。</p>
-        </div>
-      </div>
-      <div class="index-board glass-card" id="paperIndex"></div>
-    </section>
-  </main>
+        <section class="view-panel" id="view-index" data-view-panel="index" hidden>
+          <div class="page-hero mini"><p>Name Index</p><h2>论文名称索引</h2><span>按标题首字母聚合，适合论文数量变多后的快速定位。</span></div>
+          <div id="nameIndex" class="name-index"></div>
+        </section>
 
-  <footer class="site-footer section-shell">
-    <div>
-      <strong>Paper Atlas</strong>
-      <p>Static, searchable, incremental. Designed for GitHub Pages and Codex-generated paper notes.</p>
-    </div>
-    <a href="#top" class="ghost-button">回到顶部 ↑</a>
-  </footer>
-
-  <template id="paperJsonTemplate">{
-  "id": "2501.00001",
-  "slug": "short-paper-slug",
-  "title": "Paper Title",
-  "titleZh": "中文标题或一句话翻译",
+        <section class="view-panel" id="view-workflow" data-view-panel="workflow" hidden>
+          <div class="page-hero mini"><p>Incremental Ready</p><h2>增量同步流程</h2><span>当前只固定站点本体，下一步再让 Codex Skill 适配这个结构。</span></div>
+          <div class="workflow-grid">
+            <article class="workflow-step-card"><span>01</span><h3>生成论文页</h3><p>每篇论文写入 <code>papers/&lt;slug&gt;/index.html</code>，同目录可放图片和表格资源。</p></article>
+            <article class="workflow-step-card"><span>02</span><h3>更新 JSON 索引</h3><p>向 <code>data/papers.json</code> 新增或更新一条记录，主页自动进入搜索、分类、标签和索引。</p></article>
+            <article class="workflow-step-card"><span>03</span><h3>提交到 GitHub</h3><p>执行 <code>git add .</code>、<code>git commit</code>、<code>git push</code> 后，GitHub Pages 自动刷新。</p></article>
+            <article class="workflow-step-card"><span>04</span><h3>持续迭代</h3><p>同一个 <code>slug</code> 可反复更新：粗读版 → 精读版 → 复现版，不影响首页结构。</p></article>
+          </div>
+          <section class="section-block contract-block">
+            <div class="section-heading compact"><p>Data Contract</p><h2>Skill 后续应写入的最小字段</h2></div>
+            <pre><code>{
+  "id": "2501-xxxxx",
+  "slug": "paper-short-name",
+  "title": "Paper English Title",
+  "title_zh": "论文中文标题",
   "authors": ["Author A", "Author B"],
   "year": 2026,
   "venue": "arXiv",
-  "category": "Agent / RLVR",
-  "tags": ["reasoning", "agent", "rlvr"],
-  "status": "精读",
-  "priority": 4,
-  "readingDate": "2026-06-07",
-  "updatedAt": "2026-06-07",
-  "summary": "用 2-4 句话概括这篇论文解决的问题、核心方法和最重要结论。",
-  "takeaways": ["关键 insight 1", "关键 insight 2"],
-  "arxivId": "2501.00001",
-  "paperUrl": "https://arxiv.org/abs/2501.00001",
-  "pdfUrl": "https://arxiv.org/pdf/2501.00001",
-  "pageUrl": "papers/short-paper-slug/index.html",
-  "codeUrl": "",
-  "repro": {
-    "available": true,
-    "level": "medium",
-    "notes": "是否包含 dataset、hyperparameters、prompts、training details 等复现信息。"
-  }
-}</template>
+  "arxiv": "2501.xxxxx",
+  "html": "papers/paper-short-name/index.html",
+  "pdf": "https://arxiv.org/pdf/2501.xxxxx",
+  "category": "Agents & Tool Use",
+  "tags": ["Agent", "Reasoning", "Tool Use"],
+  "status": "已精读",
+  "summary": "一句话总结论文。"
+}</code></pre>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div><strong>Paper Reading Atlas</strong><span>静态页面，无构建依赖，适合 GitHub Pages 和后续自动化追加。</span></div>
+      <a href="README.md">查看维护说明</a>
+    </footer>
+  </div>
+
+  <script src="assets/js/app.js" defer></script>
 </body>
 </html>

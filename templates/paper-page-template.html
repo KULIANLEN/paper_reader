@@ -3,49 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <title>{{PAPER_TITLE}} · Paper Atlas</title>
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <title>{{PAPER_TITLE}} · Paper Reading Atlas</title>
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>
     window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']],
-        processEscapes: true
-      },
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
       svg: { fontCache: 'global' }
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
-<body class="paper-page">
-  <div class="site-ambient" aria-hidden="true"><span class="orb orb-a"></span><span class="orb orb-b"></span></div>
-  <header class="topbar">
-    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>{{ARXIV_ID}}</small></span></a>
-    <nav class="topnav" aria-label="论文页导航">
-      <a href="#motivation">动机</a>
-      <a href="#method">方法</a>
-      <a href="#experiments">实验</a>
-      <a href="#results">结果</a>
-      <a href="#critique">评价</a>
+<body>
+  <header class="site-header">
+    <nav class="shell nav" aria-label="主导航">
+      <a class="brand" href="../../index.html">
+        <span class="brand-mark">π</span>
+        <span><strong>Paper Reading Atlas</strong><small>返回论文库</small></span>
+      </a>
+      <div class="nav-links"><a href="../../index.html#library">论文库</a><a href="../../index.html#categories">分类</a><a href="../../index.html#name-index">索引</a></div>
     </nav>
-    <a class="ghost-button" href="../../">回到首页</a>
   </header>
 
-  <main class="paper-article">
-    <section class="paper-hero">
-      <div class="eyebrow"><span></span> {{CATEGORY}} · {{YEAR}}</div>
+  <main class="paper-detail article-shell">
+    <a class="back-link" href="../../index.html">← 返回首页</a>
+    <section class="article-hero">
+      <p class="eyebrow">{{CATEGORY}} · {{VENUE}} · {{YEAR}}</p>
       <h1>{{PAPER_TITLE}}</h1>
-      <p>{{ONE_SENTENCE_SUMMARY}}</p>
-      <div class="paper-tags">{{TAG_CHIPS}}</div>
+      <p class="hero-lead">{{ONE_SENTENCE_SUMMARY}}</p>
+      <div class="badge-row">
+        <span class="badge status-{{STATUS}}">{{STATUS_LABEL}}</span>
+        <span class="badge">{{CATEGORY}}</span>
+        <span class="badge">{{READ_TIME}}</span>
+      </div>
     </section>
 
-    <section class="content-card" id="motivation"><h2>1. 研究动机</h2>{{MOTIVATION_HTML}}</section>
-    <section class="content-card" id="method"><h2>2. 数学表示与方法</h2>{{METHOD_HTML}}</section>
-    <section class="content-card" id="experiments"><h2>3. 实验设计与复现细节</h2>{{EXPERIMENTS_HTML}}</section>
-    <section class="content-card" id="results"><h2>4. 实验结果与核心结论</h2>{{RESULTS_HTML}}</section>
-    <section class="content-card" id="critique"><h2>5. Reviewer Critique</h2>{{CRITIQUE_HTML}}</section>
+    <section class="article-content">
+      <article class="article-card"><h2>1. 研究动机</h2>{{MOTIVATION_HTML}}</article>
+      <article class="article-card"><h2>2. 核心方法与数学建模</h2>{{METHOD_MATH_HTML}}</article>
+      <article class="article-card"><h2>3. 算法流程</h2>{{ALGORITHM_HTML}}</article>
+      <article class="article-card"><h2>4. 实验设计与复现细节</h2>{{EXPERIMENTS_HTML}}</article>
+      <article class="article-card"><h2>5. 结果与结论</h2>{{RESULTS_HTML}}</article>
+      <article class="article-card"><h2>6. Figures / Tables</h2>{{FIGURE_TABLE_HTML}}</article>
+      <article class="article-card"><h2>7. Reviewer Critique</h2>{{CRITIQUE_HTML}}</article>
+      <article class="article-card"><h2>8. 对我们研究的启发</h2>{{PROJECT_RELEVANCE_HTML}}</article>
+    </section>
   </main>
 </body>
 </html>
