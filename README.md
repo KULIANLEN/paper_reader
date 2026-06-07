@@ -19,7 +19,7 @@
 │   ├── papers.json                # 论文索引数据，后续自动增量维护
 │   └── papers.schema.json         # JSON 字段规范
 ├── papers/
-│   └── _sample-paper/index.html   # 示例论文页，可删除
+│   └── <slug>/index.html          # 每篇论文的阅读页
 ├── templates/
 │   └── paper-page-template.html   # 后续 Skill 可参考的论文页模板
 ├── scripts/

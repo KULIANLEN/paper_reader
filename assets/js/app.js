@@ -9,78 +9,6 @@ const state = {
   view: localStorage.getItem('paperAtlas:view') || 'cards',
 };
 
-const fallbackPapers = [
-  {
-    id: 'sample-react',
-    slug: '_sample-paper',
-    title: 'ReAct: Synergizing Reasoning and Acting in Language Models',
-    titleZh: '将推理轨迹与外部行动结合的语言模型智能体范式',
-    authors: ['Shunyu Yao', 'Jeffrey Zhao', 'Dian Yu', 'Nan Du', 'Izhak Shafran', 'Karthik Narasimhan', 'Yuan Cao'],
-    year: 2023,
-    venue: 'ICLR / arXiv',
-    category: 'Agent / Tool Use',
-    tags: ['agent', 'reasoning', 'tool-use', 'HotPotQA', 'ALFWorld'],
-    status: '精读',
-    priority: 5,
-    readingDate: '2026-06-07',
-    updatedAt: '2026-06-07',
-    summary: '示例条目：用于展示站点卡片、标签、索引和论文页面链接效果。真实使用时可以删除或替换为自动生成的论文记录。',
-    takeaways: ['论文页面可以放在 papers/<slug>/index.html。', '主页只需要读取 data/papers.json 即可自动更新。'],
-    arxivId: '2210.03629',
-    paperUrl: 'https://arxiv.org/abs/2210.03629',
-    pdfUrl: 'https://arxiv.org/pdf/2210.03629',
-    pageUrl: 'papers/_sample-paper/index.html',
-    codeUrl: '',
-    repro: { available: true, level: 'medium', notes: '示例：包含方法、实验和复现提示。' },
-  },
-  {
-    id: 'sample-tree-of-thoughts',
-    slug: 'tree-of-thoughts',
-    title: 'Tree of Thoughts: Deliberate Problem Solving with Large Language Models',
-    titleZh: '使用树状搜索组织大语言模型的中间思考路径',
-    authors: ['Shunyu Yao', 'Dian Yu', 'Jeffrey Zhao', 'Izhak Shafran', 'Thomas L. Griffiths', 'Yuan Cao', 'Karthik Narasimhan'],
-    year: 2023,
-    venue: 'NeurIPS / arXiv',
-    category: 'Reasoning',
-    tags: ['reasoning', 'search', 'planning', 'prompting'],
-    status: '待读',
-    priority: 4,
-    readingDate: '2026-06-06',
-    updatedAt: '2026-06-06',
-    summary: '示例条目：可以用来测试同一标签在不同分类中的聚合效果。后续由 Codex Skill 替换为真实精读页面。',
-    takeaways: ['适合和 CoT、self-consistency、MCTS-style prompting 放在同一组比较。'],
-    arxivId: '2305.10601',
-    paperUrl: 'https://arxiv.org/abs/2305.10601',
-    pdfUrl: 'https://arxiv.org/pdf/2305.10601',
-    pageUrl: 'papers/tree-of-thoughts/index.html',
-    codeUrl: '',
-    repro: { available: false, level: 'low', notes: '示例条目，未生成复现页。' },
-  },
-  {
-    id: 'sample-rlvr',
-    slug: 'rlvr-questioner-solver-placeholder',
-    title: 'Self-Evolving Reasoning Models with Questioner-Solver RLVR',
-    titleZh: '示例：面向自进化数学推理的 Questioner-Solver 训练框架',
-    authors: ['Demo Author'],
-    year: 2026,
-    venue: 'Project Note',
-    category: 'RLVR / Self-Evolution',
-    tags: ['rlvr', 'self-evolution', 'math-reasoning', 'replay', 'diversity'],
-    status: '复现中',
-    priority: 5,
-    readingDate: '2026-06-07',
-    updatedAt: '2026-06-07',
-    summary: '示例项目笔记：用于展示项目类页面也能和论文类页面统一管理。真实论文条目可以包含 arXiv、PDF、代码和复现状态。',
-    takeaways: ['分类不仅限于论文，也可以管理 project note、survey、benchmark note。'],
-    arxivId: '',
-    paperUrl: '',
-    pdfUrl: '',
-    pageUrl: '',
-    codeUrl: '',
-    repro: { available: true, level: 'high', notes: '示例：适合记录实验矩阵和消融。' },
-  },
-];
-
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
@@ -154,8 +82,8 @@ async function loadPapers() {
     if (!Array.isArray(papers)) throw new Error('Invalid papers.json: expected array or { papers: [] }');
     state.papers = papers.map(normalizePaper);
   } catch (error) {
-    console.warn('[Paper Atlas] Falling back to demo papers:', error);
-    state.papers = fallbackPapers.map(normalizePaper);
+    console.warn('[Paper Atlas] Unable to load paper data:', error);
+    state.papers = [];
   }
 }
 
