@@ -1,0 +1,24 @@
+{
+  "images": [
+    {
+      "page": 2,
+      "path": "assets/figures/page_002_img_01.png",
+      "xref": 76
+    },
+    {
+      "page": 4,
+      "path": "assets/figures/page_004_img_01.png",
+      "xref": 259
+    },
+    {
+      "page": 6,
+      "path": "assets/figures/page_006_img_01.png",
+      "xref": 282
+    },
+    {
+      "page": 13,
+      "path": "assets/figures/page_013_img_01.png",
+      "xref": 389
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "2305.17126",
+  "slug": "large-language-models-as-tool-makers",
+  "title": "Large Language Models as Tool Makers",
+  "titleZh": "大语言模型作为工具制造者",
+  "authors": [
+    "Tianle Cai",
+    "Xuezhi Wang",
+    "Tengyu Ma",
+    "Xinyun Chen",
+    "Denny Zhou"
+  ],
+  "year": 2024,
+  "venue": "ICLR 2024",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "functional-cache",
+    "program-synthesis",
+    "cost-efficiency"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-07",
+  "updatedAt": "2026-06-07",
+  "summary": "LATM 让强模型一次性为一类任务生成可复用 Python tool，再让弱模型把后续请求转换为函数调用，从而把昂贵推理摊销到多次便宜调用中。实验显示 GPT-4 造出的工具能显著提升 GPT-3.5 Turbo 在多个 BigBench 和排期任务上的准确率，并引出 functional cache 的服务架构。",
+  "takeaways": [
+    "可执行 tool 比自然语言 CoT 更适合作为 agent 的长期记忆和缓存对象。",
+    "tool creation 可以转化为带 unit tests 的 verifiable self-evolution 问题。"
+  ],
+  "arxivId": "2305.17126",
+  "paperUrl": "https://arxiv.org/abs/2305.17126",
+  "pdfUrl": "https://arxiv.org/pdf/2305.17126",
+  "pageUrl": "papers/large-language-models-as-tool-makers/index.html",
+  "codeUrl": "https://github.com/ctlllll/LLM-ToolMaker",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文给出 prompts、任务 split、温度和重试设置，并提供代码仓库；但缺少精确模型快照、随机种子、token/延迟统计和完整 API 漂移控制。"
+  }
+}

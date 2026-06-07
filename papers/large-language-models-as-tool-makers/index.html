@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Large Language Models as Tool Makers · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    body.paper-page {
+      background: linear-gradient(180deg, #f8fafc 0%, #f3f6f8 42%, #eef7f3 100%);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html[data-theme="auto"] body.paper-page {
+        background: linear-gradient(180deg, #080b10 0%, #10141a 48%, #0b1714 100%);
+      }
+    }
+
+    html[data-theme="dark"] body.paper-page {
+      background: linear-gradient(180deg, #080b10 0%, #10141a 48%, #0b1714 100%);
+    }
+
+    .latm-page * {
+      letter-spacing: 0 !important;
+    }
+
+    .latm-page .paper-article {
+      width: min(calc(100% - 36px), 1120px);
+    }
+
+    .latm-page .paper-hero {
+      padding: 3.4rem 0 2rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .latm-page .paper-hero h1 {
+      max-width: 1040px;
+      font-size: clamp(2.35rem, 5vw, 4.65rem);
+      line-height: 1.04;
+    }
+
+    .latm-page .hero-subtitle {
+      max-width: 920px;
+      margin: 1.1rem 0 0;
+      font-size: clamp(1.03rem, 2vw, 1.28rem);
+    }
+
+    .latm-page .meta-row,
+    .latm-page .link-row,
+    .latm-page .paper-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+    }
+
+    .latm-page .meta-row {
+      margin-top: 1.4rem;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .latm-page .link-row {
+      margin-top: 1rem;
+    }
+
+    .latm-page .link-row a,
+    .latm-page .mini-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.1rem;
+      padding: 0.38rem 0.68rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text-soft);
+      background: color-mix(in srgb, var(--surface-strong) 74%, transparent);
+    }
+
+    .latm-page .content-card {
+      margin: 0;
+      padding: clamp(2.2rem, 5vw, 4.4rem) 0;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .latm-page .content-card h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.7rem, 3.4vw, 2.65rem);
+      line-height: 1.12;
+    }
+
+    .latm-page .section-lead {
+      max-width: 880px;
+      margin: 0 0 1.35rem;
+      color: var(--text-soft);
+      font-size: 1.05rem;
+      line-height: 1.85;
+    }
+
+    .latm-page .grid-3,
+    .latm-page .grid-2,
+    .latm-page .figure-grid,
+    .latm-page .metric-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .latm-page .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .latm-page .grid-2,
+    .latm-page .figure-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .latm-page .metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 1.25rem;
+    }
+
+    .latm-page .note-box,
+    .latm-page .metric,
+    .latm-page .figure-card,
+    .latm-page .table-wrap,
+    .latm-page .flow-step,
+    .latm-page .formula-box,
+    .latm-page .critique-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface-strong) 88%, transparent);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+    }
+
+    .latm-page .note-box,
+    .latm-page .flow-step,
+    .latm-page .formula-box,
+    .latm-page .critique-box {
+      padding: 1rem;
+    }
+
+    .latm-page .note-box h3,
+    .latm-page .flow-step h3,
+    .latm-page .formula-box h3,
+    .latm-page .critique-box h3 {
+      margin: 0 0 0.45rem;
+      font-size: 1.05rem;
+    }
+
+    .latm-page .note-box p,
+    .latm-page .flow-step p,
+    .latm-page .formula-box p,
+    .latm-page .critique-box p {
+      margin: 0.45rem 0 0;
+    }
+
+    .latm-page .metric {
+      padding: 1rem;
+    }
+
+    .latm-page .metric strong {
+      display: block;
+      font-size: 1.55rem;
+      line-height: 1.15;
+    }
+
+    .latm-page .metric span {
+      display: block;
+      margin-top: 0.35rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .latm-page .tag-pill,
+    .latm-page .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 1.9rem;
+      padding: 0.28rem 0.62rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text-soft);
+      background: rgba(127, 127, 140, 0.08);
+      font-size: 0.86rem;
+    }
+
+    .latm-page .flow-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .latm-page .flow-step b {
+      display: inline-grid;
+      width: 1.7rem;
+      height: 1.7rem;
+      place-items: center;
+      margin-bottom: 0.55rem;
+      border-radius: 999px;
+      color: white;
+      background: #2563eb;
+    }
+
+    .latm-page .formula-box {
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .latm-page .table-wrap {
+      margin: 1rem 0 1.35rem;
+      overflow-x: auto;
+    }
+
+    .latm-page table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      font-size: 0.92rem;
+    }
+
+    .latm-page th,
+    .latm-page td {
+      padding: 0.72rem 0.75rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .latm-page th {
+      color: var(--text);
+      background: rgba(127, 127, 140, 0.09);
+      font-weight: 700;
+    }
+
+    .latm-page td {
+      color: var(--text-soft);
+    }
+
+    .latm-page .table-caption {
+      margin: 0.75rem 0 0;
+      padding: 0 0.8rem 0.85rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+
+    .latm-page .figure-card {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .latm-page .figure-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: white;
+    }
+
+    .latm-page .figure-card figcaption {
+      padding: 0.9rem 1rem 1rem;
+      color: var(--text-soft);
+      line-height: 1.65;
+    }
+
+    .latm-page .figure-card figcaption strong {
+      color: var(--text);
+    }
+
+    .latm-page .compact-list {
+      margin: 0.4rem 0 0;
+      padding-left: 1.15rem;
+    }
+
+    .latm-page .compact-list li {
+      margin: 0.28rem 0;
+    }
+
+    .latm-page pre {
+      margin: 1rem 0 0;
+      padding: 1rem;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.06);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .latm-page .warn {
+      border-color: color-mix(in srgb, var(--warning) 45%, var(--line));
+      background: color-mix(in srgb, var(--warning) 10%, var(--surface-strong));
+    }
+
+    .latm-page .good {
+      border-color: color-mix(in srgb, var(--success) 35%, var(--line));
+      background: color-mix(in srgb, var(--success) 8%, var(--surface-strong));
+    }
+
+    .latm-page .danger {
+      border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
+      background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong));
+    }
+
+    .latm-page .small-note {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 980px) {
+      .latm-page .grid-3,
+      .latm-page .grid-2,
+      .latm-page .figure-grid,
+      .latm-page .metric-grid,
+      .latm-page .flow-list {
+        grid-template-columns: 1fr;
+      }
+
+      .latm-page .paper-hero {
+        padding-top: 2.4rem;
+      }
+    }
+  </style>
+</head>
+<body class="paper-page latm-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2305.17126</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Agent / Tool Use · ICLR 2024</div>
+      <h1>Large Language Models as Tool Makers</h1>
+      <p class="hero-subtitle">这篇论文提出 LATM：让强模型一次性把一类任务抽象成可复用 Python tool，再让弱模型把后续自然语言请求转成函数调用，从而把“推理能力”缓存为功能而不是缓存为文本答案。</p>
+      <div class="meta-row">
+        <span>Tianle Cai, Xuezhi Wang, Tengyu Ma, Xinyun Chen, Denny Zhou</span>
+        <span>Published: 2023-05-26</span>
+        <span>Updated: 2024-03-11</span>
+        <span>23 pages</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">tool-use</span>
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">functional-cache</span>
+        <span class="tag-pill">program-synthesis</span>
+        <span class="tag-pill">cost-efficiency</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2305.17126">arXiv</a>
+        <a href="https://arxiv.org/pdf/2305.17126.pdf">PDF</a>
+        <a href="https://github.com/ctlllll/LLM-ToolMaker">Code</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>3 / 3 / 240</strong><span>每个任务的 train / validation / test split</span></div>
+        <div class="metric"><strong>6 tasks</strong><span>5 个 BigBench 任务，加 1 个 Scheduling Meeting 任务</span></div>
+        <div class="metric"><strong>95% ± 2%</strong><span>dispatcher 在已有工具中选对工具的准确率</span></div>
+        <div class="metric"><strong>96% ± 3%</strong><span>dispatcher 判断是否需要新工具的准确率</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机</h2>
+      <p class="section-lead">论文要解决的问题不是“LLM 能否调用工具”，而是“当可用工具不存在时，LLM 能否自己制造一个可复用工具，并把一次昂贵的推理转化成后续多次便宜的函数调用”。这使工具调用从外部 API selection 进一步走向 tool creation。</p>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>现有工具增强的限制</h3>
+          <p>ReAct、Toolformer、Chameleon 等方法通常假设已有搜索、计算器、API、Python executor 或其他外部工具。真正的长尾工作流里，最缺的是“刚好适合这类请求”的专用工具。</p>
+        </div>
+        <div class="note-box">
+          <h3>服务成本问题</h3>
+          <p>复杂任务上 GPT-4 这类强模型更可靠，但每个请求都调用强模型成本高。LATM 把强模型用在一次性的 tool making，把后续大量请求交给轻量 tool user。</p>
+        </div>
+        <div class="note-box">
+          <h3>缓存粒度问题</h3>
+          <p>传统 LLM cache 多缓存自然语言 response，只能覆盖文本相似请求。LATM 缓存的是功能：只要新请求与旧请求功能同类，就能复用同一个 Python function。</p>
+        </div>
+      </div>
+      <div class="formula-box">
+        <h3>核心成本直觉</h3>
+        <p>若强模型单次成本记为 $C$，弱模型单次成本记为 $c$，论文写作时 $C$ 超过 $15c$。对于同一任务族的 $n$ 个请求，直接用强模型约为：</p>
+        $$\mathrm{Cost}_{\mathrm{strong}}(n)=nC.$$
+        <p>LATM 需要一次 tool making 成本，再加上每次 tool using 成本：</p>
+        $$\mathrm{Cost}_{\mathrm{LATM}}(n)=C_{\mathrm{make}}+n(c_{\mathrm{dispatch}}+c_{\mathrm{use}}+c_{\mathrm{exec}}).$$
+        <p>当任务重复出现且 $n$ 足够大时，一次性造工具的成本可以被摊薄。论文没有给出每个实验的实际 token 账单，所以这里的公式是论文成本论证的抽象化表达。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 方法：LATM 的建模与流程</h2>
+      <p class="section-lead">LATM 把一类自然语言任务表示为“训练示例到通用 Python 函数”的 program synthesis 问题，再把后续实例表示为“自然语言到函数参数”的 in-context mapping 问题。难的抽象由强模型做，简单的调用由弱模型做。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>符号</th>
+              <th>含义</th>
+              <th>论文中的实例</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>$\mathcal{T}$</td>
+              <td>一个任务族或功能类别，内部包含许多同类请求。</td>
+              <td>Logical Deduction、Tracking Shuffled Objects、Schedule Meeting。</td>
+            </tr>
+            <tr>
+              <td>$D_{\mathrm{train}}$</td>
+              <td>tool proposing 使用的少量 demonstrations。</td>
+              <td>每个任务 3 个训练样本。</td>
+            </tr>
+            <tr>
+              <td>$D_{\mathrm{val}}$</td>
+              <td>tool verification 使用的 validation samples。</td>
+              <td>每个任务 3 个验证样本。</td>
+            </tr>
+            <tr>
+              <td>$f$</td>
+              <td>tool maker 生成的可执行 Python function。</td>
+              <td>排序、搜索排列、模拟交换、栈匹配、区间交集等。</td>
+            </tr>
+            <tr>
+              <td>$g_{\phi}$</td>
+              <td>tool user 学到的自然语言到函数调用转换器，实际由 prompt + LLM 体现。</td>
+              <td>GPT-3.5 Turbo 读取 wrapped tool 后输出函数参数与调用。</td>
+            </tr>
+            <tr>
+              <td>$p$</td>
+              <td>后处理函数，把函数返回值转成任务要求的答案格式。</td>
+              <td>多选题中把返回对象映射为 A/B/C/D/E。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-caption">论文没有定义统一数学符号；上表是对 LATM pipeline 的显式化建模，用于理解和复现。</p>
+      </div>
+
+      <div class="flow-list">
+        <div class="flow-step">
+          <b>1</b>
+          <h3>Tool Proposing</h3>
+          <p>强模型读取 3 个训练 demonstrations，生成一个只依赖 Python 标准库的通用函数。如果函数不可执行，就把错误消息追加到 chat history 后重试。</p>
+        </div>
+        <div class="flow-step">
+          <b>2</b>
+          <h3>Tool Verification</h3>
+          <p>强模型用 3 个 validation samples 写 unit tests，并执行验证。若测试失败，论文设定只修正 unit test 中的 function calls，不修改函数本身。</p>
+        </div>
+        <div class="flow-step">
+          <b>3</b>
+          <h3>Tool Wrapping</h3>
+          <p>通过验证后，把函数代码与验证阶段产生的“问题转函数调用”示例打包成 wrapped tool，作为 tool user 的 prompt。</p>
+        </div>
+        <div class="flow-step">
+          <b>4</b>
+          <h3>Tool Using</h3>
+          <p>弱模型只调用一次 API，把新问题转换为函数调用；Python executor 执行函数，必要时再做答案格式后处理。</p>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>从自然语言问题到答案的函数化路径</h3>
+        <p>对于新请求 $x$，tool user 不直接生成完整推理链，而是生成参数化调用 $a=g_{\phi}(x;\mathrm{wrap}(f))$，随后执行：</p>
+        $$\hat{y}=p(f(a)).$$
+        <p>验证阶段的目标可以写成：</p>
+        $$\forall (x_j,y_j)\in D_{\mathrm{val}},\quad p(f(g_{\phi}^{\mathrm{test}}(x_j)))=y_j.$$
+        <p>这里 $g_{\phi}^{\mathrm{test}}$ 不是训练出的显式模型，而是 tool maker 在 verification 中生成的 unit-test style 解析代码。它同时起到 correctness check 和 in-context examples 的作用。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>为什么 Python function 比 CoT 更适合缓存</h3>
+          <p>CoT 通常绑定到单个实例；Python function 抽象的是任务族的算法。Logical Deduction 中的排列搜索、Tracking Shuffled Objects 中的状态模拟、Dyck Language 中的栈，都能跨实例复用。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>关键假设</h3>
+          <p>任务必须能被稳定抽象为可执行函数，且 tool user 能可靠地把自然语言解析成参数。若解析比求解本身更难，或输入空间持续变形，LATM 的优势会明显下降。</p>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>Functional Cache 与 dispatcher</h3>
+        <p>在线服务场景中，dispatcher 维护一个工具库 $\mathcal{F}=\{(m_i,f_i)\}_{i=1}^{K}$，其中 $m_i$ 是 API 文档或任务描述，$f_i$ 是对应 tool。对新请求 $x_t$：</p>
+        $$d_t=\mathrm{Dispatcher}(x_t,\mathcal{F}).$$
+        <p>若 $d_t=i$，系统复用 $f_i$；若 $d_t=\mathrm{unknown}$，则缓存新样本，等收集到足够 demonstrations 后触发 tool maker。</p>
+        <pre><code>for each incoming request:
+  decision = dispatcher.select_tool_or_unknown(request, tool_cache)
+  if decision is existing_tool:
+    call = tool_user.convert_to_function_call(request, existing_tool)
+    answer = execute(call)
+  else:
+    enqueue_as_new_task_example(request)
+    if enough_examples_are_ready:
+      new_tool = tool_maker.create_and_verify(examples)
+      tool_cache.add(new_tool)</code></pre>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">实验检验三个问题：强模型能否造出通用工具；弱模型借助工具是否接近强模型效果；在动态任务流中 dispatcher 能否把请求路由到已有工具或触发新工具。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>任务</th>
+              <th>来源</th>
+              <th>工具形态</th>
+              <th>核心难点</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Logical Deduction (5)</td>
+              <td>BigBench</td>
+              <td>Search over permutations</td>
+              <td>把自然语言约束翻译成 lambda constraints。</td>
+            </tr>
+            <tr>
+              <td>Tracking Shuffled Objects (5)</td>
+              <td>BigBench</td>
+              <td>State simulation</td>
+              <td>追踪连续交换后的最终状态。</td>
+            </tr>
+            <tr>
+              <td>Dyck Language</td>
+              <td>BigBench</td>
+              <td>Stack</td>
+              <td>补全括号序列并保持合法嵌套。</td>
+            </tr>
+            <tr>
+              <td>Word Sorting</td>
+              <td>BigBench</td>
+              <td>Sort</td>
+              <td>按字典序排序长词表。</td>
+            </tr>
+            <tr>
+              <td>Chinese Remainder Theorem</td>
+              <td>BigBench</td>
+              <td>Search / extended Euclidean idea</td>
+              <td>从多个余数约束恢复整数。</td>
+            </tr>
+            <tr>
+              <td>Schedule Meeting</td>
+              <td>作者构造</td>
+              <td>Interval intersections</td>
+              <td>从两人时间段中找最早可行会议窗口。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-caption">复现 split：每个数据集 3 个训练样本、3 个验证样本、240 个测试样本。Scheduling Meeting 的时间从 08:00 到 18:00，以 30 分钟为粒度，会议长度随机取 0.5、1、1.5 小时。</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>模型与 API</h3>
+          <p>tool making 使用 GPT-4 和 GPT-3.5 Turbo 的 ChatCompletion API；tool using 主要用 GPT-3.5 Turbo，并对 GPT-3 系列 Completion API 模型做消融。</p>
+        </div>
+        <div class="note-box">
+          <h3>温度与重试</h3>
+          <p>tool making 温度设为 0.3，以便失败后重试；tool using 温度设为 0.0。tool proposing 和 tool verification 的最大 retry 次数均为 3。</p>
+        </div>
+        <div class="note-box">
+          <h3>Prompt 来源</h3>
+          <p>Appendix C 给出 tool maker、verifier、wrapper、dispatcher 的 prompt 框架；Appendix D 展示每个任务的 wrapped tool 示例。</p>
+        </div>
+      </div>
+
+      <div class="note-box warn">
+        <h3>复现时需要额外核对</h3>
+        <p>论文没有给出确切 model snapshot、随机种子、每次 API 调用的 token 统计、硬件环境，也没有在正文列出完整测试集构造脚本。代码仓库可补齐一部分工程细节，但严格复现实验数值时仍要记录 API 版本漂移。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">最关键结论是：GPT-4 造出的工具能显著提升 GPT-3.5 Turbo 在算法型任务上的表现，尤其是原本 CoT 几乎失败的 Chinese Remainder Theorem 和 Scheduling Meeting。GPT-4 自己使用 LATM 不总是优于 GPT-4 CoT，但 LATM 的成本目标本来就是让弱模型接近强模型。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tool user</th>
+              <th>Method</th>
+              <th>Logical Deduction</th>
+              <th>Tracking Objects</th>
+              <th>Dyck</th>
+              <th>Word Sorting</th>
+              <th>CRT</th>
+              <th>Schedule</th>
+              <th>Cost on $n$ samples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GPT-3.5 Turbo</td>
+              <td>CoT</td>
+              <td>66.4</td>
+              <td>61.6</td>
+              <td>20.4</td>
+              <td>59.2</td>
+              <td>0.0</td>
+              <td>18.9</td>
+              <td>$O(nc)$</td>
+            </tr>
+            <tr>
+              <td>GPT-3.5 Turbo</td>
+              <td>LATM</td>
+              <td>79.7</td>
+              <td>99.6</td>
+              <td>92.2</td>
+              <td>98.3</td>
+              <td>100.0</td>
+              <td>100.0</td>
+              <td>$O(nc+C)$</td>
+            </tr>
+            <tr>
+              <td>GPT-4</td>
+              <td>CoT</td>
+              <td>88.8</td>
+              <td>100.0</td>
+              <td>63.6</td>
+              <td>90.9</td>
+              <td>0.0</td>
+              <td>55.6</td>
+              <td>$O(nC)$</td>
+            </tr>
+            <tr>
+              <td>GPT-4</td>
+              <td>LATM</td>
+              <td>86.6</td>
+              <td>100.0</td>
+              <td>87.5</td>
+              <td>99.1</td>
+              <td>100.0</td>
+              <td>100.0</td>
+              <td>$O(nC)$</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 2 重建。LATM 的 tool 由 GPT-4 生成。GPT-3.5 Turbo + LATM 在 6 个任务上相对 GPT-3.5 CoT 全面提升；但 GPT-4 + LATM 在 Logical Deduction 上略低于 GPT-4 CoT，说明工具调用链也会引入解析错误。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tool maker</th>
+              <th>Logical Deduction</th>
+              <th>Tracking Objects</th>
+              <th>Dyck</th>
+              <th>Word Sorting</th>
+              <th>CRT</th>
+              <th>Schedule</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GPT-3.5 Turbo</td>
+              <td>0/5</td>
+              <td>0/5</td>
+              <td>5/5</td>
+              <td>5/5</td>
+              <td>5/5</td>
+              <td>0/5</td>
+            </tr>
+            <tr>
+              <td>GPT-4</td>
+              <td>3/5</td>
+              <td>4/5</td>
+              <td>5/5</td>
+              <td>5/5</td>
+              <td>5/5</td>
+              <td>3/5</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 3 重建。强模型的价值主要体现在抽象出足够泛化的程序；GPT-3.5 Turbo 在简单任务上能造工具，但在 Logical Deduction、Tracking Objects、Schedule 这类更依赖结构抽象的任务上失败。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tool user model</th>
+              <th>Logical</th>
+              <th>Tracking</th>
+              <th>Dyck</th>
+              <th>Sorting</th>
+              <th>CRT</th>
+              <th>Schedule</th>
+              <th>Cost, USD / 1K tokens</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>GPT-3.5 Turbo</td><td>79.7%</td><td>99.6%</td><td>92.2%</td><td>98.3%</td><td>100.0%</td><td>100.0%</td><td>0.002</td></tr>
+            <tr><td>text-davinci-002</td><td>58.2%</td><td>100.0%</td><td>35.8%</td><td>60.8%</td><td>100.0%</td><td>100.0%</td><td>0.02</td></tr>
+            <tr><td>davinci</td><td>11.6%</td><td>62.1%</td><td>16.4%</td><td>26.6%</td><td>99.6%</td><td>62.9%</td><td>0.02</td></tr>
+            <tr><td>curie</td><td>6.5%</td><td>20.7%</td><td>18.1%</td><td>7.3%</td><td>93.1%</td><td>59.1%</td><td>0.002</td></tr>
+            <tr><td>babbage</td><td>11.6%</td><td>16.4%</td><td>9.1%</td><td>7.3%</td><td>75.0%</td><td>23.2%</td><td>0.0005</td></tr>
+            <tr><td>ada</td><td>3.0%</td><td>5.2%</td><td>9.9%</td><td>0.9%</td><td>66.0%</td><td>0.0%</td><td>0.0004</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 4 重建。GPT-3.5 Turbo 是最佳性价比 tool user。作者还观察到，若使用 GPT-3 老模型，instruction-tuned 版本反而可能不如未 instruction-tuned 版本，推测与 in-context learning 能力受损有关。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Logical Deduction (5)</th>
+              <th>Tracking Shuffled Objects (5)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>GPT-4 generated CoT reused by GPT-3.5</td><td>36.8</td><td>63.2</td></tr>
+            <tr><td>Human-written CoT</td><td>66.4</td><td>61.6</td></tr>
+            <tr><td>LATM</td><td>79.7</td><td>99.6</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 5 重建。把 GPT-4 生成的 CoT 当成可复用 artifact 并不能显著帮助弱模型；LATM 的关键不是复用解释，而是复用可执行算法。</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="note-box good">
+          <h3>最强证据</h3>
+          <p>Chinese Remainder Theorem 和 Schedule Meeting 上，CoT 对 GPT-3.5/GPT-4 都表现很差，而 LATM 达到 100.0。这表明在可程序化任务中，函数工具能绕开语言模型的脆弱算术和状态追踪。</p>
+        </div>
+        <div class="note-box">
+          <h3>细节洞察</h3>
+          <p>Dyck Language 中 GPT-3.5 Turbo tool user 甚至高于 GPT-4 tool user。作者分析是 GPT-4 在把问题转为函数调用时偶尔会过度补全括号，破坏了输入原样传递。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>证据边界</h3>
+          <p>每个任务只有 3 个训练示例和 3 个验证示例，证明的是“少样本下强模型能常常抽象程序”，但没有系统研究任务分布漂移、噪声输入、工具安全和长期版本管理。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">PDF 中的 4 张图已抽取为本地图片；关键表格已在结果部分重建。图片主要帮助理解 LATM 的系统边界，而不是提供额外数值证据。</p>
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/page_002_img_01.png" alt="LATM closed-loop framework" loading="lazy" />
+          <figcaption><strong>Figure 1.</strong> LATM 的 closed-loop 框架：用少量请求制造可复用 tool，再由 tool user 解决后续相似实例。它对应论文的成本摊销主张。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_004_img_01.png" alt="LATM pipeline" loading="lazy" />
+          <figcaption><strong>Figure 2.</strong> LATM pipeline：tool proposing、tool verification、tool wrapping 只执行一次；tool using 在后续请求中反复执行。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_006_img_01.png" alt="Logical Deduction tool proposing and using" loading="lazy" />
+          <figcaption><strong>Figure 3.</strong> Logical Deduction 示例：tool maker 生成排列搜索函数，tool user 把自然语言条件转成约束函数调用。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_013_img_01.png" alt="Dispatcher for functional cache" loading="lazy" />
+          <figcaption><strong>Figure 4.</strong> Dispatcher 机制：先判断已有 tool cache 是否覆盖请求，若没有则触发新的 tool-making 流程。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">这篇论文的复现重点不在训练模型，而在构造稳定的 tool-making / verification / using pipeline，并严格记录 API 版本、prompt、重试和执行环境。</p>
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>最小复现路径</h3>
+          <ul class="compact-list">
+            <li>准备 6 个任务的数据，保持每个任务 3 train、3 validation、240 test。</li>
+            <li>使用 Appendix C 的 prompt 框架，让 GPT-4 生成 Python function。</li>
+            <li>在 sandboxed Python executor 中执行函数和 unit tests。</li>
+            <li>把通过验证的函数与 validation 中的调用示例包装成 wrapped tool。</li>
+            <li>让 GPT-3.5 Turbo 在温度 0.0 下把测试问题转换成函数调用。</li>
+            <li>执行函数，做必要后处理，按任务计算 accuracy。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>动态缓存复现路径</h3>
+          <ul class="compact-list">
+            <li>建立工具库，工具条目包含 task name、API signature、参数说明和示例。</li>
+            <li>用 GPT-3.5 Turbo 作为 dispatcher，输入问题和 API 文档，输出任务名或 unknown。</li>
+            <li>已有工具实验：从 6 个任务随机混合 100 个样本，重复 5 次。</li>
+            <li>新任务实验：随机指定 4 个已有任务，再混入 2 个 unseen tasks 与 2 个 existing tasks。</li>
+            <li>记录选错工具与误判 unknown 的具体 failure cases。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="note-box good">
+          <h3>论文已给出的关键参数</h3>
+          <p>tool-making temperature 0.3；tool-using temperature 0.0；tool proposing / verification 最大重试 3 次；BigBench 前 5 个任务加作者构造的 Schedule Meeting。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>缺失或易漂移项</h3>
+          <p>OpenAI 模型版本、API 行为、token 价格、完整随机种子、train/validation/test 采样细节、错误处理策略和代码执行安全策略都需要复现者自行固定。</p>
+        </div>
+        <div class="note-box danger">
+          <h3>安全注意</h3>
+          <p>tool maker 生成 Python 代码，真实部署必须沙箱化执行、限制导入、限制文件和网络访问，并对 generated tool 做静态检查与运行时监控。论文只在 broad impact 中高层讨论安全，没有展开工程防护。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">我会把这篇论文看作“LLM 自生成工具生态”的早期系统论文：想法清晰，实验证明了可行性，但离稳健生产系统还有不少关键缺口。</p>
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>把 tool use 的瓶颈从“选择已有工具”推进到“创造可复用工具”，问题定义有前瞻性。</li>
+            <li>强弱模型分工非常实用：强模型用于抽象，弱模型用于高频调用，成本逻辑明确。</li>
+            <li>verification 的设计一举两得：既测试函数，又生成 tool user 的 in-context 调用示例。</li>
+            <li>功能缓存的概念比文本缓存更适合 recurring workflow。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>任务多为可程序化、规则清晰的 toy-to-medium reasoning tasks，真实企业工作流的噪声与异常更复杂。</li>
+            <li>每个任务只用 3 个训练与 3 个验证样本，容易高估工具的泛化边界。</li>
+            <li>成功率按 5 trials 统计，置信度有限；失败工具如何诊断、修复、版本化没有系统研究。</li>
+            <li>成本分析是渐近式，没有提供实际 token、延迟、重试次数分布和执行成本。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>Missing Ablations</h3>
+          <ul class="compact-list">
+            <li>验证样本数量从 1 到 20 对成功率和泛化的影响。</li>
+            <li>tool maker 的 self-debug 是否应该允许修改函数，而不只是修正 unit tests。</li>
+            <li>不同 dispatcher prompt、embedding retrieval、schema matching 对路由准确率的影响。</li>
+            <li>工具库增长到上百或上千个 API 时的选择准确率和上下文成本。</li>
+          </ul>
+        </div>
+        <div class="critique-box danger">
+          <h3>Failure Modes</h3>
+          <ul class="compact-list">
+            <li>工具在 3 个验证样本上通过，但对长尾输入 silently wrong。</li>
+            <li>tool user 参数解析错误，导致正确函数被错误调用。</li>
+            <li>dispatcher 选错 tool，系统输出看似结构化但语义不对应。</li>
+            <li>generated code 引入安全风险、无限循环、资源耗尽或隐藏副作用。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note-box">
+        <h3>具体改进方向</h3>
+        <p>下一步应该把 LATM 与 test generation、property-based testing、tool versioning、retrieval-based API selection、sandboxed execution 和 telemetry 结合起来。真正有价值的 benchmark 也应从规则题扩展到带噪声的 recurring office workflows，例如邮件排期、报表清洗、工单路由和多系统数据同步。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究的启发</h2>
+      <p class="section-lead">如果把 LATM 放到 agent、RLVR、自进化、questioner-solver、replay、diversity、evaluation 这些方向里，它的核心价值是把“经验”从自然语言轨迹升级为可执行、可测试、可版本化的工具。</p>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Agent memory</h3>
+          <p>不要只存 reasoning trace。把成功轨迹蒸馏为 function、API schema、unit tests 和 usage examples，记忆就从 episodic memory 变成可复用技能库。</p>
+        </div>
+        <div class="note-box">
+          <h3>RLVR / self-evolution</h3>
+          <p>工具生成天然适合 verifiable reward：函数能否通过 tests、能否在 held-out cases 上正确、是否减少调用成本，都能成为比偏好打分更硬的 reward signal。</p>
+        </div>
+        <div class="note-box">
+          <h3>Questioner-solver</h3>
+          <p>questioner 可以主动生成覆盖边界条件的 validation cases，solver 负责造工具。这样比随机 few-shot 更能发现工具的泛化漏洞。</p>
+        </div>
+        <div class="note-box">
+          <h3>Replay 与 curriculum</h3>
+          <p>失败请求不应只进入错误日志，而应进入 tool-making queue。按功能聚类后形成 replay buffer，逐步推动工具库覆盖更多任务族。</p>
+        </div>
+        <div class="note-box">
+          <h3>Diversity</h3>
+          <p>可以要求 tool maker 生成多种候选实现，并用 tests、复杂度、可读性、安全策略做 selection。多样性不只是答案多样性，也可以是程序实现多样性。</p>
+        </div>
+        <div class="note-box">
+          <h3>Evaluation</h3>
+          <p>评价一个 tool-making agent，要同时看 task accuracy、tool generalization、dispatcher routing、execution safety、latency、cache hit rate 和维护成本。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
