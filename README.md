@@ -1,130 +1,157 @@
-# Paper Reading Atlas
+# Paper Atlas · arXiv 论文阅读站
 
-这是一个用于 GitHub Pages 的静态论文阅读站点骨架。它的设计目标是：
+这是一个为 GitHub Pages 设计的静态论文阅读主页模板。它的核心目标是：
 
-- 首页采用“模块分页式”结构，不把所有内容堆在一个超长滚动页里；
-- 每篇论文是一个独立 HTML 页面，放在 `papers/<slug>/index.html`；
-- `data/papers.json` 是唯一的数据入口，后续自动化流程只需要追加或更新这里；
-- 不依赖构建工具，不依赖数据库，可以直接部署到 GitHub Pages。
+- 把每篇论文的深度阅读页面保存为 `papers/<slug>/index.html`。
+- 把论文元信息写入 `data/papers.json`。
+- 首页自动生成搜索、分类、标签云、论文名称索引和阅读状态统计。
+- 后续可以让 Codex Skill 自动增量添加论文页面并更新 JSON。
 
-## 推荐目录结构
+## 目录结构
 
 ```text
 .
-├── index.html
-├── .nojekyll
+├── index.html                     # 主页：论文库、分类、标签、索引
 ├── assets/
-│   ├── css/styles.css
-│   └── js/app.js
+│   ├── css/styles.css             # 全站样式，主页和论文页共用
+│   └── js/app.js                  # 读取 data/papers.json 并渲染主页
 ├── data/
-│   ├── papers.json
-│   ├── paper.schema.json
-│   └── site.json
+│   ├── papers.json                # 论文索引数据，后续自动增量维护
+│   └── papers.schema.json         # JSON 字段规范
 ├── papers/
-│   └── <slug>/index.html
+│   └── _sample-paper/index.html   # 示例论文页，可删除
 ├── templates/
-│   └── paper-page-template.html
-└── tools/
-    └── upsert_paper_manifest.py
-```
-
-## 首页模块分页设计
-
-当前首页被拆成 6 个模块页：
-
-- `总览`：只放站点说明、统计卡片、最近更新和快捷入口；
-- `论文库`：搜索、筛选、排序和论文卡片，卡片区每页显示 6 篇；
-- `分类`：按 `category` 自动聚合论文，适合查看研究方向结构；
-- `标签`：按 `tags` 自动聚合论文，适合围绕方法、任务、数据集、训练范式检索；
-- `索引`：按英文标题首字母生成 A-Z 索引；
-- `同步`：展示后续 Codex Skill / GitHub Pages 自动同步约定。
-
-URL 会保存当前模块、页码和筛选条件，例如：
-
-```text
-/?category=Agents+%26+Tool+Use&page=2#library
+│   └── paper-page-template.html   # 后续 Skill 可参考的论文页模板
+├── scripts/
+│   └── add_paper.py               # 可选：命令行添加/更新论文索引
+└── .nojekyll                      # 避免 GitHub Pages 的 Jekyll 处理静态文件
 ```
 
 ## 本地预览
 
-不要直接双击 `index.html`，因为浏览器在 `file://` 下通常不允许读取 `data/papers.json`。建议在仓库根目录运行：
+由于主页使用 `fetch('data/papers.json')`，建议用本地 HTTP 服务预览，不要直接双击打开：
 
 ```bash
 python -m http.server 8000
 ```
 
-然后打开：
+然后访问：
 
 ```text
 http://localhost:8000
 ```
 
-## 新增一篇论文
+## 添加一篇论文
 
-推荐每篇论文放在：
+最小流程：
+
+1. 生成论文页：
 
 ```text
 papers/<slug>/index.html
 ```
 
-然后向 `data/papers.json` 的 `papers` 数组追加：
+2. 更新 `data/papers.json`：
 
 ```json
 {
-  "id": "2501-xxxxx",
-  "slug": "paper-short-name",
-  "title": "Paper English Title",
-  "title_zh": "论文中文标题",
+  "id": "2501.00001",
+  "slug": "short-paper-slug",
+  "title": "Paper Title",
+  "titleZh": "中文标题或一句话翻译",
   "authors": ["Author A", "Author B"],
   "year": 2026,
   "venue": "arXiv",
-  "arxiv": "2501.xxxxx",
-  "html": "papers/paper-short-name/index.html",
-  "pdf": "https://arxiv.org/pdf/2501.xxxxx",
-  "repo": "",
-  "category": "Agents & Tool Use",
-  "tags": ["Agent", "Reasoning", "Tool Use"],
-  "status": "已精读",
-  "difficulty": "中高",
-  "read_time": "45 min",
-  "created_at": "2026-06-07",
-  "updated_at": "2026-06-07",
-  "summary": "一句话说明这篇论文解决什么问题、核心方法是什么、为什么值得读。",
-  "insights": ["对自己项目最有用的一点", "值得复现或做 ablation 的一点"]
+  "category": "Agent / RLVR",
+  "tags": ["reasoning", "agent", "rlvr"],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-07",
+  "updatedAt": "2026-06-07",
+  "summary": "用 2-4 句话概括这篇论文解决的问题、核心方法和最重要结论。",
+  "takeaways": ["关键 insight 1", "关键 insight 2"],
+  "arxivId": "2501.00001",
+  "paperUrl": "https://arxiv.org/abs/2501.00001",
+  "pdfUrl": "https://arxiv.org/pdf/2501.00001",
+  "pageUrl": "papers/short-paper-slug/index.html",
+  "codeUrl": "",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "是否包含 dataset、hyperparameters、prompts、training details 等复现信息。"
+  }
 }
 ```
 
-## 使用脚本追加或更新论文记录
-
-准备一个单篇论文 JSON，例如 `new_paper.json`，然后运行：
+也可以使用脚本：
 
 ```bash
-python tools/upsert_paper_manifest.py --record new_paper.json --manifest data/papers.json
+python scripts/add_paper.py \
+  --id 2501.00001 \
+  --title "Paper Title" \
+  --title-zh "中文标题" \
+  --authors "Author A, Author B" \
+  --year 2026 \
+  --category "Agent / RLVR" \
+  --tag reasoning \
+  --tag agent \
+  --tag rlvr \
+  --status 精读 \
+  --priority 4 \
+  --summary "2-4 句话总结论文。" \
+  --arxiv-id 2501.00001 \
+  --paper-url "https://arxiv.org/abs/2501.00001" \
+  --pdf-url "https://arxiv.org/pdf/2501.00001" \
+  --slug short-paper-slug \
+  --repro \
+  --repro-level medium
 ```
 
-脚本会根据 `id` 或 `slug` 更新已有记录，否则追加新记录。
+## 推荐分类
 
-## GitHub Pages 部署建议
+后续不必固定，但建议保持粒度稳定，例如：
 
-最简单的方式：
+- `Agent / Tool Use`
+- `RLVR / Self-Evolution`
+- `Reasoning`
+- `Post-training / Alignment`
+- `Evaluation / Benchmark`
+- `Long Context / Memory`
+- `Systems / Inference`
+- `Multimodal`
+- `Survey / Position`
 
-1. 创建一个仓库，例如 `paper-reading-atlas`；
-2. 把这些文件放到仓库根目录；
-3. Settings → Pages；
-4. Source 选择 `Deploy from a branch`；
-5. Branch 选择 `main`，目录选择 `/root`；
-6. 访问 GitHub Pages 地址。
+## 推荐标签规范
 
-如果你用的是 `username.github.io` 这种用户主页仓库，也可以直接放在根目录。所有链接都使用相对路径，因此也适合项目页面。
+建议使用英文短标签，便于搜索和跨论文聚合：
 
-## 后续自动化对接思路
+```text
+agent, reasoning, rlvr, grpo, replay, diversity, tool-use, planning,
+math-reasoning, benchmark, evaluation, long-context, kv-cache, moe,
+mamba, linear-attention, multimodal, post-training, preference-optimization
+```
 
-现阶段不需要修改 Skill。后续 Skill 只需要在完成论文阅读页生成后额外做三件事：
+## 部署到 GitHub Pages
 
-1. 将生成的 `index.html` 写入 `papers/<slug>/index.html`；
-2. 根据论文 metadata 生成一条 JSON 记录；
-3. 调用 `tools/upsert_paper_manifest.py` 更新 `data/papers.json`，再由 Git 同步到 GitHub Pages。
+把这个目录的内容放在仓库根目录，或者放在 `docs/` 目录。然后在 GitHub 仓库 Settings → Pages 中选择对应 branch 和目录。
 
-## 模块分页版首页
+如果后续使用 GitHub Actions 自动生成页面，可以把生成后的静态文件发布到 Pages。当前模板本身不需要构建步骤。
 
-首页已经改为模块切换结构：`#overview`、`#library`、`#categories`、`#tags`、`#index`、`#workflow`。论文库内部支持分页，默认每页展示 6 篇；后续自动化追加论文时仍只需要维护 `papers/<slug>/index.html` 和 `data/papers.json`，不需要手动修改首页。
+## 和后续 Codex Skill 的接口
+
+未来 Skill 只需要做两件事：
+
+1. 生成或更新 `papers/<slug>/index.html`。
+2. 追加或更新 `data/papers.json` 中对应的 paper object。
+
+主页会自动处理：
+
+- 总论文数统计
+- 分类计数
+- 标签云计数
+- 搜索
+- 按状态筛选
+- 按分类筛选
+- 多标签交集筛选
+- 论文名称索引
+- 最近更新排序

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Paper Atlas data schema",
+  "type": "object",
+  "required": ["version", "updatedAt", "papers"],
+  "properties": {
+    "version": { "type": "integer" },
+    "updatedAt": { "type": "string", "description": "YYYY-MM-DD" },
+    "papers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "slug", "title", "year", "category", "tags", "status", "updatedAt"],
+        "properties": {
+          "id": { "type": "string", "description": "arXiv ID, DOI, or project-specific unique ID" },
+          "slug": { "type": "string", "description": "Folder name under papers/<slug>/" },
+          "title": { "type": "string" },
+          "titleZh": { "type": "string" },
+          "authors": { "type": "array", "items": { "type": "string" } },
+          "year": { "type": "integer" },
+          "venue": { "type": "string" },
+          "category": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "status": { "type": "string", "enum": ["待读", "略读", "精读", "复现中", "已复现", "归档"] },
+          "priority": { "type": "integer", "minimum": 0, "maximum": 5 },
+          "readingDate": { "type": "string" },
+          "updatedAt": { "type": "string" },
+          "summary": { "type": "string" },
+          "takeaways": { "type": "array", "items": { "type": "string" } },
+          "arxivId": { "type": "string" },
+          "paperUrl": { "type": "string" },
+          "pdfUrl": { "type": "string" },
+          "pageUrl": { "type": "string" },
+          "codeUrl": { "type": "string" },
+          "repro": {
+            "type": "object",
+            "properties": {
+              "available": { "type": "boolean" },
+              "level": { "type": "string", "enum": ["unknown", "low", "medium", "high"] },
+              "notes": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
