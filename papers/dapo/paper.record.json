@@ -1,0 +1,49 @@
+{
+  "id": "2503.14476",
+  "slug": "dapo",
+  "title": "DAPO: An Open-Source LLM Reinforcement Learning System at Scale",
+  "titleZh": "DAPO：大规模开源大语言模型强化学习系统",
+  "authors": [
+    "Qiying Yu",
+    "Zheng Zhang",
+    "Ruofei Zhu",
+    "Yufeng Yuan",
+    "Xiaochen Zuo",
+    "Yu Yue",
+    "Weinan Dai",
+    "Tiantian Fan",
+    "Gaohong Liu",
+    "Lingjun Liu",
+    "Xin Liu",
+    "Haibin Lin"
+  ],
+  "year": 2025,
+  "venue": "arXiv",
+  "category": "RLVR / Self-Evolution",
+  "tags": [
+    "rlvr",
+    "grpo",
+    "policy-optimization",
+    "reasoning",
+    "open-source"
+  ],
+  "status": "精读",
+  "priority": 5,
+  "readingDate": "2026-06-08",
+  "updatedAt": "2026-06-08",
+  "summary": "DAPO 是一个面向大规模 LLM RL 的开源系统和算法配方，在 Qwen2.5-32B base 上把 AIME 2024 avg@32 从 naive GRPO 的 30 提升到 50。论文提出 Clip-Higher、Dynamic Sampling、Token-Level Policy Gradient Loss 和 Overlong Reward Shaping，并开放 verl 代码、DAPO-Math-17K、verifier、模型和复现脚本。",
+  "takeaways": [
+    "R1-like RLVR 的复现瓶颈不只是算法名，而是 entropy、长度、有效梯度、截断奖励和 verifier 噪声等工程细节。",
+    "Dynamic Sampling 和 Clip-Higher 都是在保护探索多样性，适合迁移到自进化、questioner-solver 和 agent RL 训练。"
+  ],
+  "arxivId": "2503.14476",
+  "paperUrl": "https://arxiv.org/abs/2503.14476",
+  "pdfUrl": "https://arxiv.org/pdf/2503.14476",
+  "pageUrl": "papers/dapo/index.html",
+  "codeUrl": "https://github.com/BytedTsinghua-SIA/DAPO",
+  "repro": {
+    "available": true,
+    "level": "high",
+    "notes": "官方开放 GitHub 代码、verl 训练脚本、DAPO-Math-17K 数据、rule-based verifier 和 DAPO-Qwen-32B 模型；严格复现仍需要大规模 GPU 资源，项目页提到开放实验使用 128 H20 GPUs。"
+  }
+}

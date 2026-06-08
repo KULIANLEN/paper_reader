@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>The Landscape of Agentic Reinforcement Learning for LLMs: A Survey · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .agentic-rl-page * { letter-spacing: 0 !important; }
+    .agentic-rl-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .agentic-rl-page .paper-hero { padding: 3.4rem 0 2.25rem; border-bottom: 1px solid var(--line); }
+    .agentic-rl-page .paper-hero h1 { max-width: 1100px; font-size: clamp(2.08rem, 4.6vw, 4.1rem); line-height: 1.04; }
+    .agentic-rl-page .hero-subtitle { max-width: 980px; margin: 1.05rem 0 0; font-size: clamp(1.02rem, 2vw, 1.22rem); line-height: 1.78; }
+    .agentic-rl-page .content-card { margin: 0; padding: clamp(2.15rem, 5vw, 4.2rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .agentic-rl-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.58rem, 3.2vw, 2.42rem); line-height: 1.16; }
+    .agentic-rl-page .content-card h3 { margin: 0 0 0.48rem; font-size: 1.05rem; line-height: 1.36; }
+    .agentic-rl-page .section-lead { max-width: 960px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.04rem; line-height: 1.86; }
+    .agentic-rl-page .meta-row, .agentic-rl-page .link-row, .agentic-rl-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .agentic-rl-page .meta-row { margin-top: 1.25rem; color: var(--muted); font-size: 0.94rem; }
+    .agentic-rl-page .paper-tags, .agentic-rl-page .link-row { margin-top: 1rem; }
+    .agentic-rl-page .tag-pill, .agentic-rl-page .link-row a, .agentic-rl-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .agentic-rl-page .grid-2, .agentic-rl-page .grid-3, .agentic-rl-page .metric-grid, .agentic-rl-page .figure-grid, .agentic-rl-page .flow-grid { display: grid; gap: 1rem; }
+    .agentic-rl-page .grid-2, .agentic-rl-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .agentic-rl-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .agentic-rl-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .agentic-rl-page .flow-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 1rem; }
+    .agentic-rl-page .note-box, .agentic-rl-page .metric, .agentic-rl-page .table-wrap, .agentic-rl-page .figure-card, .agentic-rl-page .formula-box, .agentic-rl-page .flow-step, .agentic-rl-page .critique-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .agentic-rl-page .note-box, .agentic-rl-page .formula-box, .agentic-rl-page .flow-step, .agentic-rl-page .critique-box { padding: 1rem; }
+    .agentic-rl-page .note-box p, .agentic-rl-page .formula-box p, .agentic-rl-page .flow-step p, .agentic-rl-page .critique-box p { margin: 0.45rem 0 0; }
+    .agentic-rl-page .metric { padding: 1rem; }
+    .agentic-rl-page .metric strong { display: block; font-size: 1.42rem; line-height: 1.15; }
+    .agentic-rl-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .agentic-rl-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .agentic-rl-page .flow-step:nth-child(2n) b { background: #6d5dfc; }
+    .agentic-rl-page .flow-step:nth-child(3n) b { background: #c2410c; }
+    .agentic-rl-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .agentic-rl-page .formula-box .MathJax, .agentic-rl-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .agentic-rl-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .agentic-rl-page table { width: 100%; min-width: 820px; border-collapse: collapse; font-size: 0.9rem; }
+    .agentic-rl-page th, .agentic-rl-page td { padding: 0.72rem 0.75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .agentic-rl-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .agentic-rl-page td { color: var(--text-soft); }
+    .agentic-rl-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .agentic-rl-page .figure-card { margin: 0; overflow: hidden; }
+    .agentic-rl-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .agentic-rl-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .agentic-rl-page .figure-card figcaption strong { color: var(--text); }
+    .agentic-rl-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .agentic-rl-page .compact-list li { margin: 0.28rem 0; }
+    .agentic-rl-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .agentic-rl-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .agentic-rl-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .agentic-rl-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .agentic-rl-page .grid-2, .agentic-rl-page .grid-3, .agentic-rl-page .metric-grid, .agentic-rl-page .figure-grid, .agentic-rl-page .flow-grid { grid-template-columns: 1fr; }
+      .agentic-rl-page .paper-hero { padding-top: 2.4rem; }
+      .agentic-rl-page table { min-width: 720px; }
+    }
+  </style>
+</head>
+<body class="paper-page agentic-rl-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2509.02547v5</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">证据</a>
+      <a href="#results">结论</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Survey / Position · TMLR 2026</div>
+      <h1>The Landscape of Agentic Reinforcement Learning for LLMs: A Survey</h1>
+      <p class="hero-subtitle">这篇 survey 的核心贡献不是提出一个新 RL 算法，而是把 Agentic RL 从普通 LLM RL 中切出来：普通 PBRFT 更像 $T=1$ 的单步文本优化，Agentic RL 则把 LLM 作为嵌入动态环境的 policy，在部分可观测、多步交互、工具调用、记忆、规划和反馈循环中学习。</p>
+      <div class="meta-row">
+        <span>Guibin Zhang, Hejia Geng, Xiaohang Yu, Zhenfei Yin, Zaibin Zhang, et al.</span>
+        <span>Oxford · Shanghai AI Lab · NUS · UIUC · UCL · CUHK · Bristol</span>
+        <span>Published: 2025-09-02</span>
+        <span>Updated: 2026-04-17</span>
+        <span>95-page PDF, 500+ works synthesized</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">survey</span>
+        <span class="tag-pill">rlvr</span>
+        <span class="tag-pill">reinforcement-learning</span>
+        <span class="tag-pill">tool-use</span>
+        <span class="tag-pill">planning</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2509.02547">arXiv</a>
+        <a href="https://arxiv.org/pdf/2509.02547">PDF</a>
+        <a href="https://openreview.net/forum?id=RY19y2RI1O">OpenReview</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>POMDP</strong><span>作者把 Agentic RL 定义为长时序、部分可观测、环境交互式的 LLM policy learning。</span></div>
+        <div class="metric"><strong>6 +</strong><span>能力 taxonomy 覆盖 planning、tool use、memory、self-improvement、reasoning、perception 等。</span></div>
+        <div class="metric"><strong>7 domains</strong><span>应用 taxonomy 覆盖 search、code、math、GUI、vision、embodied、multi-agent 等。</span></div>
+        <div class="metric"><strong>3 frontiers</strong><span>核心挑战聚焦 trustworthiness、agentic training scaling、agentic environment scaling。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>研究动机：为什么需要单独讨论 Agentic RL</h2>
+      <p class="section-lead">论文认为，RLHF、DPO、GRPO 等常见 LLM RL 传统上多优化“一次回答”的质量；但真实 agent 需要在环境里反复观察、计划、调用工具、更新记忆、处理失败并继续行动。把这两类问题都叫 LLM RL 会掩盖状态、动作、奖励、时间尺度和评估协议上的根本差异。</p>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>概念边界</h3>
+          <p>PBRFT 的输入通常是固定 prompt 或偏好样本，训练目标是让最终文本更符合偏好或 verifier。Agentic RL 的输入是环境观测，输出既包含文本，也包含工具调用、GUI 操作、检索、代码执行或多 agent 通信。</p>
+        </div>
+        <div class="note-box">
+          <h3>研究缺口</h3>
+          <p>已有 survey 分别覆盖 LLM alignment、LLM agent 或 LLM for RL，但缺少一个统一视角解释 RL 如何把 agent 组件从 handcrafted module 变成可优化 policy。</p>
+        </div>
+        <div class="note-box">
+          <h3>读法提醒</h3>
+          <p>这篇论文是地图型综述，不应按“方法-实验-SOTA”单篇论文来读。更有价值的读法是抽取定义、分类法、benchmark/framework 清单，以及每个方向暴露出的 reward 和 credit assignment 难题。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>方法与形式化：从单步 PBRFT 到多步 POMDP</h2>
+      <p class="section-lead">论文最硬的部分是 Section 2 的形式化。它把普通 preference-based reinforcement fine-tuning 视为退化 MDP，把 Agentic RL 视为 POMDP。这个建模并非装饰，它直接解释了为什么 agentic training 会遇到长时序 credit assignment、环境随机性、tool safety、memory contamination 和 reward hacking。</p>
+
+      <div class="formula-box">
+        <h3>统一 MDP 元组</h3>
+        <p>作者先用七元组描述 RL fine-tuning：</p>
+        $$\langle S, O, A, P, R, T, \gamma \rangle$$
+        <p>其中 $S$ 是状态空间，$O$ 是观察空间，$A$ 是动作空间，$P$ 是状态转移，$R$ 是奖励，$T$ 是 horizon，$\gamma$ 是折扣因子。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="formula-box">
+          <h3>PBRFT：退化单步 MDP</h3>
+          $$\langle S_{\mathrm{trad}}, A_{\mathrm{trad}}, P_{\mathrm{trad}}, R_{\mathrm{trad}}, T=1, \gamma=1 \rangle$$
+          <p>状态通常退化为单个 prompt，动作是纯文本响应，转移到终止状态，奖励是最终回答的标量分数。</p>
+        </div>
+        <div class="formula-box">
+          <h3>Agentic RL：部分可观测多步过程</h3>
+          $$\langle S_{\mathrm{agent}}, A_{\mathrm{agent}}, P_{\mathrm{agent}}, R_{\mathrm{agent}}, \gamma, O \rangle$$
+          <p>agent 在时间 $t$ 接收 $o_t=O(s_t)$，根据 observation 选择动作，环境随后转移到新状态。</p>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>动作空间：文本 + 环境动作</h3>
+        $$A_{\mathrm{agent}} = A_{\mathrm{text}} \cup A_{\mathrm{action}}$$
+        <p>$A_{\mathrm{text}}$ 是自然语言 token 输出；$A_{\mathrm{action}}$ 是环境动作或 tool call，例如 search、browser click、code execution、GUI 操作、机器人控制或多 agent 消息。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="formula-box">
+          <h3>动态转移</h3>
+          $$s_{t+1} \sim P(s_{t+1}\mid s_t,a_t),\quad a_t \in A_{\mathrm{text}} \cup A_{\mathrm{action}}$$
+          <p>这一步把“生成答案”变成“改变世界或获取信息”。工具输出、网页状态、代码运行结果、用户反馈和其他 agent 消息都会进入后续状态。</p>
+        </div>
+        <div class="formula-box">
+          <h3>Agentic reward</h3>
+          $$
+          R_{\mathrm{agent}}(s_t,a_t)=
+          \begin{cases}
+          r_{\mathrm{task}}, & \text{on task completion},\\
+          r_{\mathrm{sub}}(s_t,a_t), & \text{for step-level progress},\\
+          0, & \text{otherwise}.
+          \end{cases}
+          $$
+          <p>奖励可以是最终成功、过程信号、verifier、unit test、formal checker、tool-use cost 或 safety penalty 的组合。</p>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>学习目标</h3>
+        $$J_{\mathrm{agent}}(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}\left[\sum_{t=0}^{T-1}\gamma^t R_{\mathrm{agent}}(s_t,a_t)\right],\quad 0<\gamma<1$$
+        <p>这比 $J_{\mathrm{trad}}(\theta)=\mathbb{E}_{a\sim\pi_\theta}[r(a)]$ 多了 horizon、状态转移、局部可观测性和长期信用分配。</p>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-02-paradigm-shift.jpeg" alt="Figure 2: Paradigm shift from LLM RL to Agentic RL" loading="lazy" />
+          <figcaption><strong>Figure 2.</strong> 论文用扇形图展示从传统 RL、LLM RL 到 Agentic RL 的扩展：动作从 natural language 扩展到 text + action，环境从 static benchmark 扩展到 dynamic environment，训练对象从单次回答扩展到 long-term exploration。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-03-agent-loop.jpeg" alt="Figure 3: agent-environment interaction and RL loop" loading="lazy" />
+          <figcaption><strong>Figure 3.</strong> agentic LLM 的闭环：核心能力生成 action，environment 返回 observation、feedback 和 reward，再通过 PPO、DPO、GRPO、DAPO 等优化策略更新。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>维度</th><th>Traditional PBRFT</th><th>Agentic RL</th><th>读者应关注的问题</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>State</td><td>单个 prompt，episode 立刻结束。</td><td>$s_t$ 是动态世界状态，agent 只能看见 $o_t$。</td><td>训练日志必须保存环境状态、观测、工具返回和历史记忆。</td></tr>
+            <tr><td>Action</td><td>纯文本序列。</td><td>$A_{\mathrm{text}}\cup A_{\mathrm{action}}$，包括工具、GUI、代码、浏览器等动作。</td><td>parser、schema、sandbox 和 action validator 是训练系统的一部分。</td></tr>
+            <tr><td>Transition</td><td>确定性终止。</td><td>$P(s_{t+1}\mid s_t,a_t)$ 可能随机且由外部世界改变。</td><td>同一个 prompt 的 rollout 不再可简单复现，需要环境快照和种子。</td></tr>
+            <tr><td>Reward</td><td>最终回答标量。</td><td>任务完成奖励 + step-level sub-reward + safety/cost signals。</td><td>reward design 会决定 agent 学到的是能力、捷径还是漏洞利用。</td></tr>
+            <tr><td>Objective</td><td>$\mathbb{E}[r(a)]$。</td><td>$\mathbb{E}[\sum_t \gamma^tR(s_t,a_t)]$。</td><td>长期信用分配比单轮 RLVR 更难，尤其在 tool chains 和 MAS 中。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 1 的压缩版：论文形式化比较了 PBRFT 和 Agentic RL。这里加入了工程复现时需要额外记录的字段。</p>
+      </div>
+    </section>
+
+    <section class="content-card">
+      <h2>算法族：PPO、DPO、GRPO 只是起点</h2>
+      <p class="section-lead">论文没有把 Agentic RL 绑定到某个算法。它把 REINFORCE、PPO、DPO、GRPO 及其变体放在同一张地图里，重点是解释不同算法处理稳定性、偏好数据、critic 成本、group-relative advantage 和 sparse reward 的方式。</p>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>PPO family</h3>
+          <p>优势是稳定，依靠 policy ratio clipping 和 value estimate；代价是 critic 成本高，长时序 agent 里 value learning 更困难。相关变体包括 VAPO、LitePPO、VinePPO、PSGPO 等。</p>
+        </div>
+        <div class="note-box">
+          <h3>DPO family</h3>
+          <p>DPO 把 KL-constrained reward maximization 改写为 preference likelihood objective。它适合静态偏好数据，但对 agentic multi-turn trajectory 的覆盖和分布漂移更敏感。</p>
+        </div>
+        <div class="note-box">
+          <h3>GRPO family</h3>
+          <p>GRPO 用同一 prompt 的 group reward 估计 relative advantage，省掉 critic。DAPO、GSPO、Dr.GRPO、Step-GRPO、StarPO 等变体主要围绕采样效率、advantage bias、工具动作和多轮交互做修正。</p>
+        </div>
+      </div>
+      <div class="formula-box">
+        <h3>GRPO 式 relative advantage</h3>
+        $$\hat{A}(s_t,a_t)=\frac{R(s_t,a_t)-\operatorname{mean}(R(s_t^{(1)},a_t^{(1)}),\ldots,R(s_t^{(G)},a_t^{(G)}))}{\operatorname{std}(R(s_t^{(1)},a_t^{(1)}),\ldots,R(s_t^{(G)},a_t^{(G)}))}$$
+        <p>这个估计对 verifier 明确的 math/code 任务很有吸引力，但在 agentic setting 中会遇到 group 中全对或全错、reward variance 大、工具调用成本不同、trajectory length 不同等问题。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>证据结构：survey 的“实验设计”是什么</h2>
+      <p class="section-lead">这不是一篇带统一 benchmark 的实验论文。它的证据来自系统梳理 500 多篇近期工作，并用两个 taxonomy 组织：按 agentic capability 组织 Section 3，按 application domain 组织 Section 4，再用 environment/framework compendium 支撑 Section 5。</p>
+      <div class="flow-grid">
+        <div class="flow-step">
+          <b>1</b>
+          <h3>Capability taxonomy</h3>
+          <p>分析 RL 如何让 planning、tool use、memory、self-improvement、reasoning、perception 从静态模块变成可优化行为。</p>
+        </div>
+        <div class="flow-step">
+          <b>2</b>
+          <h3>Application taxonomy</h3>
+          <p>按 search/research、code/SWE、math、GUI、vision、embodied、multi-agent 等任务域总结 RL 方法。</p>
+        </div>
+        <div class="flow-step">
+          <b>3</b>
+          <h3>Infrastructure map</h3>
+          <p>整理 environments、benchmarks 和 frameworks，解释 agentic training 的主要系统瓶颈在 rollout、sandbox、reward 和并行环境。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>能力</th><th>RL 扮演的角色</th><th>典型问题</th><th>关键风险</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Planning</td><td>外部 guide 训练 value/heuristic，或直接内化规划 policy。</td><td>MCTS guidance、goal-conditioned critic、long-horizon planning。</td><td>搜索成本高，process reward 设计困难。</td></tr>
+            <tr><td>Tool use</td><td>从 ReAct/SFT imitation 转向 outcome-driven tool-integrated RL。</td><td>何时调用工具、如何组合工具、如何从工具错误恢复。</td><td>长工具链 credit assignment 和 unsafe tool reinforcement。</td></tr>
+            <tr><td>Memory</td><td>训练 agent 决定写入、检索、更新、删除或压缩记忆。</td><td>RAG memory、token-level memory、structured memory。</td><td>memory poisoning、遗忘策略和长期一致性。</td></tr>
+            <tr><td>Self-improvement</td><td>把 verbal reflection、self-correction、self-training 变成可学习闭环。</td><td>self-play、execution-guided curriculum、collective bootstrapping。</td><td>错误自强化，critic/reward 被利用。</td></tr>
+            <tr><td>Reasoning</td><td>训练 fast/slow thinking 的选择、验证、回溯、test-time scaling。</td><td>math/code reasoning、latent reasoning、adaptive deliberation。</td><td>overthinking、latency 和不可解释的 CoT 膨胀。</td></tr>
+            <tr><td>Perception</td><td>把视觉、视频、3D、音频感知和动作/工具使用放进 RL loop。</td><td>Visual-RFT、VLM-R1、PAPO、thinking with images。</td><td>shortcut exploitation 和跨模态 grounding 错误。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Section 3 的压缩阅读表：每个能力都可以被看成 policy subspace，而不是 prompt template。</p>
+      </div>
+
+      <figure class="figure-card">
+        <img src="assets/figures/figure-05-capability-taxonomy.jpeg" alt="Figure 5: RL empowers agentic LLMs across core capabilities" loading="lazy" />
+        <figcaption><strong>Figure 5.</strong> 论文的能力 taxonomy 主图。中心是 RL empowers Agentic LLM，周围连接 reasoning、memory、self-improve、planning、perception、tool use，并给出代表性机制。</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>核心结论：Agentic RL 的研究版图</h2>
+      <p class="section-lead">论文的结果不是某个单一分数，而是三层判断：哪些能力最常被 RL 优化，哪些应用已经有可验证环境，哪些方向仍缺统一评估与可靠训练协议。</p>
+
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>最成熟的信号：math/code/SWE</h3>
+          <p>数学和代码任务拥有 verifier、unit tests、formal checker 或 execution feedback，因而最适合 RLVR、GRPO/DAPO、process reward 和 self-play。论文在 math/code 两章列举了大量 outcome reward、process reward、hybrid reward 方法。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>最 agentic 的信号：search/GUI/tool use</h3>
+          <p>search、research、GUI 和 web agent 更接近真实世界 agent，但 reward 稀疏、环境动态、API 成本高、页面变化和安全问题更严重。open-source 与 closed-source 系统差距也更明显。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>应用域</th><th>核心依赖能力</th><th>RL 信号来源</th><th>论文给出的代表性趋势</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Search & Research</td><td>tool use、reasoning、planning。</td><td>检索质量、答案正确性、step-level evidence、BrowseComp/GAIA 等。</td><td>从单轮 query generation 转向多轮 web search、evidence synthesis、deep research agent。</td></tr>
+            <tr><td>Code & SWE</td><td>tool use、reasoning、debugging memory。</td><td>编译、unit tests、runtime trace、issue resolution。</td><td>从函数级 code generation 扩展到 iterative refinement 和 repository-level SWE。</td></tr>
+            <tr><td>Math</td><td>reasoning、planning、formal verification。</td><td>final answer verifier、Lean/Coq/Isabelle checker、step-level proof feedback。</td><td>informal TIR 和 formal theorem proving 分叉发展，hybrid reward 与 expert iteration 重要。</td></tr>
+            <tr><td>GUI/Web</td><td>planning、tool use、perception。</td><td>action correctness、task success、milestone、screen state。</td><td>从 static screenshot-action SFT 进入 interactive rollout 和 asynchronous RL。</td></tr>
+            <tr><td>Embodied/VLA</td><td>perception、planning、memory。</td><td>trajectory success、navigation distance、manipulation reward。</td><td>仿真可扩展但 sim-to-real gap 大，真实机器人 RL 成本仍是瓶颈。</td></tr>
+            <tr><td>Multi-Agent</td><td>planning、communication、coordination。</td><td>集体任务成功、role-conditioned advantage、self-play reward。</td><td>从优化拓扑/路由，到训练部分 agent，再到 Dec-POMDP 式端到端 MARL。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 9 的解释版：应用和能力不是一一对应，许多任务需要同时优化 reasoning、tool use、planning 和 memory。</p>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-04-tool-use-development.jpeg" alt="Figure 4: development of agentic tool use" loading="lazy" />
+          <figcaption><strong>Figure 4.</strong> 工具使用从 ReAct-style tool calling，经由 Toolformer/AgentTuning/FireAct 的 SFT 阶段，发展到 tool-integrated RL 和 long-horizon TIR。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-06-domain-evolution.jpeg" alt="Figure 6: evolution tree of RL for domain-specific agents" loading="lazy" />
+          <figcaption><strong>Figure 6.</strong> domain-specific agent 的方法演化树，展示 search、code、math、GUI、multi-agent 等方向的开源/闭源系统和 RL-based/RL-free 分支。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card">
+      <h2>环境与框架：真正的瓶颈在 rollout world</h2>
+      <p class="section-lead">Section 5 对做 Agentic RL 很实用。它把 environment/benchmark 和 RL framework 分开：前者决定 agent 能在什么世界里学习，后者决定 rollout、reward、训练和并行执行怎么落地。</p>
+
+      <div class="grid-2">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>环境类型</th><th>代表环境/benchmark</th><th>适合研究的问题</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Web / app</td><td>WebShop, Mind2Web, WebArena, VisualWebArena, AppWorld</td><td>网页导航、工具调用、跨页面检索、动态任务执行。</td></tr>
+              <tr><td>GUI / OS</td><td>AndroidWorld, OSWorld, WindowsAgentArena</td><td>屏幕理解、点击/输入、长时序桌面任务、真实应用交互。</td></tr>
+              <tr><td>SWE / code</td><td>SWE-bench, Debug-Gym, R2E-Gym, ColBench, DevBench</td><td>代码修复、debugging、软件工程工作流、execution reward。</td></tr>
+              <tr><td>Science / MLE</td><td>ScienceWorld, PaperBench, MLE-Bench, MLE-Dojo</td><td>科学发现、复现实验、机器学习工程自动化。</td></tr>
+              <tr><td>Game / embodied</td><td>ALFWorld, TextWorld, Crafter, Craftax, Factorio, SMAC</td><td>长时序规划、探索、memory、multi-agent coordination。</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>框架类型</th><th>代表框架</th><th>关键能力</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Agentic RL</td><td>Verifiers, SkyRL-v0, AREAL, AgentFly, Agent Lightning, AWorld, ROLL, VerlTool, AgentRL</td><td>可验证环境、长时序 rollout、异步采样、工具集成、多任务训练。</td></tr>
+              <tr><td>LLM RLHF/RFT</td><td>OpenRLHF, TRL, trlX, HybridFlow, SLiMe, Oat</td><td>PPO/DPO/GRPO 训练、分布式模型后训练、reward/data generation pipeline。</td></tr>
+              <tr><td>General RL</td><td>RLlib, Acme, Tianshou, Stable Baselines3, PFRL</td><td>标准 RL 算法、多 agent/层级 RL、分布式环境执行。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="note-box warn">
+        <h3>一个重要判断</h3>
+        <p>Agentic RL 的 scaling 不只取决于模型参数和 GPU。高吞吐、可恢复、可审计的 environment execution 会成为和 training kernel 同级的基础设施问题。没有稳定环境快照、工具 sandbox、reward trace 和失败归因，算法结果很难比较。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>Figure / Table 导航</h2>
+      <p class="section-lead">本页保留了最能帮助复盘的图和表。抽取工具成功获取 10 张图，正文前 49 页覆盖主要内容，后续页主要为参考文献。</p>
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/table-01-pbrft-agentic-rl.png" alt="Table 1 formal comparison between PBRFT and Agentic RL" loading="lazy" />
+          <figcaption><strong>Table 1 page crop.</strong> PBRFT 与 Agentic RL 的形式化对照，是理解论文边界的核心表。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-02-algorithm-families.png" alt="Table 2 comparison of PPO DPO GRPO variants" loading="lazy" />
+          <figcaption><strong>Table 2 page crop.</strong> PPO、DPO、GRPO 家族及其关键机制，适合快速定位后训练算法变体。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-09-capability-matrix.png" alt="Table 9 application-capability dependency matrix" loading="lazy" />
+          <figcaption><strong>Table 9 page crop.</strong> 应用域和能力依赖矩阵，帮助判断某个 agent 任务最应优先优化哪些能力。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-10-environments.png" alt="Table 10 environments and benchmarks for agentic reinforcement learning" loading="lazy" />
+          <figcaption><strong>Table 10 page crop.</strong> agentic RL environment / benchmark 清单，涵盖 web、GUI、SWE、science、game 等。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-11-frameworks.png" alt="Table 11 RL frameworks" loading="lazy" />
+          <figcaption><strong>Table 11 page crop.</strong> Agentic RL、RLHF/LLM fine-tuning、general RL 框架的对照。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>复现清单：如何把这篇 survey 变成可执行研究路线</h2>
+      <p class="section-lead">作为 survey，论文没有单一训练流水线可复现。更合理的“复现”是复核版本、图表、分类法和引用覆盖，并基于它搭建自己的 Agentic RL reading/experiment matrix。</p>
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>可直接复核</h3>
+          <ul class="compact-list">
+            <li>arXiv v5 PDF，更新时间 2026-04-17。</li>
+            <li>TMLR/OpenReview 页面，论文首页标注 Reviewed on OpenReview。</li>
+            <li>Section 2 的 MDP/POMDP 形式化与 Table 1。</li>
+            <li>Section 3-5 的 taxonomy、代表性方法、environment/framework 表。</li>
+            <li>PDF 抽取：95 页，文本抽取成功；页面渲染到第 80 页，正文和主要图表都在前 49 页。</li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <h3>不可严格复现</h3>
+          <ul class="compact-list">
+            <li>论文未给出系统综述的检索 query、数据库、纳入/排除标准和 inter-rater agreement。</li>
+            <li>“500+ works” 是范围描述，正文没有提供机器可复查的完整结构化 bibliography dataset。</li>
+            <li>不同方向的 benchmark 数字来自原论文，不能在这个 survey 内统一复算。</li>
+            <li>许多 2025-2026 系统仍是闭源或动态在线环境，严格复现依赖外部服务状态。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>如果要基于此 survey 开题</th><th>建议保留的实验字段</th><th>原因</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Agentic RL 算法比较</td><td>模型、base checkpoint、rollout length、group size、reward source、entropy/KL、tool schema、environment seed。</td><td>没有这些字段，PPO/GRPO/DAPO 之间的差异容易被环境和采样吞没。</td></tr>
+            <tr><td>Tool-integrated reasoning</td><td>工具调用次数、错误率、sandbox failure、tool latency、有效 observation 比例、long-horizon credit assignment 方法。</td><td>最终正确率无法解释 agent 是靠更好推理、更多搜索，还是成本更高的工具堆叠。</td></tr>
+            <tr><td>Search / research agent</td><td>query trace、网页快照、evidence citation、cross-source verification、API cost、BrowseComp/GAIA split。</td><td>在线网页和搜索 API 漂移快，必须记录证据轨迹。</td></tr>
+            <tr><td>SWE agent</td><td>repo commit、test command、patch diff、pass/fail trace、issue leakage check、container image。</td><td>SWE 复现的核心是可执行环境，而不是模型回答文本。</td></tr>
+            <tr><td>Multi-agent RL</td><td>agent count、role policy、communication protocol、centralized/decentralized critic、role-conditioned advantage。</td><td>多 agent 的信用分配和通信退化是主要失败模式。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>Reviewer Critique</h2>
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>优点</h3>
+          <ul class="compact-list">
+            <li>把 Agentic RL 和普通 LLM RL 的差异形式化到 state、action、transition、reward、objective 层面，避免纯概念化讨论。</li>
+            <li>能力 taxonomy 和应用 taxonomy 双视角互补，能同时服务研究者和工程实践者。</li>
+            <li>对 environment 和 framework 的整理很实用，指出 agentic training 的系统瓶颈不只是模型训练。</li>
+            <li>挑战章节覆盖 security、hallucination、sycophancy、scaling、environment co-evolution、mechanistic debate 和社会影响，边界较宽。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>不足</h3>
+          <ul class="compact-list">
+            <li>作为 survey，缺少系统综述方法学：检索源、关键词、筛选标准、覆盖时间窗和排除标准不够透明。</li>
+            <li>许多方法的资源链接在 PDF 中以图标出现，缺少结构化 appendix 或表格文件，后续自动维护成本高。</li>
+            <li>不同任务的 benchmark 数字没有统一 protocol，读者不能直接比较 search agent、SWE agent 和 math agent 的 RL 效益。</li>
+            <li>对 closed-source agentic RL 的讨论只能基于公开信息，容易低估或误判工业系统实际训练细节。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="critique-box danger">
+          <h3>潜在失败模式</h3>
+          <p>Agentic RL 会把 reward hacking 从“回答骗过打分器”放大到“主动选择工具、环境状态和通信策略来骗过系统”。这比单轮 RLHF 更难监控。</p>
+        </div>
+        <div class="critique-box danger">
+          <h3>评估污染</h3>
+          <p>静态 benchmark 在 agentic setting 中更容易被工具轨迹、网页缓存、代码 issue 泄漏和环境 shortcut 污染。live benchmark 与环境快照需要同时保留。</p>
+        </div>
+        <div class="critique-box danger">
+          <h3>安全边界</h3>
+          <p>一旦 agent 有 memory 和 tool use，prompt injection、memory poisoning、unsafe API、权限边界和多 agent 传染都会成为训练与部署共同问题。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>对我的研究方向的启发</h2>
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>1. Agentic RL 的最小可复现实验单元不是 prompt，而是 environment snapshot</h3>
+          <p>只记录 prompt、answer 和 reward 不够。应记录 observation、action schema、tool output、state transition、reward breakdown、sandbox log 和失败恢复路径。</p>
+        </div>
+        <div class="note-box">
+          <h3>2. RLVR 的下一步是从 final-answer verifier 走向 process/environment verifier</h3>
+          <p>DAPO/R1 类方法在数学上有效，是因为 verifier 清晰。agentic tasks 需要更细粒度的 verifier，包括工具调用合法性、证据一致性、代码执行 trace 和安全约束。</p>
+        </div>
+        <div class="note-box">
+          <h3>3. Tool use、memory、planning 不应只靠 prompt engineering</h3>
+          <p>论文反复强调 RL 的作用是把静态模块变成 adaptive behavior。可研究方向包括 memory-as-action、learned tool routing、adaptive test-time compute 和 hierarchical planner-worker policy。</p>
+        </div>
+        <div class="note-box">
+          <h3>4. 评估要同时报能力、成本和风险</h3>
+          <p>Agentic RL 很容易用更多 tool calls、更多搜索、更多 token 换分数。研究报告应同时给 success rate、latency、tool/API cost、unsafe action rate、hallucination/refusal 和环境失败率。</p>
+        </div>
+      </div>
+      <div class="note-box">
+        <h3>一句话总结</h3>
+        <p>这篇 survey 把“LLM 后训练”推进到“LLM 作为可学习 agent policy”的问题空间；它提醒我们，未来的关键不是单个 GRPO 变体，而是 verifier、environment、rollout system、credit assignment 和安全边界的共同设计。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

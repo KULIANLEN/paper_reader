@@ -1,0 +1,49 @@
+{
+  "id": "2501.12948",
+  "slug": "deepseek-r1",
+  "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+  "titleZh": "DeepSeek-R1：通过强化学习激励大语言模型的推理能力",
+  "authors": [
+    "DeepSeek-AI",
+    "Daya Guo",
+    "Dejian Yang",
+    "Haowei Zhang",
+    "Junxiao Song",
+    "Peiyi Wang",
+    "Qihao Zhu",
+    "Runxin Xu",
+    "Ruoyu Zhang",
+    "Shirong Ma",
+    "Xiao Bi",
+    "Xiaokang Zhang"
+  ],
+  "year": 2025,
+  "venue": "arXiv / Nature",
+  "category": "RLVR / Self-Evolution",
+  "tags": [
+    "rlvr",
+    "reasoning",
+    "grpo",
+    "distillation",
+    "self-evolution"
+  ],
+  "status": "精读",
+  "priority": 5,
+  "readingDate": "2026-06-08",
+  "updatedAt": "2026-06-08",
+  "summary": "DeepSeek-R1 证明在数学、代码和逻辑等可验证任务上，LLM 的复杂推理能力可以通过大规模 GRPO 强化学习从 base model 中被激励出来，而不必先依赖人工标注的 reasoning traces。R1-Zero 展示纯 RL 的 self-evolution，R1 则用 cold start、SFT、两阶段 RL、preference/safety reward 和 distillation 把能力转化为可用模型。",
+  "takeaways": [
+    "RLVR 的关键是 hard prompts、可靠 verifier 和足够采样/算力，而不是人工规定固定 CoT 形态。",
+    "纯 RL 能诱发 reflection 与 self-verification，但通用对话、安全、语言一致性和工具使用仍需要额外系统设计。"
+  ],
+  "arxivId": "2501.12948",
+  "paperUrl": "https://arxiv.org/abs/2501.12948",
+  "pdfUrl": "https://arxiv.org/pdf/2501.12948",
+  "pageUrl": "papers/deepseek-r1/index.html",
+  "codeUrl": "https://github.com/deepseek-ai/DeepSeek-R1",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "权重、蒸馏模型、评测设置、主要超参和训练成本披露较多，适合复跑评测和蒸馏实验；但完整复现依赖 DeepSeek-V3-Base、未完全公开的数据选择/verifier/RL infrastructure，以及约 147K H800 GPU hours 的后训练资源。"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "id": "2509.02547",
+  "slug": "agentic-rl-landscape",
+  "title": "The Landscape of Agentic Reinforcement Learning for LLMs: A Survey",
+  "titleZh": "面向大语言模型的智能体强化学习版图：综述",
+  "authors": [
+    "Guibin Zhang",
+    "Hejia Geng",
+    "Xiaohang Yu",
+    "Zhenfei Yin",
+    "Zaibin Zhang",
+    "Zelin Tan",
+    "Heng Zhou",
+    "Zhongzhi Li",
+    "Xiangyuan Xue",
+    "Yijiang Li",
+    "Yifan Zhou",
+    "Yang Chen",
+    "Chen Zhang",
+    "Yutao Fan",
+    "Zihu Wang",
+    "Songtao Huang",
+    "Francisco Piedrahita-Velez",
+    "Yue Liao",
+    "Hongru Wang",
+    "Mengyue Yang",
+    "Heng Ji",
+    "Jun Wang",
+    "Shuicheng Yan",
+    "Philip Torr",
+    "Lei Bai"
+  ],
+  "year": 2026,
+  "venue": "TMLR 2026",
+  "category": "Survey / Position",
+  "tags": [
+    "agent",
+    "survey",
+    "rlvr",
+    "reinforcement-learning",
+    "tool-use",
+    "planning"
+  ],
+  "status": "精读",
+  "priority": 5,
+  "readingDate": "2026-06-08",
+  "updatedAt": "2026-06-08",
+  "summary": "这篇 survey 将 Agentic RL 从普通 LLM RL 中形式化地区分出来：PBRFT 更像单步文本优化，而 Agentic RL 是部分可观测、长时序、环境交互式的 policy learning。论文用能力 taxonomy、应用 taxonomy、环境/框架清单和挑战分析梳理 500 多篇近期工作，是构建 agentic RL 研究路线的地图型论文。",
+  "takeaways": [
+    "Agentic RL 的关键对象不是单次回答，而是 observation-action-reward-state 的可审计环境闭环。",
+    "未来进展取决于 verifier、environment、rollout system、credit assignment 和安全边界的共同设计。"
+  ],
+  "arxivId": "2509.02547",
+  "paperUrl": "https://arxiv.org/abs/2509.02547",
+  "pdfUrl": "https://arxiv.org/pdf/2509.02547",
+  "pageUrl": "papers/agentic-rl-landscape/index.html",
+  "codeUrl": "",
+  "repro": {
+    "available": true,
+    "level": "low",
+    "notes": "作为综述论文，没有单一训练流水线；可复核 arXiv v5、OpenReview 页面、MDP/POMDP 形式化、taxonomy、环境/框架清单和图表抽取。缺少系统综述式检索协议、纳入/排除标准和结构化 bibliography dataset。"
+  }
+}

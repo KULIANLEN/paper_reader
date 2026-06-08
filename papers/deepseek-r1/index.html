@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .r1-page * { letter-spacing: 0 !important; }
+    .r1-page .paper-article { width: min(calc(100% - 36px), 1160px); }
+    .r1-page .paper-hero { padding: 3.35rem 0 2.25rem; border-bottom: 1px solid var(--line); }
+    .r1-page .paper-hero h1 { max-width: 1080px; font-size: clamp(2.1rem, 4.5vw, 4.05rem); line-height: 1.05; }
+    .r1-page .hero-subtitle { max-width: 950px; margin: 1.05rem 0 0; font-size: clamp(1.02rem, 2vw, 1.24rem); line-height: 1.76; }
+    .r1-page .content-card { margin: 0; padding: clamp(2.15rem, 5vw, 4.25rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .r1-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.62rem, 3.2vw, 2.5rem); line-height: 1.14; }
+    .r1-page .content-card h3 { margin: 0 0 0.48rem; font-size: 1.06rem; line-height: 1.35; }
+    .r1-page .section-lead { max-width: 940px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.04rem; line-height: 1.86; }
+    .r1-page .meta-row, .r1-page .link-row, .r1-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .r1-page .meta-row { margin-top: 1.25rem; color: var(--muted); font-size: 0.94rem; }
+    .r1-page .paper-tags, .r1-page .link-row { margin-top: 1rem; }
+    .r1-page .tag-pill, .r1-page .link-row a, .r1-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .r1-page .grid-2, .r1-page .grid-3, .r1-page .metric-grid, .r1-page .figure-grid, .r1-page .flow-grid { display: grid; gap: 1rem; }
+    .r1-page .grid-2, .r1-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .r1-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .r1-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .r1-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .r1-page .note-box, .r1-page .metric, .r1-page .table-wrap, .r1-page .figure-card, .r1-page .formula-box, .r1-page .flow-step, .r1-page .critique-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .r1-page .note-box, .r1-page .formula-box, .r1-page .flow-step, .r1-page .critique-box { padding: 1rem; }
+    .r1-page .note-box p, .r1-page .formula-box p, .r1-page .flow-step p, .r1-page .critique-box p { margin: 0.45rem 0 0; }
+    .r1-page .metric { padding: 1rem; }
+    .r1-page .metric strong { display: block; font-size: 1.5rem; line-height: 1.15; }
+    .r1-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .r1-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .r1-page .flow-step:nth-child(2) b { background: #6d5dfc; }
+    .r1-page .flow-step:nth-child(3) b { background: #c2410c; }
+    .r1-page .flow-step:nth-child(4) b { background: #0f766e; }
+    .r1-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .r1-page .formula-box .MathJax, .r1-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .r1-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .r1-page table { width: 100%; min-width: 780px; border-collapse: collapse; font-size: 0.9rem; }
+    .r1-page th, .r1-page td { padding: 0.72rem 0.75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .r1-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .r1-page td { color: var(--text-soft); }
+    .r1-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .r1-page .figure-card { margin: 0; overflow: hidden; }
+    .r1-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .r1-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .r1-page .figure-card figcaption strong { color: var(--text); }
+    .r1-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .r1-page .compact-list li { margin: 0.28rem 0; }
+    .r1-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .r1-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .r1-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .r1-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .r1-page .grid-2, .r1-page .grid-3, .r1-page .metric-grid, .r1-page .figure-grid, .r1-page .flow-grid { grid-template-columns: 1fr; }
+      .r1-page .paper-hero { padding-top: 2.4rem; }
+      .r1-page table { min-width: 700px; }
+    }
+  </style>
+</head>
+<body class="paper-page r1-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2501.12948v2</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> RLVR / Self-Evolution · arXiv 2025/2026 v2</div>
+      <h1>DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</h1>
+      <p class="hero-subtitle">DeepSeek-R1 的核心结论很直接：如果任务有可靠 verifier，LLM 的复杂推理能力可以通过大规模 reinforcement learning 从 base model 中被激励出来，而不必先用人工标注的 reasoning traces 规定模型应该怎样思考。R1-Zero 展示纯 RL 的“自发推理”，R1 则把 cold start、SFT、两阶段 RL 和 distillation 接成可用产品模型。</p>
+      <div class="meta-row">
+        <span>DeepSeek-AI · Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, et al.</span>
+        <span>Published: 2025-01-22</span>
+        <span>Updated: 2026-01-04</span>
+        <span>86 pages in source · rendered page set extracted locally</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">rlvr</span>
+        <span class="tag-pill">reasoning</span>
+        <span class="tag-pill">grpo</span>
+        <span class="tag-pill">distillation</span>
+        <span class="tag-pill">self-evolution</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2501.12948">arXiv</a>
+        <a href="https://arxiv.org/pdf/2501.12948">PDF</a>
+        <a href="https://doi.org/10.1038/s41586-025-09422-z">Nature DOI</a>
+        <a href="https://github.com/deepseek-ai/DeepSeek-R1">GitHub</a>
+        <a href="https://huggingface.co/deepseek-ai">Models</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>77.9%</strong><span>DeepSeek-R1-Zero AIME 2024 pass@1，从初始 15.6% 经纯 RL 提升到 77.9%。</span></div>
+        <div class="metric"><strong>79.8%</strong><span>DeepSeek-R1 AIME 2024 pass@1，MATH-500 达 97.3%，接近或超过公开报告的 o1 系列数字。</span></div>
+        <div class="metric"><strong>96.3%</strong><span>Codeforces percentile；R1 的 reasoning RL 对算法竞赛任务提升显著。</span></div>
+        <div class="metric"><strong>147K</strong><span>论文给出的总训练成本约 147K H800 GPU hours，按 $2/GPU hour 折算约 $294K。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机</h2>
+      <p class="section-lead">传统 reasoning post-training 很依赖人类写好的 chain-of-thought 或高质量 demonstrations。DeepSeek-R1 挑战这个路径：人类轨迹既贵，又会把模型锁进人类偏好的思考格式。作者要验证的是，给 base model 足够难的问题、可靠 reward 和足够算力，模型能不能自己探索出更强推理策略。</p>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>反 SFT 起点</h3>
+          <p>R1-Zero 绕过 conventional SFT，直接在 DeepSeek-V3-Base 上做 RL，避免先验 reasoning traces 限制探索。</p>
+        </div>
+        <div class="note-box">
+          <h3>可验证任务优先</h3>
+          <p>数学、代码、逻辑推理有 rule-based verifier，可以给准确 reward，避免 neural RM 在长程 RL 中被 reward hacking。</p>
+        </div>
+        <div class="note-box">
+          <h3>从能力到产品</h3>
+          <p>R1-Zero 强但可读性差、语言混杂；R1 用 cold start、SFT、preference reward 和 safety reward 把能力迁移到可用模型。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 方法：GRPO、奖励与多阶段训练</h2>
+      <p class="section-lead">论文的方法有两层：R1-Zero 用 GRPO + rule-based reward 观察纯 RL 能否诱发 reasoning；R1 再加入 cold start data、语言一致性 reward、rejection sampling、SFT 和第二阶段 mixed RL，使模型兼顾推理、通用对话、helpfulness 和 harmlessness。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-01-r1-zero-training.png" alt="DeepSeek-R1-Zero AIME accuracy and response length during RL" />
+          <figcaption><strong>Figure 1.</strong> R1-Zero 训练中 AIME accuracy 与平均 response length 同时上升，8.2k step 后最大长度从 32,768 提到 65,536，性能和长度出现跃迁。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-02-r1-pipeline.png" alt="DeepSeek-R1 multi-stage training pipeline" />
+          <figcaption><strong>Figure 2.</strong> R1 的多阶段 pipeline：R1-Zero 纯 RL；R1 经过 cold start long CoT SFT、reasoning RL、rejection sampling + SFT、最终 mixed RL。</figcaption>
+        </figure>
+      </div>
+
+      <div class="formula-box">
+        <h3>GRPO objective</h3>
+        <p>对每个问题 $q$，GRPO 从旧策略 $\pi_{\theta_{\mathrm{old}}}$ 采样一组输出 $\{o_i\}_{i=1}^{G}$，用组内 reward 标准化估计 advantage，而不是训练 value model。</p>
+        $$A_i=\frac{r_i-\mathrm{mean}(\{r_1,\ldots,r_G\})}{\mathrm{std}(\{r_1,\ldots,r_G\})}.$$
+        $$J_{\mathrm{GRPO}}(\theta)=\mathbb{E}\left[\frac{1}{G}\sum_{i=1}^{G}\left(\min\left(\rho_iA_i,\mathrm{clip}(\rho_i,1-\epsilon,1+\epsilon)A_i\right)-\beta D_{\mathrm{KL}}(\pi_\theta||\pi_{\mathrm{ref}})\right)\right],\quad \rho_i=\frac{\pi_\theta(o_i|q)}{\pi_{\theta_{\mathrm{old}}}(o_i|q)}.$$
+        <p>工程意义：GRPO 去掉 value model，节省大模型 RL 的显存和训练复杂度；代价是依赖同组样本 reward 的相对排序和稳定采样。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>Reward design</h3>
+        <p>R1-Zero 使用 rule-based reward，不使用 neural reward model。数学题用格式化答案校验，代码题用 compiler/test cases 校验，并加上格式 reward 让输出包含 <code>&lt;think&gt;</code> 和 <code>&lt;answer&gt;</code>。</p>
+        $$R_{\mathrm{rule}}=R_{\mathrm{acc}}+R_{\mathrm{format}}.$$
+        <p>R1 的第一阶段 RL 增加 language consistency reward，缓解中英混杂：</p>
+        $$R_{\mathrm{language}}=\frac{\mathrm{Num}(\mathrm{Words}_{\mathrm{target}})}{\mathrm{Num}(\mathrm{Words})}.$$
+        <p>第二阶段 mixed RL 合并 reasoning、general preference 和 language reward：</p>
+        $$R=R_{\mathrm{reasoning}}+R_{\mathrm{general}}+R_{\mathrm{language}},\quad R_{\mathrm{reasoning}}=R_{\mathrm{rule}},\quad R_{\mathrm{general}}=R_{\mathrm{reward\_model}}+R_{\mathrm{format}}.$$
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>训练信号</th>
+              <th>目的</th>
+              <th>关键参数/数据</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>R1-Zero</td>
+              <td>GRPO + rule-based accuracy/format reward</td>
+              <td>验证 base model 能否纯 RL 自发学会 reflection、verification、long CoT。</td>
+              <td>LR 3e-6，KL 0.001，temperature 1，G=16，batch 512，10,400 steps，1.6 epochs。</td>
+            </tr>
+            <tr>
+              <td>Cold start SFT</td>
+              <td>数千条人类友好 long CoT 数据</td>
+              <td>解决 R1-Zero 可读性差和语言混杂，为后续 RL 提供更好初始风格。</td>
+              <td>DeepSeek-V3-Base 上训练 conversational thinking process。</td>
+            </tr>
+            <tr>
+              <td>First RL</td>
+              <td>rule-based reward + language consistency reward</td>
+              <td>恢复并增强推理能力，同时约束目标语言一致性。</td>
+              <td>最大 32,768 tokens，clip ratio $\epsilon=10$，每 400 steps 更新 reference model。</td>
+            </tr>
+            <tr>
+              <td>Rejection sampling + SFT</td>
+              <td>reasoning 与 non-reasoning supervised data</td>
+              <td>让模型不仅会推理，还保留写作、问答、指令跟随和工程代码能力。</td>
+              <td>Appendix B.3.3 汇总约 800K supervised data。</td>
+            </tr>
+            <tr>
+              <td>Second RL</td>
+              <td>reasoning rule reward + helpful/safety reward models + language reward</td>
+              <td>最终对齐 helpfulness/harmlessness，同时微调 reasoning。</td>
+              <td>1,700 steps，最后 400 steps 引入 general instruction data 与 preference reward，temperature 降到 0.7。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-03-grpo-vs-ppo.png" alt="GRPO versus PPO diagram" />
+          <figcaption><strong>Figure 3.</strong> GRPO 不训练 value model，而用同一问题的多条输出 reward 做 group computation 来估计 advantage。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-05-rl-framework.png" alt="DeepSeek-R1 RL infrastructure" />
+          <figcaption><strong>Figure 5.</strong> RL framework 包括 rollout、reward、reference、policy 更新等模块；附录强调对不稳定节点和 rollout waste 的工程处理。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">实验覆盖通用知识、指令跟随、长文档、STEM、数学、代码竞赛、软件工程、中文能力、开放式偏好和安全。评估中特别强调：long-output reasoning model 不适合 greedy decoding，论文默认用 non-zero temperature 的 pass@k 估计 pass@1。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>评估设置</h3>
+          <ul class="compact-list">
+            <li>最大生成长度 32,768 tokens。</li>
+            <li>temperature 0.6，top-p 0.95。</li>
+            <li>AIME/GPQA 使用 $k=64$，MATH/Codeforces 使用 $k=16$，LiveCodeBench 使用 $k=8$。</li>
+            <li>AIME 还报告 cons@64 majority vote。</li>
+            <li>few-shot CoT 会伤害 R1，因此推荐 zero-shot 描述问题和输出格式。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>数据去污染</h3>
+          <p>DeepSeek-V3 base cutoff 是 2024 年 7 月；预训练和后训练数据用 10-gram 过滤 evaluation questions / reference solutions。数学域仅预训练去污染就移除约 600 万潜在文本。但作者也承认 n-gram 不能防 paraphrase contamination。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Benchmark</th>
+              <th>R1-Zero</th>
+              <th>R1</th>
+              <th>读法</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>MMLU-Pro</td><td>68.9</td><td>84.0</td><td>R1 的后续 SFT/RL 补足通用与 STEM 复杂题。</td></tr>
+            <tr><td>IF-Eval</td><td>46.6</td><td>83.3</td><td>纯 RL 不擅长按格式跟指令，多阶段训练显著修复。</td></tr>
+            <tr><td>GPQA Diamond</td><td>75.8</td><td>71.5</td><td>R1-Zero 反而略高，说明可读性/通用对齐可能牺牲部分纯 reasoning。</td></tr>
+            <tr><td>LiveCodeBench</td><td>50.0</td><td>65.9</td><td>代码推理受多阶段数据和 RL 明显增强。</td></tr>
+            <tr><td>Codeforces percentile</td><td>80.4</td><td>96.3</td><td>算法竞赛是 R1 最强展示之一。</td></tr>
+            <tr><td>SWE Verified</td><td>43.2</td><td>49.2</td><td>软件工程提升有限，作者归因于长评估时间限制 RL 覆盖。</td></tr>
+            <tr><td>AIME 2024</td><td>77.9</td><td>79.8</td><td>R1-Zero 已经很强，R1 更偏综合平衡。</td></tr>
+            <tr><td>MATH-500</td><td>95.9</td><td>97.3</td><td>可验证数学题上 rule-based RL 很有效。</td></tr>
+            <tr><td>ArenaHard</td><td>53.6</td><td>92.3</td><td>通用偏好对齐主要来自后续 SFT 和 preference RL。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">节选自 Table 3。完整表还包含 MMLU、DROP、SimpleQA、FRAMES、AlpacaEval、C-Eval、C-SimpleQA 等。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>项目</th>
+              <th>DeepSeek-R1-Zero</th>
+              <th>SFT data creation</th>
+              <th>DeepSeek-R1</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>H800 GPU hours</td><td>101K</td><td>5K</td><td>41K</td><td>147K</td></tr>
+            <tr><td>USD at $2/GPU hour</td><td>$202K</td><td>$10K</td><td>$82K</td><td>$294K</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">来自 Table 7。这个数字只覆盖论文列出的 RL/SFT 数据创建阶段，不应理解为完整预训练成本。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 结果与核心结论</h2>
+      <p class="section-lead">最重要的结论不是“R1 在某个榜单赢了”，而是三个结构性发现：纯 RL 可以诱发 long CoT 与自我反思；可靠 verifier 比人工 CoT 更可扩展；强模型的 reasoning traces 可以蒸馏到小模型。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Benchmark</th>
+              <th>DeepSeek-R1</th>
+              <th>OpenAI o1-1217</th>
+              <th>差异</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>MMLU</td><td>90.8</td><td>91.8</td><td>R1 略低。</td></tr>
+            <tr><td>GPQA Diamond</td><td>71.5</td><td>75.7</td><td>R1 仍低于 o1；论文认为 web access 可能缩小差距。</td></tr>
+            <tr><td>LiveCodeBench</td><td>65.9</td><td>63.4</td><td>R1 略高。</td></tr>
+            <tr><td>Codeforces percentile</td><td>96.3</td><td>96.6</td><td>非常接近。</td></tr>
+            <tr><td>SWE Verified</td><td>49.2</td><td>48.9</td><td>接近。</td></tr>
+            <tr><td>Aider-Polyglot</td><td>53.3</td><td>61.7</td><td>R1 明显低，软件工程仍是短板。</td></tr>
+            <tr><td>AIME 2024</td><td>79.8</td><td>79.2</td><td>R1 略高。</td></tr>
+            <tr><td>MATH-500</td><td>97.3</td><td>96.4</td><td>R1 略高。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">节选自 Table 8。OpenAI o1-1217 数字来自官方报告，论文说明在中国大陆访问 API 困难，因此直接引用官方结果。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Aha moment 的真实含义</h3>
+          <p>Table 2 中模型在推理中突然说 “Wait, wait. That’s an aha moment I can flag here.” 不是因为被显式教了 reflection，而是在 verifier 奖励下，模型发现重新检查、延长思考、探索替代路线能提高最终正确率。</p>
+        </div>
+        <div class="critique-box warn">
+          <h3>R1-Zero 到 R1 的 tradeoff</h3>
+          <p>R1-Zero 是最纯粹的 RL 证据，但语言混杂、可读性和通用任务差。R1 是工程折中：用 cold start/SFT/RM 修复产品形态，同时保留大部分 reasoning 能力。</p>
+        </div>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/table-08-main-results-a.png" alt="Table 8 main comparison with frontier models" />
+          <figcaption><strong>Table 8.</strong> R1 与 Claude、GPT-4o、DeepSeek-V3、o1-mini、o1-1217 的主结果比较。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-10-human-comparison.png" alt="DeepSeek-R1 compared with human scores on AIME, Codeforces, GPQA" />
+          <figcaption><strong>Figure 10.</strong> R1 在 AIME 和 Codeforces 上超过平均人类参赛者；GPQA 上仍低于有 web access 的 PhD-level human experts。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">本页保留 10 张关键图页截图，覆盖训练曲线、pipeline、主结果、GRPO/PPO、训练成本、distillation、跨模型比较。</p>
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/table-03-stage-results.png" alt="Table 3 stage results of DeepSeek-R1" />
+          <figcaption><strong>Table 3.</strong> R1-Zero、Dev1/2/3、R1 各阶段指标，能直接看出 cold start/SFT/RL 各自补了什么。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-06-distillation.png" alt="Table 6 distillation models" />
+          <figcaption><strong>Table 6.</strong> 蒸馏模型对应 base model 和初始学习率，覆盖 Qwen 1.5B/7B/14B/32B 与 Llama 8B/70B。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-07-cost-lc-reward.png" alt="Table 7 training cost and language consistency reward" />
+          <figcaption><strong>Table 7 / Figure 7.</strong> 训练成本与 language consistency reward ablation：LC reward 提升语言一致性，但 coding benchmark 略降。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-12-v3-r1-comparison.png" alt="Table 12 DeepSeek-V3 and R1 comparison" />
+          <figcaption><strong>Table 12.</strong> V3-Base、V3、R1-Zero、R1 对比：R1 的增益主要集中在 STEM、math、code 和部分长文档任务。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">严格复现 R1 需要 DeepSeek-V3-Base、reasoning prompts、verifier、RL infrastructure 和大规模 H800 集群。开源权重有助于研究推理行为，但训练流水线并非完全可复现。</p>
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>可复现/可核对</h3>
+          <ul class="compact-list">
+            <li>下载 DeepSeek-R1、R1-Zero 和 distilled models，复跑 AIME、MATH-500、GPQA、LiveCodeBench 等公开评测。</li>
+            <li>按 Appendix D 使用 zero-shot prompt，避免 few-shot CoT 损害 R1。</li>
+            <li>用 temperature 0.6、top-p 0.95、max 32,768 tokens 和 pass@k 估计 pass@1。</li>
+            <li>复核 distillation：用 R1 生成 reasoning data 对 Qwen/Llama base model SFT 2-3 epochs。</li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <h3>难以完整复现</h3>
+          <ul class="compact-list">
+            <li>DeepSeek-V3-Base 的完整预训练数据、过滤细节和 MoE 训练栈不可完全复刻。</li>
+            <li>RL prompts、hard reasoning set、verifier 实现和数据选择策略只部分披露。</li>
+            <li>147K H800 GPU hours 对多数实验室仍是高门槛。</li>
+            <li>安全系统依赖额外 risk control pipeline，裸模型与服务模型安全性不同。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">这篇论文的贡献非常强，但也要清楚它证明的是“可验证任务上的大规模 RL 能激励 reasoning”，不是“所有任务都能纯 RL 解决”。</p>
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>优点</h3>
+          <ul class="compact-list">
+            <li>R1-Zero 是少见的大规模纯 RL 证据，清楚展示了 long CoT、reflection 和 self-verification 的自发出现。</li>
+            <li>GRPO 去掉 value model，适合大模型 RL 工程约束。</li>
+            <li>论文公开了大量训练超参、成本、distillation 设置、评测设置和 limitations。</li>
+            <li>R1 把能力研究与产品可用性连接起来，承认 R1-Zero 的语言混杂和可读性问题。</li>
+          </ul>
+        </div>
+        <div class="critique-box danger">
+          <h3>不足</h3>
+          <ul class="compact-list">
+            <li>最关键的数据选择、verifier、RL infra 和采样策略仍然不足以让外部完全复现。</li>
+            <li>主要成功集中在可验证任务，对写作、开放问答、工具使用和软件工程的纯 RL 路径仍不充分。</li>
+            <li>reward hacking 的风险被观察到，但缺少更系统的 mitigation 实验。</li>
+            <li>安全报告显示裸 R1 仍有明显风险，服务级安全依赖外部 risk control。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="critique-box warn" style="margin-top: 1rem;">
+        <h3>我会补的实验</h3>
+        <p>加入 verifier quality ablation、hardness/diversity 数据选择 ablation、GRPO group size ablation、long-CoT token efficiency 约束、tool-use RL 环境，以及对 reward hacking 的在线检测与惩罚机制。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对研究的启发</h2>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>RLVR</h3>
+          <p>核心不是“让模型输出更长”，而是构建可靠 verifier 和足够难的 prompt distribution，让长推理成为提高 reward 的手段。</p>
+        </div>
+        <div class="note-box">
+          <h3>自进化</h3>
+          <p>R1-Zero 说明 self-evolution 需要可验证反馈闭环。没有可靠 reward，模型容易 reward hacking 或只学会讨好 RM。</p>
+        </div>
+        <div class="note-box">
+          <h3>Agent / Tool Use</h3>
+          <p>论文明确把 structure output 和 tool use 列为未来方向。下一步应把 compiler、search、calculator、simulator 变成 RL environment。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
