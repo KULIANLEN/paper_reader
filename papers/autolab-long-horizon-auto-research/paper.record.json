@@ -1,0 +1,57 @@
+{
+  "id": "2606.05080",
+  "slug": "autolab-long-horizon-auto-research",
+  "title": "AutoLab: Can Frontier Models Solve Long-Horizon Auto Research and Engineering Tasks?",
+  "titleZh": "AutoLab：前沿模型能否完成长时程自动研究与工程任务？",
+  "authors": [
+    "Zhangchen Xu",
+    "Junda Chen",
+    "Yue Huang",
+    "Dongfu Jiang",
+    "Jiefeng Chen",
+    "Hang Hua",
+    "Zijian Wu",
+    "Zheyuan Liu",
+    "Zexue He",
+    "Lichi Li",
+    "Shizhe Diao",
+    "Jiaxin Pei",
+    "Jinsung Yoon",
+    "Hao Zhang",
+    "Mengdi Wang",
+    "Radha Poovendran",
+    "Misha Sra",
+    "Alex Pentland",
+    "Zichen Chen"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Evaluation / Benchmark",
+  "tags": [
+    "agent",
+    "benchmark",
+    "evaluation",
+    "long-horizon",
+    "tool-use",
+    "systems"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "AUTOLAB 将自动研究与工程能力建模为数小时的 closed-loop optimization：agent 从正确但低效的 baseline 出发，在固定 wall-clock budget 内反复 benchmark、edit、evaluate 和提交。论文构造 36 个跨 system optimization、puzzle、model development、CUDA 的任务，并评测 17 个 frontier models；最关键结论是 persistence、time awareness 和 empirical feedback use 比初始一次性方案质量更能解释最终成绩。",
+  "takeaways": [
+    "长时程 agent 评测应同时记录 Avg@k、Best@k、stability、runtime、token/cost 与 failure modes，不能只报最终 pass rate。",
+    "harness design 会显著改变模型排名和成本曲线；做 RLVR、自进化或 tool-use agent 时应把 harness lineage 和 best-so-far submission policy 当作一等变量。"
+  ],
+  "arxivId": "2606.05080",
+  "paperUrl": "https://arxiv.org/abs/2606.05080",
+  "pdfUrl": "https://arxiv.org/pdf/2606.05080",
+  "pageUrl": "papers/autolab-long-horizon-auto-research/index.html",
+  "codeUrl": "https://github.com/autolabhq/autolab",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文提供代码、网站和完整 benchmark 释放声明，PDF 给出评分公式、anchors、gates、模型列表和硬件摘要；完整复现仍依赖仓库 task artifacts、exact harness/API versions、长时程 GPU/CPU 资源和人工 failure annotation。"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "2606.02113",
+  "slug": "post-training-reasoning-data-primer",
+  "title": "A Primer in Post-Training Reasoning Data: What We Know About How It Works",
+  "titleZh": "后训练推理数据入门：我们已知它如何发挥作用",
+  "authors": [
+    "Yaoming Li",
+    "Guangxiang Zhao",
+    "Qilong Shi",
+    "Lin Sun",
+    "Xiangzheng Zhang",
+    "Tong Yang"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Survey / Position",
+  "tags": [
+    "reasoning",
+    "post-training",
+    "rlvr",
+    "evaluation",
+    "verifier",
+    "data-quality"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "这篇 primer 综合 150+ 公开研究与系统报告，主张 post-training reasoning data 应被视为带 verifier、feedback、trajectory 和 lineage 的证据对象，而不是简单 prompt-response pair。论文给出 verification contract、quality support、construction ledger 与 scaling attribution 四层框架，用来判断 reasoning model 的提升到底来自数据、verifier、base、scaffold 还是 inference budget。",
+  "takeaways": [
+    "reasoning-data release 应披露 verifier version、base-conditioned difficulty、trace author、lineage、budget 和 replay 信息，否则 reported gain 难以归因。",
+    "agent/tool trajectory 应作为 replayable episodes 发布，保留 failed actions、state diffs、recoveries 和 terminal predicates，而不是只给 clean success transcript。",
+    "scaling claim 需要区分 reachable ceiling、approach efficiency 和 measurement surface，不能把更多 test-time compute 或 verifier refresh 直接解释为模型能力提升。"
+  ],
+  "arxivId": "2606.02113",
+  "paperUrl": "https://arxiv.org/abs/2606.02113",
+  "pdfUrl": "https://arxiv.org/pdf/2606.02113.pdf",
+  "pageUrl": "papers/post-training-reasoning-data-primer/index.html",
+  "codeUrl": "https://github.com/RenBing-Sumeru/Awesome-LLM-Reasoning-Data",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文是 survey/primer，没有新训练实验或统一 benchmark 可复现；PDF、项目仓库、图表、纳入标准、source-placement logic 与 agent trajectory audit fields 可复核。完整结构化 source table、formal meta-analysis protocol 和 closed pipeline details 未提供。"
+  }
+}

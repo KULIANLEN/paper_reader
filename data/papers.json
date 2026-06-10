@@ -699,6 +699,244 @@
         "level": "low",
         "notes": "PDF 给出 EFC/NRS-EFC/D_task 公式、任务层、harness roles 与主要结果，但未提供代码链接、完整 prompts、预算网格、task IDs、random seeds 或 estimator 训练超参数；可复现实验框架，逐数值复现需要作者实现细节。"
       }
+    },
+    {
+      "id": "2606.05080",
+      "slug": "autolab-long-horizon-auto-research",
+      "title": "AutoLab: Can Frontier Models Solve Long-Horizon Auto Research and Engineering Tasks?",
+      "titleZh": "AutoLab：前沿模型能否完成长时程自动研究与工程任务？",
+      "authors": [
+        "Zhangchen Xu",
+        "Junda Chen",
+        "Yue Huang",
+        "Dongfu Jiang",
+        "Jiefeng Chen",
+        "Hang Hua",
+        "Zijian Wu",
+        "Zheyuan Liu",
+        "Zexue He",
+        "Lichi Li",
+        "Shizhe Diao",
+        "Jiaxin Pei",
+        "Jinsung Yoon",
+        "Hao Zhang",
+        "Mengdi Wang",
+        "Radha Poovendran",
+        "Misha Sra",
+        "Alex Pentland",
+        "Zichen Chen"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Evaluation / Benchmark",
+      "tags": [
+        "agent",
+        "benchmark",
+        "evaluation",
+        "long-horizon",
+        "tool-use",
+        "systems"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "AUTOLAB 将自动研究与工程能力建模为数小时的 closed-loop optimization：agent 从正确但低效的 baseline 出发，在固定 wall-clock budget 内反复 benchmark、edit、evaluate 和提交。论文构造 36 个跨 system optimization、puzzle、model development、CUDA 的任务，并评测 17 个 frontier models；最关键结论是 persistence、time awareness 和 empirical feedback use 比初始一次性方案质量更能解释最终成绩。",
+      "takeaways": [
+        "长时程 agent 评测应同时记录 Avg@k、Best@k、stability、runtime、token/cost 与 failure modes，不能只报最终 pass rate。",
+        "harness design 会显著改变模型排名和成本曲线；做 RLVR、自进化或 tool-use agent 时应把 harness lineage 和 best-so-far submission policy 当作一等变量。"
+      ],
+      "arxivId": "2606.05080",
+      "paperUrl": "https://arxiv.org/abs/2606.05080",
+      "pdfUrl": "https://arxiv.org/pdf/2606.05080",
+      "pageUrl": "papers/autolab-long-horizon-auto-research/index.html",
+      "codeUrl": "https://github.com/autolabhq/autolab",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文提供代码、网站和完整 benchmark 释放声明，PDF 给出评分公式、anchors、gates、模型列表和硬件摘要；完整复现仍依赖仓库 task artifacts、exact harness/API versions、长时程 GPU/CPU 资源和人工 failure annotation。"
+      }
+    },
+    {
+      "id": "2605.30785",
+      "slug": "agent-compatible-context-management",
+      "title": "Learning Agent-Compatible Context Management for Long-Horizon Tasks",
+      "titleZh": "面向长程任务的 Agent 兼容上下文管理学习",
+      "authors": [
+        "Lu Yi",
+        "Runlin Lei",
+        "Liuyi Yao",
+        "Yuexiang Xie",
+        "Yuyang Li",
+        "Wenhao Zhang",
+        "Zhewei Wei",
+        "Yaliang Li",
+        "Jian-Yun Nie"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "tool-use",
+        "long-context",
+        "reasoning",
+        "grpo",
+        "evaluation"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "论文提出 AdaCoM，用外部 Qwen3-4B-Instruct context manager 为 frozen long-horizon agents 学习上下文删除、重写、合并和保留策略。它在 BrowseComp-Plus 与 MCP-Bench-Wiki 上稳定提升多种 agent，并揭示强 agent 更需要高保真保留、弱 agent 更需要激进压缩的 Fidelity-Reliability Trade-off。",
+      "takeaways": [
+        "Context management 应该按目标 agent 的能力和 reasoning style 学习，而不是固定 summarization。",
+        "长程 agent 的过程奖励可以直接来自轨迹规则，如重复 tool call、超长上下文、格式错误和关键文档检索。"
+      ],
+      "arxivId": "2605.30785",
+      "paperUrl": "https://arxiv.org/abs/2605.30785",
+      "pdfUrl": "https://arxiv.org/pdf/2605.30785",
+      "pageUrl": "papers/agent-compatible-context-management/index.html",
+      "codeUrl": "https://anonymous.4open.science/r/AdaCoM-8864/",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文附录给出主要超参、process rewards、prompts、tool set 和数据构造流程，并声称 code/data 可用；但数值级复现仍需确认 benchmark 版本、closed-source API 模型版本、judge 配置和作者仓库细节。"
+      }
+    },
+    {
+      "id": "2605.27734",
+      "slug": "learn-from-your-own-latents",
+      "title": "Learn from your own latents and not from tokens: A sample-complexity theory",
+      "titleZh": "从自己的潜变量而非 token 学习：一个样本复杂度理论",
+      "authors": [
+        "Daniel J. Korchinski",
+        "Alessandro Favero",
+        "Matthieu Wyart"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Reasoning",
+      "tags": [
+        "self-supervised-learning",
+        "latent-prediction",
+        "sample-complexity",
+        "data2vec",
+        "hierarchical-representations",
+        "theory"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "论文在 Random Hierarchy Model 上证明，使用模型自己的同层 latent 作为监督目标，可以把恢复非 root 层级潜变量的样本复杂度从 token-level SSL 的深度指数依赖降到近似 v m^3。作者用 Iterative Latent Clustering、可微 Stacked Latent-Clustering 和 data2vec 实验支持该理论，并指出单个 data2vec 可能已经隐式执行多尺度 latent prediction。",
+      "takeaways": [
+        "latent prediction 的关键收益来自把 prediction target 提升到同一抽象层，减少 token descendant channel 对相关性的稀释。",
+        "data2vec 的 EMA teacher target 可被理解为递归携带已学 latent，从而逐层触发同样的 cousin-tuple clustering。",
+        "对 agent/RLVR replay，值得把监督对象从 final answer token 提升到 plan/state/tool-result latent，并用 synonym-swap 几何指标评估不变量学习。"
+      ],
+      "arxivId": "2605.27734",
+      "paperUrl": "https://arxiv.org/abs/2605.27734",
+      "pdfUrl": "https://arxiv.org/pdf/2605.27734.pdf",
+      "pageUrl": "papers/learn-from-your-own-latents/index.html",
+      "codeUrl": "",
+      "repro": {
+        "available": false,
+        "level": "medium",
+        "notes": "未在 arXiv 页面发现官方代码链接；RHM、ILC、SLC、data2vec 超参数与算力信息较完整，但 data2vec 约需 1000 H100 hours，完整复现成本高。"
+      }
+    },
+    {
+      "id": "2606.02113",
+      "slug": "post-training-reasoning-data-primer",
+      "title": "A Primer in Post-Training Reasoning Data: What We Know About How It Works",
+      "titleZh": "后训练推理数据入门：我们已知它如何发挥作用",
+      "authors": [
+        "Yaoming Li",
+        "Guangxiang Zhao",
+        "Qilong Shi",
+        "Lin Sun",
+        "Xiangzheng Zhang",
+        "Tong Yang"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Survey / Position",
+      "tags": [
+        "reasoning",
+        "post-training",
+        "rlvr",
+        "evaluation",
+        "verifier",
+        "data-quality"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "这篇 primer 综合 150+ 公开研究与系统报告，主张 post-training reasoning data 应被视为带 verifier、feedback、trajectory 和 lineage 的证据对象，而不是简单 prompt-response pair。论文给出 verification contract、quality support、construction ledger 与 scaling attribution 四层框架，用来判断 reasoning model 的提升到底来自数据、verifier、base、scaffold 还是 inference budget。",
+      "takeaways": [
+        "reasoning-data release 应披露 verifier version、base-conditioned difficulty、trace author、lineage、budget 和 replay 信息，否则 reported gain 难以归因。",
+        "agent/tool trajectory 应作为 replayable episodes 发布，保留 failed actions、state diffs、recoveries 和 terminal predicates，而不是只给 clean success transcript。",
+        "scaling claim 需要区分 reachable ceiling、approach efficiency 和 measurement surface，不能把更多 test-time compute 或 verifier refresh 直接解释为模型能力提升。"
+      ],
+      "arxivId": "2606.02113",
+      "paperUrl": "https://arxiv.org/abs/2606.02113",
+      "pdfUrl": "https://arxiv.org/pdf/2606.02113.pdf",
+      "pageUrl": "papers/post-training-reasoning-data-primer/index.html",
+      "codeUrl": "https://github.com/RenBing-Sumeru/Awesome-LLM-Reasoning-Data",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文是 survey/primer，没有新训练实验或统一 benchmark 可复现；PDF、项目仓库、图表、纳入标准、source-placement logic 与 agent trajectory audit fields 可复核。完整结构化 source table、formal meta-analysis protocol 和 closed pipeline details 未提供。"
+      }
+    },
+    {
+      "id": "2606.02373",
+      "slug": "harness-1-state-externalizing-harnesses",
+      "title": "Harness-1: Reinforcement Learning for Search Agents with State-Externalizing Harnesses",
+      "titleZh": "Harness-1：用状态外置 harness 训练搜索代理",
+      "authors": [
+        "Pengcheng Jiang",
+        "Zhiyi Shi",
+        "Kelly Hong",
+        "Xueqiang Xu",
+        "Jiashuo Sun",
+        "Jimeng Sun",
+        "Hammad Bashir",
+        "Jiawei Han"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "tool-use",
+        "reasoning",
+        "rlvr",
+        "retrieval",
+        "evaluation"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "Harness-1 将多轮搜索中的候选池、curated set、证据图、验证记录和预算渲染外置到 stateful harness，让 20B policy 专注于搜索、读取、curate、verify 和停止决策。论文在八个检索 benchmark 上达到 0.730 average curated recall，超过下一强 open search subagent 11.4 个点，并在 held-out transfer benchmarks 上取得更大的增益。关键价值在于把 harness design 作为 retrieval-agent RL 的核心方法，而不是实现细节。",
+      "takeaways": [
+        "Agent RL 不应只调 reward，必须先设计 policy 可操作的显式 state 和稳定 renderer。",
+        "Trajectory Recall 与 Curated Recall 的差距能区分 discovery gap 与 selection/curation gap。",
+        "Diversity reward 和 auto-seeded curation 能降低长 horizon search RL 的工具坍缩风险。"
+      ],
+      "arxivId": "2606.02373",
+      "paperUrl": "https://arxiv.org/abs/2606.02373",
+      "pdfUrl": "https://arxiv.org/pdf/2606.02373.pdf",
+      "pageUrl": "papers/harness-1-state-externalizing-harnesses/index.html",
+      "codeUrl": "https://github.com/pat-jj/harness-1",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文给出工具签名、reward 权重、SFT/RL 超参数、benchmark 统计、working-memory 渲染、算法伪代码和 prompts，并在摘要中声明代码可用；本次构建未验证 GitHub 仓库、模型权重、外部检索服务或训练环境是否完整可用。"
+      }
     }
   ]
 }

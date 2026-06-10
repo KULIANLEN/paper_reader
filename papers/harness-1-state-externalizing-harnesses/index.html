@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Harness-1: Reinforcement Learning for Search Agents with State-Externalizing Harnesses · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    .paper-page {
+      background:
+        linear-gradient(135deg, rgba(10, 132, 255, 0.10), transparent 34%),
+        linear-gradient(225deg, rgba(0, 168, 134, 0.10), transparent 36%),
+        linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 54%, var(--bg) 100%);
+    }
+
+    .site-ambient {
+      display: none;
+    }
+
+    .paper-article {
+      width: min(calc(100% - 34px), 1180px);
+    }
+
+    .topbar,
+    .paper-hero h1,
+    .content-card h2,
+    .content-card h3 {
+      letter-spacing: 0;
+    }
+
+    .topnav {
+      flex-wrap: wrap;
+    }
+
+    .paper-hero {
+      padding: 3.2rem 0 1.35rem;
+    }
+
+    .paper-hero h1 {
+      max-width: 1060px;
+      font-size: clamp(2.15rem, 4.4vw, 4.1rem);
+      line-height: 1.06;
+    }
+
+    .paper-hero p {
+      max-width: 930px;
+      font-size: 1.08rem;
+      line-height: 1.75;
+    }
+
+    .hero-meta,
+    .contribution-strip,
+    .metric-row,
+    .two-col,
+    .three-col,
+    .figure-grid,
+    .check-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .hero-meta {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 1.35rem 0;
+    }
+
+    .hero-meta div,
+    .contribution-strip article,
+    .mini-panel,
+    .figure-card,
+    .note-box {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--surface-strong) 86%, transparent);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero-meta div {
+      min-height: 104px;
+      padding: 0.9rem 1rem;
+    }
+
+    .hero-meta strong,
+    .mini-panel strong,
+    .note-box strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+
+    .hero-meta span,
+    .mini-panel span {
+      display: block;
+      margin-top: 0.28rem;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .paper-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1.3rem;
+    }
+
+    .contribution-strip {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 1rem 0 1.65rem;
+    }
+
+    .contribution-strip article {
+      padding: 1rem;
+    }
+
+    .contribution-strip h2 {
+      margin: 0 0 0.45rem;
+      font-size: 1.02rem;
+      line-height: 1.42;
+    }
+
+    .contribution-strip p,
+    .mini-panel p,
+    .figure-card p,
+    .note-box p {
+      margin: 0;
+      color: var(--text-soft);
+      line-height: 1.78;
+    }
+
+    .content-card {
+      border-radius: 22px;
+    }
+
+    .content-card h2 {
+      font-size: 1.72rem;
+      line-height: 1.28;
+    }
+
+    .content-card h3 {
+      margin: 1.45rem 0 0.65rem;
+      font-size: 1.16rem;
+      line-height: 1.45;
+    }
+
+    .lead {
+      color: var(--text);
+      font-size: 1.05rem;
+      line-height: 1.86;
+    }
+
+    .metric-row {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 1rem 0;
+    }
+
+    .metric {
+      padding: 0.88rem 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1.66rem;
+      line-height: 1.18;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+
+    .two-col {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .three-col {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .mini-panel,
+    .note-box {
+      padding: 1rem;
+      box-shadow: none;
+    }
+
+    .note-box {
+      margin: 1rem 0;
+    }
+
+    .table-wrap {
+      width: 100%;
+      margin: 1rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--surface-strong) 78%, transparent);
+    }
+
+    table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th,
+    td {
+      padding: 0.62rem 0.68rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--text);
+      font-weight: 760;
+      background: rgba(127, 127, 140, 0.08);
+    }
+
+    td {
+      color: var(--text-soft);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .best {
+      color: var(--success);
+      font-weight: 760;
+    }
+
+    .warn {
+      color: var(--warning);
+      font-weight: 720;
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-size: 0.92em;
+    }
+
+    .formula {
+      margin: 1rem 0;
+      padding: 1rem;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(127, 127, 140, 0.08);
+    }
+
+    .figure-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin: 1rem 0;
+    }
+
+    .figure-card {
+      overflow: hidden;
+    }
+
+    .figure-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: white;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .figure-card figcaption {
+      padding: 0.9rem 1rem 1rem;
+      color: var(--text-soft);
+      line-height: 1.7;
+      font-size: 0.92rem;
+    }
+
+    .check-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .check-grid li,
+    .content-card li {
+      margin-bottom: 0.56rem;
+      color: var(--text-soft);
+      line-height: 1.78;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 0.9rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .pill-list li {
+      margin: 0;
+      padding: 0.46rem 0.66rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text-soft);
+      background: rgba(127, 127, 140, 0.08);
+      font-size: 0.86rem;
+      line-height: 1.25;
+    }
+
+    .caption-note {
+      margin-top: 0.7rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 960px) {
+      .hero-meta,
+      .contribution-strip,
+      .metric-row,
+      .two-col,
+      .three-col,
+      .figure-grid,
+      .check-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .paper-hero h1 {
+        font-size: 2.35rem;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        border-radius: 22px;
+        align-items: flex-start;
+      }
+
+      .topnav {
+        justify-content: flex-start;
+      }
+
+      th,
+      td {
+        padding: 0.56rem 0.58rem;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body class="paper-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>arXiv:2606.02373</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+      <a href="#takeaways">启发</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero">
+      <div class="eyebrow"><span></span> Agent / Tool Use · RLVR / Self-Evolution · 2026</div>
+      <h1>Harness-1: Reinforcement Learning for Search Agents with State-Externalizing Harnesses</h1>
+      <p>
+        这篇论文的核心主张是：不要把多轮 search agent 的候选池、证据关系、验证记录和上下文预算都压回 LLM transcript，
+        而是让 harness 维护可恢复的搜索状态，policy 只学习搜索、curate、verify 和 stop 等语义决策。
+      </p>
+      <div class="paper-tags">
+        <span>stateful harness</span>
+        <span>search agent</span>
+        <span>CISPO RL</span>
+        <span>retrieval evaluation</span>
+        <span>modular RAG</span>
+      </div>
+      <div class="hero-meta">
+        <div><strong>作者</strong><span>Pengcheng Jiang, Zhiyi Shi, Kelly Hong, Xueqiang Xu, Jiashuo Sun, Jimeng Sun, Hammad Bashir, Jiawei Han</span></div>
+        <div><strong>机构</strong><span>University of Illinois at Urbana-Champaign；UC Berkeley；Chroma</span></div>
+        <div><strong>版本</strong><span>arXiv:2606.02373v1, 2026-06-01, cs.AI / cs.CL / cs.IR</span></div>
+        <div><strong>代码</strong><span>论文摘要声明代码位于 github.com/pat-jj/harness-1；本次构建未额外验证仓库内容。</span></div>
+      </div>
+      <div class="paper-actions">
+        <a class="primary-button" href="https://arxiv.org/abs/2606.02373">arXiv Abs</a>
+        <a class="secondary-button" href="https://arxiv.org/pdf/2606.02373.pdf">PDF</a>
+        <a class="ghost-button" href="https://github.com/pat-jj/harness-1">Code</a>
+      </div>
+    </section>
+
+    <section class="content-card" id="overview">
+      <h2>论文速览 / TL;DR</h2>
+      <p class="lead">
+        Harness-1 是一个基于 <span class="mono">gpt-oss-20b</span> 的 20B retrieval subagent。它把 search episode 写成
+        state-machine：harness 维护候选池、curated set、importance tags、full-text store、evidence graph、verification cache、
+        search history 和 budget marker；policy 每轮只发一个 structured action，编辑这个显式状态。
+      </p>
+      <div class="metric-row">
+        <div class="metric"><strong>0.730</strong><span>八个 benchmark 的平均 curated recall，论文主指标。</span></div>
+        <div class="metric"><strong>+11.4 pts</strong><span>相对下一强 open search subagent Tongyi DeepResearch 30B 的平均 curated recall 提升。</span></div>
+        <div class="metric"><strong>+17.0 pts</strong><span>held-out transfer benchmarks 相对 Context-1 的平均 recall gain。</span></div>
+        <div class="metric"><strong>899</strong><span>过滤后的 SFT teacher trajectories；RL 只在 SEC train split 上做。</span></div>
+      </div>
+      <div class="contribution-strip">
+        <article>
+          <h2>1. Harness 是方法本体</h2>
+          <p>论文把 agent interface \(I=(A,O,T,r)\) 视为可设计对象，而不是固定 tool wrapper。</p>
+        </article>
+        <article>
+          <h2>2. 状态外置</h2>
+          <p>机械 bookkeeping 由环境维护，policy 保留“搜索什么、读什么、保留什么、验证什么”的语义决策。</p>
+        </article>
+        <article>
+          <h2>3. 可训练性要求</h2>
+          <p>提出 warm-started curation、compact derived-state rendering、diversity-preserving incentives 三个条件。</p>
+        </article>
+        <article>
+          <h2>4. 结果指向迁移</h2>
+          <p>held-out transfer 增益大于 source-family 增益，说明学到的是状态操作策略而不只是领域 replay。</p>
+        </article>
+      </div>
+      <div class="note-box">
+        <strong>一句话 thesis</strong>
+        <p>在 retrieval-agent RL 中，显式 search state 可以降低 policy 的记忆负担，让 RL 学会更稳定的 evidence collection、curation 和 verification 行为。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>研究动机</h2>
+      <p>
+        传统 search agent 往往是“LLM + retrieval tools + growing transcript”。这会让同一个 policy 同时承担两类工作：
+        一类是语义决策，比如下一步搜哪个约束、是否读取某个 document、是否需要 verify；另一类是可恢复的 bookkeeping，
+        比如哪些文档看过、哪些候选值得保留、哪些实体在多个文档中桥接、还剩多少 context budget。
+      </p>
+      <p>
+        论文认为第二类工作不应占用 policy 的优化预算。对 RL 尤其如此：hard query 初期可能都是 empty curated set，reward 难以区分失败原因；
+        tool vocabulary 变大后，policy 可能坍缩为反复 search；跨文档结构虽然存在于 transcript 中，但过于分散，难以稳定利用。
+      </p>
+      <div class="two-col">
+        <div class="mini-panel">
+          <strong>作者要解决的问题</strong>
+          <p>把 search agent 的长期工作记忆从 append-only transcript 变成可编辑、可渲染、可训练的环境状态。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>为什么现在重要</strong>
+          <p>RLVR / agentic search 越来越依赖长 horizon、多工具和稀疏终局 reward；没有良好的 harness，RL 容易优化到搜索数量而非证据质量。</p>
+        </div>
+      </div>
+      <h3>和 Context-1 / Search-R1 的差异</h3>
+      <p>
+        Context-1 已经把 context management 作为搜索过程的一部分；Search-R1 等工作训练 LLM interleave reasoning and search。
+        Harness-1 的更强主张是：interface 本身应承担可恢复状态，policy 在这个 state representation 上学习，而不是在 raw transcript 上重建状态。
+      </p>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>数学表示、建模与算法流程</h2>
+      <p class="lead">
+        Harness-1 的核心抽象是将工具调用从单步 text observation 改写为显式 state transition。工具结果不会只追加到 prompt，
+        而会更新 working memory；下一轮 prompt 渲染的是压缩后的状态摘要。
+      </p>
+
+      <h3>状态变量</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>符号</th><th>含义</th><th>harness 维护什么</th><th>policy 仍决定什么</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>\(P_t\)</td><td>candidate pool</td><td>压缩、去重后的候选文档池</td><td>读哪些、检查哪些、curate 哪些</td></tr>
+            <tr><td>\(C_t, I_t\)</td><td>curated set 与 importance map</td><td>最多 30 个文档，四级 importance，capacity eviction</td><td>add/remove/promote/demote 哪些文档</td></tr>
+            <tr><td>\(D_t\)</td><td>full-text store</td><td>所有已检索 chunk 的完整文本，不全部塞进 prompt</td><td>哪些已见文档需要 read/review</td></tr>
+            <tr><td>\(G_t\)</td><td>evidence graph</td><td>regex 抽取 entity/year/date，维护 entity-document bridges</td><td>追踪哪个 bridge、singleton 或 relation</td></tr>
+            <tr><td>\(V_t\)</td><td>verification cache</td><td>claim-to-doc yes/no 与 rationale</td><td>写什么 claim、检查哪些 doc</td></tr>
+            <tr><td>\(H_t, B_t\)</td><td>search history 与 budget marker</td><td>工具历史、结果摘要、上下文预算</td><td>何时 diversify、backtrack、stop</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>从 tool wrapper 到 stateful harness</h3>
+      <div class="formula">
+        $$I=(A,O,T,r), \qquad s_t=(P_t,C_t,I_t,D_t,G_t,V_t,H_t,B_t)$$
+        $$\text{thin tool wrapper: } a_t \mapsto o_{t+1}$$
+        $$\text{Harness-1: } (s_t,a_t)\mapsto(s_{t+1},o_{t+1})$$
+        $$\max_{\theta}\mathbb{E}\left[R(\pi_{\theta}; I_{\mathrm{Harness\text{-}1}})\right]$$
+      </div>
+      <p>
+        这个转变使 policy 不必从历史文本里重新推断“候选池中有什么、哪些证据已被验证、哪些候选被标为 high confidence”。
+        每个 action 是对 working memory 的编辑：retrieval 更新 \(P_t,D_t,G_t\)，curate 更新 \(C_t,I_t\)，verify 更新 \(V_t\)，end search 返回 priority-sorted curated set。
+      </p>
+
+      <h3>工具与转移流程</h3>
+      <div class="three-col">
+        <div class="mini-panel">
+          <strong>Retrieval / Inspect</strong>
+          <p><span class="mono">fan_out_search</span>、<span class="mono">search_corpus</span>、<span class="mono">grep_corpus</span>、<span class="mono">read_document</span>、<span class="mono">review_docs</span>。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Curate / Verify</strong>
+          <p><span class="mono">curate(add, remove, importance)</span> 编辑 capped set；<span class="mono">verify(doc_ids, claim)</span> 运行 per-document entailment check。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Stop / Output</strong>
+          <p><span class="mono">end_search(reasoning)</span> 终止 episode，并把 importance-ordered \(C_t\) 交给下游 answer generator。</p>
+        </div>
+      </div>
+
+      <h3>关键 harness 机制</h3>
+      <ul>
+        <li><strong>Auto-seeding</strong>：第一次成功 search 会把 top \(k=8\) reranked IDs 自动加入 curated set，并标记为 <span class="mono">fair</span>，把 early RL 从 empty-set construction 改为 refinement。</li>
+        <li><strong>Sentence-BM25 compression</strong>：search/fan-out/grep 的返回按 query 对句子做 BM25，保留 top \(K=4\) 个句子并维持原顺序；explicit read 仍可返回 full text。</li>
+        <li><strong>Two-level dedup</strong>：chunk ID 去重加 content fingerprint 去重；近重复被隐藏于 rendered memory，但 trajectory recall accounting 仍记入。</li>
+        <li><strong>Evidence graph</strong>：用 regex 抽取 multi-word proper nouns、four-digit years、numeric dates，渲染 frequent entities、bridge docs 和 singleton leads。</li>
+        <li><strong>Budget-safe rendering</strong>：超出 prompt token budget 时按五级策略降级，优先保留 curated set、search history 和 evidence graph。</li>
+      </ul>
+
+      <h3>Reward 设计</h3>
+      <p>
+        RL 使用 full-trajectory rollout、terminal-only reward、40-turn cap、无 KL anchor。若最终 curated set 为空，reward 直接 short-circuit 到 \(\pi_{\emptyset}=-0.2\)。
+        对成功格式化且非空的 episode，reward 下界裁剪到 \(R \geq 10^{-3}\)。
+      </p>
+      <div class="formula">
+        $$R =
+        w_F F_{\beta}
+        + w_{\tau}\rho_{\tau}
+        + w_A\rho_A
+        + w_{\tau A}\rho_{\tau A}
+        + B_A\mathbf{1}[\rho_A>0]
+        + w_{\mathrm{div}}\min(\nu/\nu_0,1)
+        - w_{\mathrm{miss}}(\rho_{\tau A}-\rho_A)_+
+        - \pi_{\mathrm{turn}}(t).$$
+      </div>
+      <p>
+        其中 \(F_{\beta}\) 用 \(\beta=2\)，使 recall 权重为 precision 的四倍；\(\rho_{\tau}\) 是 trajectory recall，\(\rho_A\) 是 curated final-answer recall，
+        \(\rho_{\tau A}\) 是 trajectory final-answer recall，\(\nu\) 是使用的 distinct tools 数量，\(\nu_0=6\)。
+        这个 reward 把“发现证据”和“把证据选入最终 curated set”分开，并用 answer-miss penalty 惩罚“已经见到 answer evidence 但未提交”的失败。
+      </p>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>实验设计与复现细节</h2>
+      <h3>训练数据与优化流程</h3>
+      <p>
+        SFT 只教模型操作 stateful interface：tool-call format、search-to-curate rhythm、importance tagging、memory review 和 verify-before-promote。
+        teacher 是 GPT-5.4 live agent，使用同一套 Harness-1 tools 与 WORKINGMEMORY renderer。过滤条件包括 format-valid、至少返回一个 document、
+        final curated recall \(\geq 0.10\)。899 条保留轨迹被 replay 成约 26K turn-level SFT examples。
+      </p>
+      <p>
+        SFT checkpoint 是 <span class="mono">step 550</span>。RL 从该 checkpoint 开始，在 SEC training split 的 3,453 queries 上做 on-policy CISPO，
+        每步 128 queries、每 query 8 rollouts、共 80 steps，约 82K rollouts。groups with identical rewards 会从 gradient 中丢弃。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>模块</th><th>设置</th><th>值</th><th>复现含义</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SFT</td><td>Base / Adapter</td><td>openai/gpt-oss-20b, LoRA rank 32</td><td>只训练 harness 操作先验</td></tr>
+            <tr><td>SFT</td><td>LR / batch / epochs</td><td>5e-6 / 128 / 3</td><td>selected checkpoint step 550</td></tr>
+            <tr><td>RL</td><td>Algorithm</td><td>on-policy CISPO, clip [0, 5]</td><td>full episode, terminal reward</td></tr>
+            <tr><td>RL</td><td>LR / group / steps</td><td>1e-5 / 8 rollouts per query / 80 steps</td><td>128 queries per step, 1,024 rollouts per step</td></tr>
+            <tr><td>Env</td><td>Context and turns</td><td>32,768 context, 2,048 generation, MAX_TURNS 40</td><td>Harness-1 evaluation 40 turns</td></tr>
+            <tr><td>Retrieval</td><td>Backend</td><td>hybrid BM25 + dense, RRF, Qwen3-Reranker-8B</td><td>外部检索与 reranker 需复现</td></tr>
+            <tr><td>Harness</td><td>Capacity</td><td>MAX_CURATED_DOCS 30, AUTO_POPULATE_TOP_K 8</td><td>最终返回文档预算固定</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>评估协议</h3>
+      <p>
+        论文评估八个 retrieval benchmarks：BrowseComp+、Web synthetic、Patents、SEC、LongSealQA、Seal0QA、FRAMES、HotpotQA。
+        前四个是 source-family benchmarks，SFT 覆盖 BC+、Web、Patents、SEC，RL 只覆盖 SEC；后四个是未用于 SFT/RL 的 held-out transfer benchmarks。
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Benchmark</th><th>Backend</th><th>Test queries</th><th>Domain</th><th>Style</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>BrowseComp+</td><td>Chroma BC+ corpus</td><td>166</td><td>Web encyclopaedic</td><td>Multi-constraint</td></tr>
+            <tr><td>Web</td><td>Chroma web 1.17</td><td>554</td><td>Web encyclopaedic</td><td>Multi-hop</td></tr>
+            <tr><td>Patents</td><td>Chroma USPTO 1.18</td><td>718</td><td>Legal / USPTO</td><td>Single-doc heavy</td></tr>
+            <tr><td>SEC</td><td>Chroma SEC 1.4</td><td>5,023</td><td>Finance filings</td><td>Multi-filing</td></tr>
+            <tr><td>LongSealQA</td><td>Chroma longsealqa</td><td>254</td><td>Open web</td><td>Multi-hop, long-context</td></tr>
+            <tr><td>Seal0QA</td><td>Serper + Jina web</td><td>111</td><td>Open web</td><td>Factoid / multi-hop mix</td></tr>
+            <tr><td>FRAMES</td><td>Serper + Jina web</td><td>824</td><td>Open web</td><td>Multi-hop</td></tr>
+            <tr><td>HotpotQA-subset</td><td>Serper + Jina web</td><td>493</td><td>Open web</td><td>2-hop</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>指标定义</h3>
+      <p>
+        令 \(A_q\) 是 answer-bearing documents，\(R_q\) 是完整 relevant set，\(C_q\) 是最终 curated set，\(P_q\) 是 episode 中遇到过的 trajectory pool。
+        论文报告三个 recall-oriented metrics：
+      </p>
+      <div class="formula">
+        $$\mathrm{Recall}(q)=\frac{|C_q\cap R_q|}{|R_q|}, \qquad
+        \mathrm{FinalAnswerRecall}(q)=\frac{|C_q\cap A_q|}{|A_q|}, \qquad
+        \mathrm{TrajectoryRecall}(q)=\frac{|P_q\cap R_q|}{|R_q|}.$$
+      </div>
+      <p>
+        dataset-level score 是 query macro-average。Final-Answer Recall 不必高于或低于 Recall，因为 \(A_q\) 与 \(R_q\) 的分母不同。
+        Trajectory Recall 是 discovery upper-bound-style diagnostic：如果它高而 final Recall 低，失败更可能发生在 selection/curation。
+      </p>
+
+      <h3>Baselines</h3>
+      <p>
+        所有方法尽量共享 retrieval primitives、web backend、Qwen3-Reranker-8B 和最多 30 returned documents 的最终预算。
+        Harness-1 使用 temperature 1.0 与 40-turn cap；Context-1 和 frontier LLM zero-shot retrievers 使用 Context-1 harness、temperature 1.0 与 64-turn cap。
+        open-model baselines 包括 gpt-oss-20b/120b、Qwen3-32B、Context-1、Search-R1 32B、Tongyi DeepResearch 30B。
+      </p>
+      <div class="note-box">
+        <strong>需人工核对的外部依赖</strong>
+        <p>论文给出了代码 URL 与大量超参数，但本次构建没有下载 GitHub 仓库，也没有验证模型权重、Tinker 训练环境、Baseten-hosted reranker、Serper/Jina web backend 是否可直接访问。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>实验结果与核心结论</h2>
+      <h3>主表：八个 benchmark 的 curated recall</h3>
+      <p>
+        Harness-1 的平均 curated recall 为 0.730，是论文评估的 open-source small models 中最高。唯一平均 curated recall 更高的是 frontier Opus-4.6，
+        但 Harness-1 是 20B open search subagent，并且 trajectory recall 平均 0.807，说明它通常能发现大量相关证据。
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Model</th><th>Avg</th><th>BC+</th><th>Web</th><th>Patents</th><th>SEC</th><th>LongSeal</th><th>Seal0</th><th>FRAMES</th><th>HotpotQA</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Harness-1 20B</td><td class="best">0.730</td><td>0.584</td><td>0.787</td><td>0.890</td><td>0.589</td><td>0.891</td><td>0.551</td><td>0.710</td><td>0.841</td></tr>
+            <tr><td>Context-1 20B</td><td>0.603</td><td>0.500</td><td>0.689</td><td>0.857</td><td>0.467</td><td>0.563</td><td>0.367</td><td>0.638</td><td>0.746</td></tr>
+            <tr><td>GPT-OSS-20B</td><td>0.262</td><td>0.109</td><td>0.174</td><td>0.393</td><td>0.133</td><td>0.253</td><td>0.250</td><td>0.391</td><td>0.395</td></tr>
+            <tr><td>Tongyi DeepResearch 30B</td><td>0.616</td><td>0.381</td><td>0.607</td><td>0.780</td><td>0.419</td><td>0.855</td><td>0.577</td><td>0.561</td><td>0.751</td></tr>
+            <tr><td>Search-R1 32B</td><td>0.289</td><td>0.053</td><td>0.135</td><td>0.405</td><td>0.109</td><td>0.514</td><td>0.312</td><td>0.329</td><td>0.454</td></tr>
+            <tr><td>Qwen3 32B</td><td>0.216</td><td>0.072</td><td>0.132</td><td>0.257</td><td>0.058</td><td>0.427</td><td>0.279</td><td>0.164</td><td>0.342</td></tr>
+            <tr><td>Opus-4.6</td><td class="best">0.764</td><td>0.619</td><td>0.819</td><td>0.915</td><td>0.589</td><td>0.823</td><td>0.636</td><td>0.814</td><td>0.893</td></tr>
+            <tr><td>GPT-5.4</td><td>0.709</td><td>0.443</td><td>0.800</td><td>0.909</td><td>0.452</td><td>0.824</td><td>0.555</td><td>0.815</td><td>0.870</td></tr>
+            <tr><td>Sonnet-4.6</td><td>0.688</td><td>0.505</td><td>0.744</td><td>0.832</td><td>0.411</td><td>0.783</td><td>0.577</td><td>0.787</td><td>0.863</td></tr>
+            <tr><td>Kimi-K2.5</td><td>0.647</td><td>0.593</td><td>0.707</td><td>0.833</td><td>0.454</td><td>0.661</td><td>0.455</td><td>0.697</td><td>0.776</td></tr>
+            <tr><td>GPT-OSS-120B</td><td>0.496</td><td>0.508</td><td>0.478</td><td>0.570</td><td>0.395</td><td>0.464</td><td>0.400</td><td>0.495</td><td>0.657</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption-note">上表复刻 Table 2 的 curated-set Recall 列并增加均值；Final-Answer Recall 与 Trajectory Recall 的完整原表见图表区的 Table 2 截图。</p>
+
+      <h3>Transfer pattern 是最强证据</h3>
+      <p>
+        相对 Context-1，Harness-1 在 source-family benchmarks 的 recall gain 是 +6.2、+9.8、+3.3、+12.2，平均 +7.9；
+        在 held-out transfer benchmarks 的 gain 是 +32.8、+18.4、+7.2、+9.5，平均 +17.0，是 source-family 的 2.2 倍。
+        这支持作者解释：policy 学的是 domain-general search-state operations，而不是只 replay SFT/RL 领域模式。
+      </p>
+
+      <h3>Component ablation：harness 不是实现细节</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Configuration</th><th>Recall</th><th>∆Recall (%)</th><th>FA Recall</th><th>∆FA (%)</th><th>Failure mode</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Full Harness-1</td><td class="best">0.584</td><td>0.0</td><td>0.667</td><td>0.0</td><td>baseline</td></tr>
+            <tr><td>Minus importance tags</td><td>0.560</td><td>-4.1</td><td>0.614</td><td class="warn">-7.9</td><td>binary curate + FIFO eviction，优先级信号消失</td></tr>
+            <tr><td>Minus Sentence-BM25 compression</td><td>0.585</td><td>+0.2</td><td>0.620</td><td class="warn">-7.0</td><td>raw chunks 更长更嘈杂，bridge sentences 更易丢失</td></tr>
+            <tr><td>Minus auto-seed</td><td>0.582</td><td>-0.3</td><td>0.624</td><td class="warn">-6.4</td><td>early curated set 缺少比较上下文</td></tr>
+            <tr><td>Minus evidence graph</td><td>0.569</td><td>-2.6</td><td>0.631</td><td>-5.4</td><td>跨文档 bridge 不可见</td></tr>
+            <tr><td>verify unavailable</td><td>0.566</td><td>-3.1</td><td>0.641</td><td>-3.9</td><td>无法闭环检查 claim support</td></tr>
+            <tr><td>review_docs unavailable</td><td>0.598</td><td>+2.4</td><td>0.641</td><td>-3.9</td><td>需要更多 search/read 代替 memory review</td></tr>
+            <tr><td>Minus content-fingerprint dedup</td><td>0.611</td><td>+4.6</td><td>0.678</td><td>+1.6</td><td>BC+ qrels 近重复导致 recall 口径受影响</td></tr>
+            <tr><td>All mechanisms disabled</td><td>0.513</td><td class="warn">-12.2</td><td>0.624</td><td>-6.4</td><td>探索仍在，但选择 substrate 消失</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        解释上最关键的不是单项机制的绝对增益，而是行为变化：删除状态机制后，失败 query 中 <span class="mono">search_corpus</span> 频率上升，
+        <span class="mono">read_document</span> 和 <span class="mono">verify</span> 下降 2 到 6 倍，policy 回到宽而浅的搜索模式。
+      </p>
+
+      <h3>Reward shaping：diversity bonus 防止工具坍缩</h3>
+      <p>
+        Figure 5 比较了是否启用 \(w_{\mathrm{div}}\)。没有 diversity reward 时，agent 迅速学会大量调用
+        <span class="mono">fan_out_search</span>，trajectory recall 可上升，但 curation/verification 被绕开，tool diversity 从约 6 降到约 3.5，
+        curated recall plateau 在约 0.53。启用后，tool diversity 稳定在约 4.30，最终 curated recall 达到约 0.60。
+      </p>
+
+      <h3>Modular RAG：更好的 curated set 能传导到 answer accuracy</h3>
+      <p>
+        Appendix O 把每个 subagent 的 curated set 交给冻结的 GPT-5.4、Sonnet-4.6、Opus-4.6、Kimi-K2.5 answer generators。
+        generator 只看 query 与 curated documents，不看 trajectory。Figure 6 的 row ordering 大体跟 Table 2 的 search quality 一致，
+        说明 curated-set quality 能转换为下游回答准确率。
+      </p>
+      <p>
+        Appendix P 进一步控制同一 GPT-5.4 使用不同 harness：Naive Search-Add 的 curated recall 为 0.511，Context-1 Harness 为 0.807，
+        Harness-1 Harness 为 0.849；仅替换 harness 就有 +4.2 point recall gain。这是“harness 是 compute-allocation mechanism”的直接证据。
+      </p>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>Figure / Table 导航</h2>
+      <p class="lead">
+        下列图表来自本次解析的 PDF 页面裁剪。自动 image extraction 只抽出少数嵌入图片，因此这里优先使用页面渲染裁剪，确保 figure/table 与原文一致。
+      </p>
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/crops/figure-1-overall-performance.png" alt="Figure 1 averaged search performance across eight benchmarks" />
+          <figcaption><strong>Figure 1.</strong> 八个 benchmark 平均性能。Harness-1 20B 的 average curated recall 为 73.0%，open small models 中最高。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-2-overview.png" alt="Figure 2 Harness-1 system overview" />
+          <figcaption><strong>Figure 2.</strong> Harness-1 总览：policy 发 structured action，harness 维护 state，训练链路包括 GPT-5.4 teacher rollouts、SFT replay 和 CISPO RL。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table-2-search-quality.png" alt="Table 2 search quality across benchmarks" />
+          <figcaption><strong>Table 2.</strong> 主结果表，包含 Recall、Final-Answer Recall、Trajectory Recall。页面正文已复刻 curated recall 数字。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-3-transfer.png" alt="Figure 3 transfer pattern" />
+          <figcaption><strong>Figure 3.</strong> Transfer pattern：held-out transfer 平均增益 +17.0，source-family 平均 +7.9，差距 2.2 倍。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table-3-ablation.png" alt="Table 3 inference-time component ablation" />
+          <figcaption><strong>Table 3.</strong> BrowseComp+ inference-time component ablation。importance tags、compression、auto-seed、evidence graph 的 FA drops 最明显。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-5-training-dynamics.png" alt="Figure 5 RL training dynamics" />
+          <figcaption><strong>Figure 5.</strong> 是否启用 diversity reward 的 RL 曲线。无该 reward 时工具使用坍缩，curated recall plateau。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-6-modular-rag.png" alt="Figure 6 modular RAG answer accuracy" />
+          <figcaption><strong>Figure 6.</strong> Modular RAG answer accuracy：不同 generator 只看 curated documents，验证检索质量是否传导到回答。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-7-same-llm-harness.png" alt="Figure 7 same GPT-5.4 under different harnesses" />
+          <figcaption><strong>Figure 7.</strong> 同一个 GPT-5.4 换 harness，四个 retrieval metrics 随 harness 丰富度单调提升。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table-5-reward-hyperparameters.png" alt="Table 5 reward hyperparameters" />
+          <figcaption><strong>Table 5.</strong> Reward weights：set quality 0.7，trajectory recall 0.3，FA recall 0.8，diversity bonus 0.15，empty curated set penalty -0.2。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table-6-training-hyperparameters.png" alt="Table 6 SFT and RL hyperparameters" />
+          <figcaption><strong>Table 6.</strong> SFT/RL/env/retrieval/evaluation hyperparameters，复现时最重要的配置表。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table-7-benchmark-statistics.png" alt="Table 7 benchmark statistics" />
+          <figcaption><strong>Table 7.</strong> Benchmark backend、test queries、domain 和 style。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-4-training-data-scale.png" alt="Figure 4 training data scale" />
+          <figcaption><strong>Figure 4.</strong> 训练数据规模对比：Harness-1 使用更少 SFT/RL task units，但把先验更多放入 stateful interface。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>复现清单</h2>
+      <p class="lead">
+        这篇论文的 reproducibility 优点是 appendix 写得具体：tool signatures、reward weights、SFT/RL hyperparameters、benchmark statistics、
+        working-memory rendering、算法伪代码和 prompts 都给出。难点是外部服务、训练成本和 release 状态需要实际验证。
+      </p>
+      <div class="check-grid">
+        <div class="mini-panel">
+          <strong>必须准备</strong>
+          <ul>
+            <li><span class="mono">openai/gpt-oss-20b</span> base model 与 LoRA 训练栈。</li>
+            <li>Chroma corpora：BC+、web 1.17、USPTO 1.18、SEC 1.4、longsealqa。</li>
+            <li>Serper + Jina web backend，用于 Seal0QA、FRAMES、HotpotQA-subset。</li>
+            <li>Qwen3-Reranker-8B 或等价 reranker；论文使用 Baseten-hosted 版本。</li>
+            <li>GPT-5.4 teacher、answer generators 与 judge，或明确替代模型并重新标注差异。</li>
+          </ul>
+        </div>
+        <div class="mini-panel">
+          <strong>实现顺序</strong>
+          <ul>
+            <li>实现 state variables \(P,C,I,D,G,V,H,B\) 与 WORKINGMEMORY renderer。</li>
+            <li>实现 tools：search/fan-out/grep/read/review/curate/verify/end。</li>
+            <li>复现 observation processing：BM25 sentence compression、dedup、auto-populate。</li>
+            <li>生成 GPT-5.4 teacher trajectories，按 recall gate 过滤并 replay 成 turn-level SFT。</li>
+            <li>用 Table 5 reward 与 Table 6 CISPO 配置做 RL，再按 Table 7 protocol evaluation。</li>
+          </ul>
+        </div>
+      </div>
+      <h3>最容易踩坑的地方</h3>
+      <ul>
+        <li>evaluation 依赖 qrels 的 annotation coverage；near-duplicate qrels 会让 dedup 的影响看起来像 recall 损失。</li>
+        <li>Search-R1/Tongyi 的 released harness 不直接输出 capped curated set，论文用 shared reranker 取 top-30，复现时需严格一致。</li>
+        <li>verify 是 LLM-based proxy entailment，可能在技术性或模糊 claim 上误判；这会影响 very high promotion 的行为。</li>
+        <li>paper 声明会 release model weights、harness code、data-generation pipeline 和 RL recipe，但本页只基于论文 PDF 与 arXiv metadata，未验证 release 完整度。</li>
+      </ul>
+      <h3>最小复现实验建议</h3>
+      <p>
+        如果完整训练成本过高，优先做两个小实验：第一，在固定 GPT-5.4 或开源强模型上复现 Figure 7 的 harness-only comparison；
+        第二，在 BrowseComp+ 100 paired queries 上复现 Table 3 的 inference-time ablation。前者验证 harness 作为 compute-allocation mechanism，
+        后者验证 state mechanisms 是否真的改变 policy 行为。
+      </p>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>Reviewer Critique</h2>
+      <h3>优点</h3>
+      <ul>
+        <li><strong>问题定义清楚</strong>：把 retrieval-agent RL 的失败从“模型不够强”转向“interface 不适合长期搜索状态管理”。</li>
+        <li><strong>机制证据较完整</strong>：主结果、held-out transfer、component ablation、training dynamics、modular RAG、same-LLM-different-harness 构成较强证据链。</li>
+        <li><strong>复现细节充分</strong>：appendix 给出 reward weights、hyperparameters、tool signatures、working-memory layout、prompts 与 algorithms。</li>
+        <li><strong>诊断指标合理</strong>：同时报告 curated recall、Final-Answer Recall、Trajectory Recall，能区分 discovery gap 与 selection gap。</li>
+      </ul>
+      <h3>弱点与可能混淆</h3>
+      <ul>
+        <li><strong>harness 与 policy 难以完全解耦</strong>：SFT teacher、RL prompt、programmatic nudges 都在同一 harness 分布中，提升来自 state design、prompt guidance 还是 training distribution 的比例仍需更细 ablation。</li>
+        <li><strong>同一 harness 下的 frontier comparison 不完全公平</strong>：frontier LLMs 作为 zero-shot retrievers 运行在 Context-1 harness，而 Harness-1 是 trained agent 加专用 harness；Appendix P 缓解但不能完全替代 trained frontier policy comparison。</li>
+        <li><strong>verify 与 evidence graph 工程性强</strong>：regex entity graph 和 LLM verifier 在不同领域的鲁棒性未知，医学、法律、代码检索等强结构场景可能需要专门组件。</li>
+        <li><strong>统计不确定性仍有限</strong>：论文报告三次运行与 benchmark sizes，但没有在主表中系统呈现 confidence intervals；一些小 benchmark 或 qrels 不完整会影响 recall interpretation。</li>
+      </ul>
+      <h3>我会要求补充的实验</h3>
+      <ul>
+        <li>在 Harness-1 harness 内训练/评估 Context-1-style policy，或在 Context-1 harness 内训练 Harness-1 policy，拆分 harness design 与 policy training 的贡献。</li>
+        <li>把 programmatic nudges 单独 ablate，特别是 search-to-curate rhythm、verify nudge、tool diversity hints。</li>
+        <li>扩展到 open-ended report generation 或 adversarial web retrieval，测试 state externalization 是否在非 needle-in-haystack 任务中仍有效。</li>
+        <li>报告 cost、latency、token usage 与 verify calls 的价格，衡量 harness 机制是否只是把认知负担转成系统调用负担。</li>
+      </ul>
+      <h3>失效模式</h3>
+      <p>
+        Harness-1 可能在三类场景中出问题：证据需要长篇 discourse 而非局部 BM25 sentences 时，compression 会丢 context；
+        relevant evidence 被近重复去重折叠但 qrels 按多个 ID 计分时，recall 被低估或行为被误导；LLM verifier 误把弱支持判为 yes 时，policy 会把错误文档 promote 到 very high。
+      </p>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>对我的研究方向的启发</h2>
+      <div class="three-col">
+        <div class="mini-panel">
+          <strong>Agent RLVR</strong>
+          <p>不要只设计 reward；先设计 RL 要操作的 state。好的 harness 能把稀疏终局 reward 分解成 policy 可学习的中间行为。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Self-evolution / replay</strong>
+          <p>teacher trajectories 不是直接 imitation 全部 reasoning，而是 replay 成同一 WORKINGMEMORY 分布下的 per-turn supervised data。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Questioner-solver</strong>
+          <p>可以把 questioner 产生的 constraints 写入 external state，让 solver 在显式 constraint/evidence graph 上搜索，而非仅靠 prompt history。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Diversity</strong>
+          <p>tool diversity reward 不是装饰项；它防止 RL 走向最容易刷 trajectory recall 的单一 search action。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Evaluation</strong>
+          <p>区分 discovery 与 selection：trajectory recall 高但 curated recall 低时，应优化 curation policy，而不是盲目增强 retriever。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Systems</strong>
+          <p>state renderer、dedup、budget degradation、verification cache 是 agent 能力的一部分，应该随模型训练一起版本化与评估。</p>
+        </div>
+      </div>
+      <div class="note-box">
+        <strong>最终判断</strong>
+        <p>
+          这篇论文值得作为“agent harness design for RL”的强参考。最可迁移的不是具体工具名，而是分工原则：
+          policy 负责语义选择，environment 负责可恢复状态，reward 同时奖励发现、选择、答案证据和工具多样性。
+        </p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

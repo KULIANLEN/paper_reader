@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Learning Agent-Compatible Context Management for Long-Horizon Tasks · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .adacom-page * { letter-spacing: 0 !important; }
+    .adacom-page .paper-article { width: min(calc(100% - 36px), 1180px); margin: 0 auto; }
+    .adacom-page .paper-hero { padding: 3.35rem 0 2.35rem; border-bottom: 1px solid var(--line); }
+    .adacom-page .paper-hero h1 { max-width: 1120px; margin: 0; font-size: clamp(2.05rem, 4.6vw, 4.1rem); line-height: 1.06; }
+    .adacom-page .hero-subtitle { max-width: 980px; margin: 1.1rem 0 0; color: var(--text-soft); font-size: clamp(1.02rem, 1.8vw, 1.18rem); line-height: 1.82; }
+    .adacom-page .content-card { margin: 0; padding: clamp(2.1rem, 5vw, 4.15rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .adacom-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.55rem, 3.1vw, 2.45rem); line-height: 1.16; }
+    .adacom-page .content-card h3 { margin: 0 0 0.55rem; font-size: 1.05rem; line-height: 1.35; }
+    .adacom-page .section-lead { max-width: 980px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.03rem; line-height: 1.86; }
+    .adacom-page .meta-row, .adacom-page .link-row, .adacom-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .adacom-page .meta-row { margin-top: 1.2rem; color: var(--muted); font-size: 0.92rem; }
+    .adacom-page .paper-tags, .adacom-page .link-row { margin-top: 1rem; }
+    .adacom-page .tag-pill, .adacom-page .link-row a, .adacom-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .adacom-page .grid-2, .adacom-page .grid-3, .adacom-page .metric-grid, .adacom-page .figure-grid, .adacom-page .flow-grid { display: grid; gap: 1rem; }
+    .adacom-page .grid-2, .adacom-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .adacom-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .adacom-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .adacom-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .adacom-page .note-box, .adacom-page .metric, .adacom-page .table-wrap, .adacom-page .figure-card, .adacom-page .formula-box, .adacom-page .flow-step, .adacom-page .critique-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .adacom-page .note-box, .adacom-page .formula-box, .adacom-page .flow-step, .adacom-page .critique-box { padding: 1rem; }
+    .adacom-page .note-box p, .adacom-page .formula-box p, .adacom-page .flow-step p, .adacom-page .critique-box p { margin: 0.45rem 0 0; }
+    .adacom-page .metric { padding: 1rem; }
+    .adacom-page .metric strong { display: block; font-size: 1.48rem; line-height: 1.15; }
+    .adacom-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .adacom-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .adacom-page .flow-step:nth-child(2) b { background: #2563eb; }
+    .adacom-page .flow-step:nth-child(3) b { background: #7c3aed; }
+    .adacom-page .flow-step:nth-child(4) b { background: #c2410c; }
+    .adacom-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .adacom-page .formula-box .MathJax, .adacom-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .adacom-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .adacom-page table { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 0.88rem; }
+    .adacom-page th, .adacom-page td { padding: 0.66rem 0.68rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .adacom-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .adacom-page td { color: var(--text-soft); }
+    .adacom-page .tight-table { min-width: 660px; }
+    .adacom-page .wide-table { min-width: 1040px; }
+    .adacom-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .adacom-page .figure-card { margin: 0; overflow: hidden; }
+    .adacom-page .figure-card img { display: block; width: 100%; height: auto; background: #fff; }
+    .adacom-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .adacom-page .figure-card figcaption strong { color: var(--text); }
+    .adacom-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .adacom-page .compact-list li { margin: 0.28rem 0; }
+    .adacom-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .adacom-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .adacom-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .adacom-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .adacom-page .grid-2, .adacom-page .grid-3, .adacom-page .metric-grid, .adacom-page .figure-grid, .adacom-page .flow-grid { grid-template-columns: 1fr; }
+      .adacom-page .paper-hero { padding-top: 2.4rem; }
+      .adacom-page table { min-width: 760px; }
+      .adacom-page .wide-table { min-width: 980px; }
+    }
+  </style>
+</head>
+<body class="paper-page adacom-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2605.30785v1</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Agent / Tool Use · arXiv 2026</div>
+      <h1>Learning Agent-Compatible Context Management for Long-Horizon Tasks</h1>
+      <p class="hero-subtitle">这篇论文提出 AdaCoM：不训练底层 agent，而训练一个外部 LLM context manager，在每个 agent step 前用可重写、删除、合并的 JSON 修改动作整理运行上下文。核心结论不是“越短越好”，而是 Fidelity-Reliability Trade-off：强 agent 更需要高保真保留 raw trajectory，弱 agent 更依赖激进压缩来保持可靠推理。</p>
+      <div class="meta-row">
+        <span>Lu Yi, Runlin Lei, Liuyi Yao, Yuexiang Xie, Yuyang Li, Wenhao Zhang, Zhewei Wei, Yaliang Li, Jian-Yun Nie</span>
+        <span>Renmin University of China / Tongyi Lab, Alibaba Group / BUPT / Université de Montréal</span>
+        <span>Published: 2026-05-29</span>
+        <span>24-page PDF extraction</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">tool-use</span>
+        <span class="tag-pill">long-context</span>
+        <span class="tag-pill">reasoning</span>
+        <span class="tag-pill">grpo</span>
+        <span class="tag-pill">evaluation</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2605.30785">arXiv</a>
+        <a href="https://arxiv.org/pdf/2605.30785">PDF</a>
+        <a href="https://anonymous.4open.science/r/AdaCoM-8864/">Code/Data</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>+39.0%</strong><span>BrowseComp-Plus 平均 relative gain：AdaCoM mean@3 33.60 vs ReAct 24.17。</span></div>
+        <div class="metric"><strong>+15.2%</strong><span>MCP-Bench-Wiki 平均 gain：AdaCoM mean@3 59.05 vs ReAct 51.28。</span></div>
+        <div class="metric"><strong>25.0%</strong><span>BrowseComp-Plus 32 个 source-target manager 配对的平均 relative improvement。</span></div>
+        <div class="metric"><strong>1.9K→7.0K</strong><span>学到的 post-management context length 随 agent 能力从 DeepSeek 到 GLM 增长。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机：长程 agent 的瓶颈不只是 context window 不够大</h2>
+      <p class="section-lead">长程 web search 和 deep research agent 会把 tool results、intermediate reasoning、失败查询和候选证据不断追加到上下文。随着任务变长，stale 或 irrelevant content 会淹没关键证据，引入 position bias，并导致 constraint forgetting、premature abandonment 和 redundant exploration。论文要解决的问题是：在不改动、不可训练甚至闭源的 agent 上，是否能学习到和每个 agent 兼容的 context management 策略。</p>
+
+      <div class="grid-3">
+        <div class="note-box danger">
+          <h3>Agent-side 管理的部署缺口</h3>
+          <p>SumAgent、MemAct、ReSum 等路线通常要求 agent 自己遵守 summary 或 pruning tool 的新协议。论文认为这在闭源 agent 或多 agent 部署中不现实，因为每个底层 agent 都可能需要不同训练或适配。</p>
+        </div>
+        <div class="note-box danger">
+          <h3>固定 summarization 不够兼容</h3>
+          <p>固定摘要策略隐含 one-size-fits-all：它可能帮弱 agent 降低干扰，却会让强 agent 丢掉可利用的细粒度证据。Table 1 中 SumCoM 提升 Kimi/DeepSeek，但让 GLM 明显下降。</p>
+        </div>
+        <div class="note-box good">
+          <h3>AdaCoM 的关键假设</h3>
+          <p>context management 应该由外部 manager 学习，并在 operation level 保持灵活：可删除、重写、合并，也可不改。训练信号来自任务结果和过程奖励，而不是预先规定“必须总结”。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 数学表示、建模与算法流程</h2>
+      <p class="section-lead">AdaCoM 把 frozen agent、environment 和外部 manager 组合成一个 MDP。manager 只改变 agent 看到的 context，不改变 agent 参数。它学习的不是单一 summarizer，而是一组结构化 context edit actions。</p>
+
+      <figure class="figure-card" style="margin-bottom:1rem;">
+        <img src="assets/crops/figure1_overview.png" alt="Figure 1 AdaCoM overview" />
+        <figcaption><strong>Figure 1.</strong> AdaCoM 在每个 agent step 前管理上下文；task feedback 只更新外部 manager，底层 agent 保持 frozen。</figcaption>
+      </figure>
+
+      <div class="formula-box">
+        <h3>2.1 Vanilla ReAct 与 AdaCoM workflow</h3>
+        <p>Vanilla ReAct 在第 $t$ 轮维护追加式上下文：</p>
+        $$c_t^{\mathrm{vanilla}}=(q,a_1,o_1,\ldots,a_t,o_t),\qquad a_{t+1}\sim A(c_t^{\mathrm{vanilla}}).$$
+        <p>AdaCoM 使用 managed context $\tilde c_t$。初始 $\tilde c_0=(q)$。在第 $t$ 轮，agent 先基于上轮管理后的上下文行动，environment 返回 observation：</p>
+        $$a_t\sim A(\tilde c_{t-1}),\qquad c_t=\mathrm{Append}(\tilde c_{t-1},a_t,o_t).$$
+        <p>manager 根据 prompt $p_t=P(c_t)$ 采样修改动作，并应用到 pre-management context：</p>
+        $$m_t\sim \pi_\theta(\cdot\mid p_t),\qquad \tilde c_t=\mathrm{Apply}(c_t,m_t).$$
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Agent acts</h3><p>冻结的 ReAct-style agent 只读取 $\tilde c_{t-1}$ 并发出 tool call 或 final answer。</p></div>
+        <div class="flow-step"><b>2</b><h3>Append observation</h3><p>环境返回 $o_t$，系统把新 action-observation pair 追加成 $c_t$。</p></div>
+        <div class="flow-step"><b>3</b><h3>Manager edits</h3><p>Qwen3-4B-Instruct manager 输出 JSON modifications，目标是保持 task-critical 信息。</p></div>
+        <div class="flow-step"><b>4</b><h3>Next step</h3><p>下一轮 agent 看到 $\tilde c_t$，而不是无界增长的原始轨迹。</p></div>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.2 Flexible modification action space</h3>
+        <p>每轮 pre-management context 被表示为带唯一 message IDs 的有序消息列表。manager action 是结构化操作列表：</p>
+        $$m_t=[\delta_t^{(1)},\delta_t^{(2)},\ldots,\delta_t^{(n_t)}].$$
+        <p>每个 $\delta_t^{(j)}$ 包含四个字段：$ids^{(j)}$ 选择目标消息；$role^{(j)}\in\{\mathrm{SYSTEM},\mathrm{USER},\mathrm{ASSISTANT}\}$ 指定输出角色；$justification^{(j)}$ 是 manager 的修改理由，但不会展示给 agent；$new\_content^{(j)}$ 是替换内容，空字符串表示删除。未命中的消息原样复制，空列表表示不修改。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.3 Reward 与 two-level advantage</h3>
+        <p>每条 rollout $\tau_i=((p_{i,1},m_{i,1}),\ldots,(p_{i,T_i},m_{i,T_i}))$ 有终局 outcome reward $R_i$，每个 manager step 有过程奖励总和 $Q_{i,t}$。论文先分开标准化任务级和步骤级信号：</p>
+        $$A_i^R=\frac{R_i-\mu_R}{\sigma_R+\epsilon},\qquad A_{i,t}^Q=\frac{Q_{i,t}-\mu_Q}{\sigma_Q+\epsilon}.$$
+        <p>二者组合后再次在 group 内标准化：</p>
+        $$A_{i,t}=A_i^R+\alpha A_{i,t}^Q,\qquad \hat A_{i,t}=\frac{A_{i,t}-\mu_A}{\sigma_A+\epsilon}.$$
+        <p>manager 用 GRPO/PPO-style clipped objective 优化 token-level 修改动作：</p>
+        $$J(\theta)=\mathbb{E}\left[\frac{1}{Z}\sum_{i,t,u}\min\left(r_{i,t,u}(\theta)\hat A_{i,t},\bar r_{i,t,u}(\theta)\hat A_{i,t}\right)\right].$$
+        <p>其中 $\bar r_{i,t,u}(\theta)=\mathrm{clip}(r_{i,t,u}(\theta),1-\epsilon,1+\epsilon)$，$Z=\sum_{i=1}^{G}\sum_{t=1}^{T_i}|m_{i,t}|$。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>过程奖励来自轨迹本身</h3>
+          <p>论文使用 token penalty、redundant-action penalty、format penalty。BrowseComp-Plus 额外使用 gold-doc-found 和 key-doc-found reward，把成功检索到关键文档归因给前一步 context management。</p>
+        </div>
+        <div class="note-box">
+          <h3>Fidelity-Reliability Trade-off</h3>
+          <p>保留 raw trajectory 可保持证据 fidelity，但超过某个 agent 的 effective context length 后会降低 reasoning reliability。压缩越激进越可靠，但越可能丢失细节。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">实验覆盖 web search 和 deep research 两类长程任务。作者分别训练 target-agent-specific AdaCoM，并做 cross-agent transfer。底层 agent 全部 frozen，manager backbone 固定为 Qwen3-4B-Instruct。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>BrowseComp-Plus</h3>
+          <ul class="compact-list">
+            <li>任务：受控 corpus 上的 multi-constraint web search。</li>
+            <li>Split：680 training / 150 test。</li>
+            <li>Tools：<code>search(query, top_k)</code> 和 <code>get_document(doc_id)</code>。</li>
+            <li>Retriever：Qwen3-Embed-8B。</li>
+            <li>Max iterations：35。</li>
+            <li>Judge：GPT-4o (2024-11-20)，binary correctness。</li>
+            <li>Metrics：mean@3 和 pass@3。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>MCP-Bench-Wiki</h3>
+          <ul class="compact-list">
+            <li>任务：Wikipedia MCP server 上的 deep research。</li>
+            <li>Tools：9 个 Wikipedia MCP tools，覆盖 search、article retrieval、summary、facts、links、sections。</li>
+            <li>Judge：Claude Opus 4.6。</li>
+            <li>核心维度：task fulfillment (TF)、information grounding (IG)、parallelism and efficiency (PE)。</li>
+            <li>Overall score：$0.4\mathrm{TF}+0.4\mathrm{IG}+0.2\mathrm{PE}$。</li>
+            <li>Final datasets：4,740 SFT samples、1,000 RL tasks、150 test tasks。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:1rem;">
+        <div class="note-box">
+          <h3>Baselines</h3>
+          <p>ReAct、SumAgent、MemAct、SumCoM、AdaCoM w/o training。SumCoM 与 AdaCoM 同为外部 manager，但操作被固定为 summarization，用于隔离 flexible actions 的作用。</p>
+        </div>
+        <div class="note-box">
+          <h3>训练设置</h3>
+          <p>SFT warm-up 用 GPT-5 (2025-08-07) 生成 BrowseComp-Plus edit trajectories，用 Claude Opus 4.6 生成 MCP-Bench-Wiki trajectories；RL 基于 Trinity-RFT，group size $G=8$。</p>
+        </div>
+        <div class="note-box">
+          <h3>关键超参</h3>
+          <p>manager context window 32,768 tokens，max output 4,096 tokens；$\alpha=0.1$，rollout batch 32 trajectories，training batch 768 manager steps，learning rate $5\times10^{-6}$，KL coefficient 0.006，PPO clip 0.2。</p>
+        </div>
+      </div>
+
+      <div class="note-box warn" style="margin-top:1rem;">
+        <h3>复现时要注意的上下文窗口差异</h3>
+        <p>ReAct 使用各 agent API 的默认最大 context length：Qwen3-Max 和 Kimi-K2-Instruct 为 256K，GLM-4.5-Air 和 DeepSeek-V3 为 128K。AdaCoM 下由于 manager 只有 32K context budget，agent 的有效输入也被限制在 32K tokens。这意味着 AdaCoM 的提升不是靠更长窗口，而是靠选择性保留。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">主结果支持三个判断：AdaCoM 对不同 frozen agents 更稳定；固定 summarization 和无训练 manager 都不够可靠；manager 的可迁移性受 source-target agent capability 和 reasoning style 共同影响。</p>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr>
+              <th>Agent / Setting</th>
+              <th>ReAct</th>
+              <th>SumAgent</th>
+              <th>MemAct</th>
+              <th>SumCoM</th>
+              <th>AdaCoM w/o train.</th>
+              <th>AdaCoM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3-Max</td><td>27.78</td><td>26.67 ↓4.0%</td><td><strong>37.33 ↑34.4%</strong></td><td>32.22 ↑16.0%</td><td>21.11 ↓24.0%</td><td>36.67 ↑32.0%</td></tr>
+            <tr><td>Kimi-K2-Instruct</td><td>18.56</td><td>30.44 ↑64.0%</td><td>16.89 ↓9.0%</td><td>33.78 ↑82.0%</td><td>28.02 ↑51.0%</td><td><strong>36.20 ↑95.0%</strong></td></tr>
+            <tr><td>GLM-4.5-Air</td><td>32.56</td><td>11.56 ↓64.5%</td><td>32.00 ↓1.7%</td><td>26.44 ↓18.8%</td><td>21.33 ↓34.5%</td><td><strong>35.33 ↑8.5%</strong></td></tr>
+            <tr><td>DeepSeek-V3</td><td>17.78</td><td>19.56 ↑10.0%</td><td>16.67 ↓6.2%</td><td>25.11 ↑41.2%</td><td>17.57 ↓1.2%</td><td><strong>26.19 ↑47.3%</strong></td></tr>
+            <tr><td><strong>Avg.</strong></td><td>24.17</td><td>22.06 ↓8.7%</td><td>25.72 ↑6.4%</td><td>29.39 ↑21.6%</td><td>22.01 ↓8.9%</td><td><strong>33.60 ↑39.0%</strong></td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 1 重建：BrowseComp-Plus mean@3。AdaCoM 在四个 frozen agents 上均提升 ReAct，平均相对提升 39.0%。Qwen 上 MemAct 略高于 AdaCoM，作者解释为 Qwen 自身 agentic capability 较强，能有效使用 pruning tool，但该优势未泛化到其他 agent。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead><tr><th>Agent / Setting</th><th>ReAct</th><th>AdaCoM w/o train.</th><th>AdaCoM</th></tr></thead>
+          <tbody>
+            <tr><td>Kimi-K2-Instruct</td><td>55.05</td><td>44.35 ↓19.4%</td><td><strong>60.01 ↑9.0%</strong></td></tr>
+            <tr><td>DeepSeek-V3</td><td>47.51</td><td>47.82 ↑0.7%</td><td><strong>58.09 ↑22.3%</strong></td></tr>
+            <tr><td><strong>Avg.</strong></td><td>51.28</td><td>46.09 ↓10.1%</td><td><strong>59.05 ↑15.2%</strong></td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 2 重建：MCP-Bench-Wiki mean@3。由于 deep research rollout 和 evaluation 成本较高，正文只评估 Kimi 和 DeepSeek 两个代表性 agent。</p>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/crops/figures2_3_outcomes_context.png" alt="Figures 2 and 3 outcome shifts and context length" />
+          <figcaption><strong>Figures 2-3.</strong> AdaCoM 增加正确答案比例，并改变失败模式。Qwen、DeepSeek、GLM 的 Incorrect answer 与 Early give-up 下降，Kimi 的 Max iteration reached 大幅下降。context length 呈 DeepSeek 1.9K、Kimi 3.4K、Qwen 5.2K、GLM 7.0K 的趋势。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure4_browsecomp_transfer.png" alt="Figure 4 BrowseComp-Plus cross-agent transfer" />
+          <figcaption><strong>Figure 4.</strong> BrowseComp-Plus cross-agent transfer。28 个 cross-agent pairs 中 23 个为正，4 个 self-trained pairs 全部为正；32 个 pairs 平均 relative improvement 为 25.0%，cross-only 为 22.1%。</figcaption>
+        </figure>
+      </div>
+
+      <div class="grid-3" style="margin-top:1rem;">
+        <div class="note-box good">
+          <h3>强 agent：tiered management</h3>
+          <p>GLM 和 Qwen 的 manager 倾向先保留 raw tool results，让上下文增长，再做偶发 batched compression。原因是强 agent 能从细粒度 raw evidence 中获益。</p>
+        </div>
+        <div class="note-box good">
+          <h3>弱 agent：eager distillation</h3>
+          <p>DeepSeek 和 Kimi 的 manager 几乎每轮压缩，维持较短上下文。这样牺牲部分 fidelity，但更能避免长上下文干扰和重复探索。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>Transfer 不是只看能力</h3>
+          <p>能力接近是 first-order rule，但修改风格也重要。DeepSeek 偏好 concise key findings 和 document IDs，Kimi 更能利用 detailed search history，Gemini 容易被 report-style memory 带偏。</p>
+        </div>
+      </div>
+
+      <div class="figure-grid" style="margin-top:1rem;">
+        <figure class="figure-card">
+          <img src="assets/crops/figure5_mcpwiki_transfer.png" alt="Figure 5 MCP-Bench-Wiki transfer" />
+          <figcaption><strong>Figure 5.</strong> MCP-Bench-Wiki transfer：DeepSeek-trained 和 Kimi-trained managers 在四个 target agents 上都比 ReAct 高，说明 transfer 现象不只存在于 web search。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table5_process_reward_ablation.png" alt="Table 5 process reward ablation" />
+          <figcaption><strong>Table 5.</strong> 去掉 process reward 后性能下降：DeepSeek-V3 从 26.19 降到 24.38，Qwen3-Max 从 36.67 降到 33.33，说明中间过程信号对长程 credit assignment 有帮助。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead><tr><th>Setting</th><th>DeepSeek-V3</th><th>Qwen3-Max</th></tr></thead>
+          <tbody>
+            <tr><td>AdaCoM w/o process reward</td><td>24.38</td><td>33.33</td></tr>
+            <tr><td><strong>AdaCoM</strong></td><td><strong>26.19</strong></td><td><strong>36.67</strong></td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 5 重建：BrowseComp-Plus 上 process reward ablation。该表只覆盖 DeepSeek-V3 和 Qwen3-Max。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">PDF 内嵌图片只抽取到首页的小图元素，因此本页采用渲染页面裁剪来保留关键图表。表格中的关键数字已在上文重建；裁剪图用于快速对照原论文版式。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/crops/table1_browsecomp_mean3.png" alt="Table 1 BrowseComp-Plus mean@3" />
+          <figcaption><strong>Table 1.</strong> BrowseComp-Plus mean@3 主表。AdaCoM 平均 33.60，ReAct 平均 24.17。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table2_mcpwiki_mean3.png" alt="Table 2 MCP-Bench-Wiki mean@3" />
+          <figcaption><strong>Table 2.</strong> MCP-Bench-Wiki mean@3 主表。AdaCoM 在 Kimi 和 DeepSeek 上均高于 ReAct。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table3_browsecomp_pass3.png" alt="Table 3 BrowseComp-Plus pass@3" />
+          <figcaption><strong>Table 3.</strong> Appendix C 的 BrowseComp-Plus pass@3。AdaCoM 平均 48.92，ReAct 平均 34.67，相对提升 41.1%。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table6_mcpwiki_dimensions.png" alt="Table 6 MCP-Bench-Wiki per-dimension results" />
+          <figcaption><strong>Table 6.</strong> MCP-Bench-Wiki per-dimension breakdown。GPT-4o-mini、DeepSeek、Seed 在 TF/IG/PE 三维度均受益；Kimi 的 TF/IG 提升但 PE 下降。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">论文附录给出了相对完整的训练、数据构造、tool set、judge prompt 和 AdaCoM prompt，但仍有若干依赖需要从代码仓库或作者实现中确认。本节按可复现路径拆解。</p>
+
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>必须准备的组件</h3>
+          <ul class="compact-list">
+            <li>Frozen agents：Qwen3-Max、Kimi-K2-Instruct、GLM-4.5-Air、DeepSeek-V3；transfer 还包括 GPT-OSS-20B、Gemini-2.5-Flash、Seed-1.6-Flash、GPT-4o-mini。</li>
+            <li>Context manager：Qwen3-4B-Instruct，SFT warm-up 后用 GRPO 训练。</li>
+            <li>RL framework：论文使用 Trinity-RFT；整体 agent workflow 使用 AgentScope。</li>
+            <li>Benchmarks：BrowseComp-Plus 与作者构建的 MCP-Bench-Wiki。</li>
+            <li>Evaluation judges：BrowseComp-Plus 用 GPT-4o (2024-11-20)，MCP-Bench-Wiki 用 Claude Opus 4.6。</li>
+          </ul>
+        </div>
+        <div class="note-box good">
+          <h3>训练与奖励参数</h3>
+          <ul class="compact-list">
+            <li>Group size $G=8$，rollout batch size 32 trajectories，training batch size 768 manager-step samples。</li>
+            <li>Learning rate $5\times10^{-6}$，KL coefficient 0.006，PPO clipping range 0.2，无 entropy bonus。</li>
+            <li>Manager sampling temperature 1.0，最大 rollout iterations 35。</li>
+            <li>最多训练 40 epochs，eval score 连续 20 rollout steps 不提升则 early stopping。</li>
+            <li>SFT warm-up：BrowseComp-Plus 5 epochs，MCP-Bench-Wiki 2 epochs。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="note-box">
+          <h3>Process reward 数值</h3>
+          <ul class="compact-list">
+            <li>Token penalty：-0.8。</li>
+            <li>Redundant-action penalty：-0.4。</li>
+            <li>Format penalty：-0.5。</li>
+            <li>BrowseComp-Plus gold-doc-found：0.6。</li>
+            <li>BrowseComp-Plus key-doc-found：0.3。</li>
+            <li>Process reward weight：$\alpha=0.1$。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>MCP-Bench-Wiki 数据漏斗</h3>
+          <p>上游由 Claude Opus 4.6、Gemini 3.1 Pro、GLM-5、MiniMax M2.7、GPT-5 (2025-08-07) 多模型生成任务，并通过 cross-model evaluation、dry-run validation、log analysis 过滤。最终训练池约 2,517 tasks，部署为 4,740 SFT samples、1,000 RL tasks、150 test tasks。</p>
+        </div>
+      </div>
+
+      <div class="note-box warn" style="margin-top:1rem;">
+        <h3>复现风险与缺口</h3>
+        <p>论文附录给出 prompts 和主要超参，Appendix E 声称 code/data 可公开访问，但本次只下载并解析 PDF，没有运行作者仓库。若要数值级复现，还需确认：BrowseComp-Plus 具体版本、MCP-Bench-Wiki 发布数据、API 模型版本可用性、judge 配置、Trinity-RFT/AgentScope 版本、tokenizer 统计口径，以及各 closed-source agent 的默认 context length 是否仍与论文一致。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">这篇论文的价值在于把“context management 是否兼容 agent”作为被学习的对象，而不是把 summarization 当成固定工具。但证据仍主要集中在 knowledge-intensive search，且成本和 cache 影响没有被系统优化。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>问题定义很实用：不训练 frozen/closed-source agent，只训练外部 manager。</li>
+            <li>action space 比固定 summarization 更通用，能表达 delete、rewrite、merge、no-change。</li>
+            <li>分析不止报分，还解释了 outcome shift、context length strategy 和 transfer pattern。</li>
+            <li>Appendix 给出 reward 参数、prompts、dataset construction，复现信息比多数 agent 论文更具体。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>主要任务仍是 web/wiki knowledge search，未覆盖 code agents、embodied agents、longform writing。</li>
+            <li>MCP-Bench-Wiki 正文只评估两个 agent，transfer 扩展在附录中给出，但仍是同类知识检索任务。</li>
+            <li>每步调用 manager 会增加 token cost 和 wall-clock latency；论文只提出 tiered triggering 方向，没有实测成本收益曲线。</li>
+            <li>修改早期 context 会破坏 KV cache reuse，这对生产 inference system 很关键，但没有 cache-aware 实验。</li>
+          </ul>
+        </div>
+        <div class="critique-box danger">
+          <h3>Missing ablations</h3>
+          <ul class="compact-list">
+            <li>没有系统比较不同 manager capacity，例如 1B/4B/8B/更强 closed-source manager。</li>
+            <li>没有分离 SFT warm-up 与 RL 的贡献，只明确比较了 w/o training 和 w/o process reward。</li>
+            <li>没有 manager invocation frequency ablation：每步调用 vs threshold trigger vs fixed interval。</li>
+            <li>没有直接量化 information loss，例如被压缩/删除内容中有多少 gold evidence。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>Failure modes</h3>
+          <ul class="compact-list">
+            <li>manager 可能把细粒度证据 paraphrase 错，强 agent 原本能利用的 raw evidence 被破坏。</li>
+            <li>report-style memory 可能诱导某些 agent 模仿报告格式而不是继续搜索，Gemini case 已显示这种风险。</li>
+            <li>若 benchmark reward 或 judge 偏好短答案，manager 可能学到过度压缩，迁移到需要 exhaustive evidence 的任务时失效。</li>
+            <li>在 multi-agent 或工具状态依赖更强的环境中，删除历史 tool result 可能破坏 action provenance。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究方向的启发</h2>
+      <p class="section-lead">如果关注 RLVR、agent、自进化、questioner-solver、replay、diversity 和 evaluation，这篇论文最可迁移的点是：把“agent 需要什么样的工作记忆”当成可学习策略，并用过程信号改善长程 credit assignment。</p>
+
+      <div class="grid-3">
+        <div class="note-box good">
+          <h3>Questioner-Solver 可借鉴</h3>
+          <p>在自进化训练中，不只是生成更难问题，也可以学习 questioner/solver 之间的信息接口：哪些失败轨迹、约束、候选证据应该被保留给下一轮 solver。</p>
+        </div>
+        <div class="note-box good">
+          <h3>Replay 不只重放样本</h3>
+          <p>AdaCoM 的 working note 类似 trajectory-level replay state：保留 rejected candidates、ineffective queries 和 unresolved constraints。这启发 replay buffer 可以存“进展摘要”而不只是原始样本。</p>
+        </div>
+        <div class="note-box good">
+          <h3>Diversity 也有兼容性</h3>
+          <p>transfer 结果说明不同 agent 偏好不同 memory style。设计 diversity/evaluation 时，可能需要衡量样本或轨迹对目标 solver 的兼容度，而不是只看表面覆盖。</p>
+        </div>
+      </div>
+
+      <div class="note-box" style="margin-top:1rem;">
+        <h3>可直接尝试的后续实验</h3>
+        <ul class="compact-list">
+          <li>把 manager action space 改成 replay action space：保留、压缩、删除、提升 priority、生成 counterfactual note。</li>
+          <li>把 Fidelity-Reliability Trade-off 量化为 agent-specific effective context length，用它决定 replay/summary trigger。</li>
+          <li>在 RLVR 中加入 process rewards：重复尝试惩罚、关键证据保留奖励、格式合法性奖励、约束覆盖奖励。</li>
+          <li>做 manager style transfer：同一能力层的 agent 之间迁移工作记忆格式，观察哪些结构会导致 solver 模仿、早停或重复探索。</li>
+        </ul>
+      </div>
+
+      <div class="note-box warn" style="margin-top:1rem;">
+        <h3>本页提取说明</h3>
+        <p>本页基于 arXiv v1 PDF 全文与附录生成。图表来自渲染页面裁剪；PDF 内嵌图片抽取只得到首页若干小图元素，因此不是从矢量源直接导出的原始 figure。所有涉及模型版本、代码地址和数据发布状态的表述均按论文文本记录，未额外运行作者代码。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

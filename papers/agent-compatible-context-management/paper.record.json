@@ -1,0 +1,47 @@
+{
+  "id": "2605.30785",
+  "slug": "agent-compatible-context-management",
+  "title": "Learning Agent-Compatible Context Management for Long-Horizon Tasks",
+  "titleZh": "面向长程任务的 Agent 兼容上下文管理学习",
+  "authors": [
+    "Lu Yi",
+    "Runlin Lei",
+    "Liuyi Yao",
+    "Yuexiang Xie",
+    "Yuyang Li",
+    "Wenhao Zhang",
+    "Zhewei Wei",
+    "Yaliang Li",
+    "Jian-Yun Nie"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "long-context",
+    "reasoning",
+    "grpo",
+    "evaluation"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "论文提出 AdaCoM，用外部 Qwen3-4B-Instruct context manager 为 frozen long-horizon agents 学习上下文删除、重写、合并和保留策略。它在 BrowseComp-Plus 与 MCP-Bench-Wiki 上稳定提升多种 agent，并揭示强 agent 更需要高保真保留、弱 agent 更需要激进压缩的 Fidelity-Reliability Trade-off。",
+  "takeaways": [
+    "Context management 应该按目标 agent 的能力和 reasoning style 学习，而不是固定 summarization。",
+    "长程 agent 的过程奖励可以直接来自轨迹规则，如重复 tool call、超长上下文、格式错误和关键文档检索。"
+  ],
+  "arxivId": "2605.30785",
+  "paperUrl": "https://arxiv.org/abs/2605.30785",
+  "pdfUrl": "https://arxiv.org/pdf/2605.30785",
+  "pageUrl": "papers/agent-compatible-context-management/index.html",
+  "codeUrl": "https://anonymous.4open.science/r/AdaCoM-8864/",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文附录给出主要超参、process rewards、prompts、tool set 和数据构造流程，并声称 code/data 可用；但数值级复现仍需确认 benchmark 版本、closed-source API 模型版本、judge 配置和作者仓库细节。"
+  }
+}

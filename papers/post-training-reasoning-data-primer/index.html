@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>A Primer in Post-Training Reasoning Data: What We Know About How It Works · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .reasoning-data-page * { letter-spacing: 0 !important; }
+    .reasoning-data-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .reasoning-data-page .paper-hero { padding: 3.4rem 0 2.2rem; border-bottom: 1px solid var(--line); }
+    .reasoning-data-page .paper-hero h1 { max-width: 1120px; font-size: clamp(2.05rem, 4.6vw, 4.35rem); line-height: 1.05; }
+    .reasoning-data-page .hero-subtitle { max-width: 1020px; margin: 1.05rem 0 0; font-size: clamp(1.02rem, 2vw, 1.22rem); line-height: 1.82; }
+    .reasoning-data-page .content-card { margin: 0; padding: clamp(2.1rem, 5vw, 4.1rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .reasoning-data-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.55rem, 3.2vw, 2.4rem); line-height: 1.18; }
+    .reasoning-data-page .content-card h3 { margin: 0 0 0.55rem; font-size: 1.06rem; line-height: 1.36; }
+    .reasoning-data-page .section-lead { max-width: 980px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.04rem; line-height: 1.88; }
+    .reasoning-data-page .meta-row,
+    .reasoning-data-page .link-row,
+    .reasoning-data-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .reasoning-data-page .meta-row { margin-top: 1.25rem; color: var(--muted); font-size: 0.94rem; }
+    .reasoning-data-page .paper-tags,
+    .reasoning-data-page .link-row { margin-top: 1rem; }
+    .reasoning-data-page .tag-pill,
+    .reasoning-data-page .link-row a,
+    .reasoning-data-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .reasoning-data-page .grid-2,
+    .reasoning-data-page .grid-3,
+    .reasoning-data-page .metric-grid,
+    .reasoning-data-page .figure-grid,
+    .reasoning-data-page .flow-grid { display: grid; gap: 1rem; }
+    .reasoning-data-page .grid-2,
+    .reasoning-data-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .reasoning-data-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .reasoning-data-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .reasoning-data-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .reasoning-data-page .note-box,
+    .reasoning-data-page .metric,
+    .reasoning-data-page .table-wrap,
+    .reasoning-data-page .figure-card,
+    .reasoning-data-page .formula-box,
+    .reasoning-data-page .flow-step,
+    .reasoning-data-page .critique-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .reasoning-data-page .note-box,
+    .reasoning-data-page .formula-box,
+    .reasoning-data-page .flow-step,
+    .reasoning-data-page .critique-box { padding: 1rem; }
+    .reasoning-data-page .note-box p,
+    .reasoning-data-page .formula-box p,
+    .reasoning-data-page .flow-step p,
+    .reasoning-data-page .critique-box p { margin: 0.45rem 0 0; }
+    .reasoning-data-page .metric { padding: 1rem; }
+    .reasoning-data-page .metric strong { display: block; font-size: 1.42rem; line-height: 1.15; }
+    .reasoning-data-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .reasoning-data-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .reasoning-data-page .flow-step:nth-child(2n) b { background: #6d5dfc; }
+    .reasoning-data-page .flow-step:nth-child(3n) b { background: #c2410c; }
+    .reasoning-data-page .flow-step:nth-child(4n) b { background: #2563eb; }
+    .reasoning-data-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .reasoning-data-page .formula-box .MathJax,
+    .reasoning-data-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .reasoning-data-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .reasoning-data-page table { width: 100%; min-width: 840px; border-collapse: collapse; font-size: 0.9rem; }
+    .reasoning-data-page th,
+    .reasoning-data-page td { padding: 0.72rem 0.75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .reasoning-data-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .reasoning-data-page td { color: var(--text-soft); }
+    .reasoning-data-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .reasoning-data-page .figure-card { margin: 0; overflow: hidden; }
+    .reasoning-data-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .reasoning-data-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .reasoning-data-page .figure-card figcaption strong { color: var(--text); }
+    .reasoning-data-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .reasoning-data-page .compact-list li { margin: 0.28rem 0; }
+    .reasoning-data-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .reasoning-data-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .reasoning-data-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .reasoning-data-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .reasoning-data-page .grid-2,
+      .reasoning-data-page .grid-3,
+      .reasoning-data-page .metric-grid,
+      .reasoning-data-page .figure-grid,
+      .reasoning-data-page .flow-grid { grid-template-columns: 1fr; }
+      .reasoning-data-page .paper-hero { padding-top: 2.4rem; }
+      .reasoning-data-page table { min-width: 760px; }
+    }
+  </style>
+</head>
+<body class="paper-page reasoning-data-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2606.02113v1</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">证据</a>
+      <a href="#results">结论</a>
+      <a href="#figures">图表</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Survey / Position · arXiv 2026</div>
+      <h1>A Primer in Post-Training Reasoning Data: What We Know About How It Works</h1>
+      <p class="hero-subtitle">这篇 primer 的核心判断是：post-training reasoning data 不是简单的 prompt-response pair，而是带 verifier、feedback、trajectory、lineage 和 release metadata 的证据对象。作者综合 150+ 公开研究和系统报告，给出一个用于归因 reasoning model 增益的审计框架。</p>
+      <div class="meta-row">
+        <span>Yaoming Li, Guangxiang Zhao, Qilong Shi, Lin Sun, Xiangzheng Zhang, Tong Yang</span>
+        <span>Peking University · Tsinghua University · Qiyuan Tech</span>
+        <span>Published: 2026-06-01</span>
+        <span>22-page PDF, appendix included</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">reasoning</span>
+        <span class="tag-pill">post-training</span>
+        <span class="tag-pill">rlvr</span>
+        <span class="tag-pill">verifier</span>
+        <span class="tag-pill">data-quality</span>
+        <span class="tag-pill">evaluation</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2606.02113">arXiv</a>
+        <a href="https://arxiv.org/pdf/2606.02113.pdf">PDF</a>
+        <a href="https://github.com/RenBing-Sumeru/Awesome-LLM-Reasoning-Data">Project repository</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>150+</strong><span>公开论文、技术报告、benchmark、reward-model 与系统报告被综合。</span></div>
+        <div class="metric"><strong>4 questions</strong><span>对象是什么、为何有用、如何构造、如何 scale 与归因。</span></div>
+        <div class="metric"><strong>3 contracts</strong><span>programmatic、environmental、judgment-required verification。</span></div>
+        <div class="metric"><strong>1 thesis</strong><span>增益可解释性来自 data object、verifier、base、scaffold、budget 的完整记录。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>研究动机：reasoning data 为什么需要重新命名为“证据对象”</h2>
+      <p class="section-lead">论文起点很直接：o1-style test-time scaling 和 thinking models 让 post-training 成为 reasoning model 进步的主驱动之一，而 reasoning data 往往比 optimizer 细节更能解释成败。但公开文献分散在 dataset、RL recipes、reward models、benchmarks、frontier reports 里，导致很多报告只给出分数，无法回答“到底是哪一层数据对象改变了模型”。</p>
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>被挑战的直觉</h3>
+          <p>作者把常见误区列成 Table 1：long CoT 不等于 faithful reasoning，harder data 不必然更好，more data 不等于 coverage，clean success transcript 反而会删除 agent credit assignment 所需的 failures/retries/state diffs。</p>
+        </div>
+        <div class="note-box">
+          <h3>关键缺口</h3>
+          <p>现有报告常把 optimizer、base model、prompt pool、teacher trace、verifier、inference budget 混在一起比较。没有统一字段时，分数提升可能来自数据、更强 teacher、更多 rollout、verifier 漏洞或 benchmark leakage。</p>
+        </div>
+        <div class="note-box">
+          <h3>论文贡献</h3>
+          <p>它不是提出新算法，而是给出 attribution framework：把 reasoning-data item 拆成 task context、model behavior、feedback/verifier、metadata，并要求未来 release 报告可审计字段。</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>误区</th><th>论文给出的 takeaways</th><th>未来报告必须披露的字段</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Long CoT means good reasoning</td><td>长 trace 可能只是 rationalization、teacher style copying 或掩盖真实因果路径；质量要看 validity 和 grounding。</td><td>trace source、process labels、execution context、localization tests、robustness checks。</td></tr>
+            <tr><td>Harder data is better data</td><td>difficulty 是 base-relative：同一题可能对一个 base 不可达，对另一个刚好产生梯度，对第三个已经饱和。</td><td>base model、sampling protocol、verifier、rollout count、temperature、pass-rate band、estimate date。</td></tr>
+            <tr><td>More data means better coverage</td><td>coverage 是 recipe，不是 count；source mixture、filters、teachers、generators、leakage 和 lineage 决定继承了什么。</td><td>source mixture、generator、teacher、filtering rule、split、decontamination status、lineage risks。</td></tr>
+            <tr><td>A clean successful transcript is ideal</td><td>agent data 的 failures、retries、recoveries、state diffs 才是 credit assignment 的证据；清洗过的成功轨迹会删除关键分支。</td><td>replayable episodes、states、actions、observations、failures、terminal predicates、scaffold metadata。</td></tr>
+            <tr><td>Self-play removes curation</td><td>self-play 只是把 curation 移到 anchor：answer、interpreter、verifier、majority vote、archive 或 role split。</td><td>anchor、selection rule、verifier、admissibility rule、replay policy、failure modes。</td></tr>
+            <tr><td>The optimizer explains the gain</td><td>同一个 RL scaffold 可能隐藏完全不同的 prompt pools、trace writers、substrates 和 verifiers。</td><td>prompt source、trace author、search substrate、reward channel、scaffold、budget。</td></tr>
+            <tr><td>Scaling means the model got better</td><td>更高分数可能移动 ceiling、提高 efficiency 或改变 measurement surface；三者是不同 claim。</td><td>unique data、reuse rate、training compute、inference budget、search topology、verifier refresh、evaluation protocol。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 1 重建：论文把这些“反直觉教训”作为阅读所有 reasoning-data release 的入口。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>方法框架：从 verification contract 到 scaling attribution</h2>
+      <p class="section-lead">这篇 primer 的“方法”是 taxonomy + audit ledger，而不是训练新模型。它先按 verification contract 定义 reasoning-data object，再按质量、构造与 scaling 三层字段解释为什么某个 data item 可用、可复现、可归因。</p>
+
+      <figure class="figure-card">
+        <img src="assets/figures/page_003_img_01.png" alt="Figure 1: Beyond prompt-response pairs, a reasoning-data item packages state, behavior, feedback and metadata" loading="lazy" />
+        <figcaption><strong>Figure 1.</strong> 主图把 paper 的抽象压缩成一张图：reasoning-data sample = query/state + trace/actions + answer/evidence + feedback/verifier + metadata。底部六类 training uses 包括 SFT、distillation、preference learning、process supervision、RLVR 和 agent training。</figcaption>
+      </figure>
+
+      <div class="flow-grid">
+        <div class="flow-step">
+          <b>1</b>
+          <h3>What objects exist?</h3>
+          <p>不是按 domain 命名 data，而是按 feedback 可被怎样检查来命名：programmatic、environmental、judgment-required。</p>
+        </div>
+        <div class="flow-step">
+          <b>2</b>
+          <h3>What makes data useful?</h3>
+          <p>correctness verifier-relative，difficulty base-relative，trace quality trajectory-relative，coverage lineage-relative。</p>
+        </div>
+        <div class="flow-step">
+          <b>3</b>
+          <h3>How is it built?</h3>
+          <p>prompt sourcing、trace writing、search substrate、self-play anchor、reward/verifier 和 frontier pipeline 分别暴露不同 confound。</p>
+        </div>
+        <div class="flow-step">
+          <b>4</b>
+          <h3>How do gains scale?</h3>
+          <p>区分 data substrate 改变 reachable ceiling，optimizer/scaffold 改变 approach efficiency，measurement surface 改变可观察分数。</p>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="note-box good">
+          <h3>Programmatic verification</h3>
+          <p>math、code、formal proof 等任务可以通过 answer normalization、code execution、proof-state checking 形成 scalable verifier。优势是低成本、可重复；风险是 false rejection、spurious reward 和 verifier gaming。</p>
+        </div>
+        <div class="note-box good">
+          <h3>Environmental verification</h3>
+          <p>tool、web、app、OS、repository tasks 通过 goals、actions、observations、state transitions 和 terminal predicates 给出 state-based success。优势是更接近 agent；风险是 transcript compression。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>Judgment-required verification</h3>
+          <p>medical、factuality、safety、rubric reward 等任务依赖 criteria、evidence、risk、provenance、judge traces 或 disagreement fields。judge 本身必须成为 data object。</p>
+        </div>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/page_003_img_02.png" alt="Figure 2: verifier-anchored taxonomy" loading="lazy" />
+          <figcaption><strong>Figure 2.</strong> Verifier-anchored taxonomy：每类 contract 都有 native signal、training field、failure surface 和 release audit fields。论文强调这不是 domain taxonomy。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_003_img_03.png" alt="Figure 3: where supervision enters the trajectory" loading="lazy" />
+          <figcaption><strong>Figure 3.</strong> Feedback 可进入 final answer、intermediate step、state-action transition 或 full episode。反馈点不同，即使底层任务相同，训练对象也不同。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>质量 claim</th><th>相对对象</th><th>论文解释</th><th>必须记录</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Correctness</td><td>Verifier-relative</td><td>正确性是 versioned verifier contract，不是 answer string；extractor、normalization、invalid-output handling 和 pass-rate filtering 都会改变训练样本。</td><td>extractor、verifier version、filtering rule、known failure modes。</td></tr>
+            <tr><td>Trace quality</td><td>Trajectory-relative</td><td>可见 trace 只是 suggestive evidence，不证明 reasoning mechanism；有效 trace 应 locally valid、task-relevant、grounded。</td><td>trace author、process labels、execution lineage、localization/sensitivity tests。</td></tr>
+            <tr><td>Difficulty</td><td>Base-relative</td><td>difficulty 是 item-model-sampling relation；同一 item 的 usefulness 随 base、temperature、rollout count 和 verifier 改变。</td><td>base checkpoint、prompt format、sampling protocol、pass-rate band、estimate date。</td></tr>
+            <tr><td>Coverage</td><td>Lineage-relative</td><td>coverage 由 source mixture、filters、teachers、generators、leakage 与 split 决定；synthetic flywheel 可能放大 hidden traits 或 narrowing。</td><td>generator、filter、split、teacher、verifier of record、decontamination、inheritance risk。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Figure 4 的文字化重建：不同质量 claim 需要不同证据字段，不能由“数据量”或“最终准确率”统一替代。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>Scaling 读法：ceiling 与 efficiency 分离</h3>
+        <p>作者引用 Khatri et al. 和 Tan et al. 的形式作为阅读 scaling claim 的工具，而不是声明一个通用定律：</p>
+        $$R(C)=R_0+\frac{A-R_0}{1+(C_{\mathrm{mid}}/C)^B}$$
+        $$\log L(N,C)=E(N)-k(N)\log C$$
+        <p>这里 $A$ 表示 reachable ceiling，$B$ 或 $k(N)$ 表示 approach efficiency。一个 benchmark gain 可能是 ceiling 变高、approach 变快，或 measurement surface 被 inference budget/search topology 改写。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>Data reuse 不是预处理细节</h3>
+        $$D_{\mathrm{total}} = D_{\mathrm{unique}} \times \tau$$
+        <p>论文借 Tan et al. 的分解强调：unique data 与 reuse rate 共同构成 scaling surface。小数据集在 base policy 已支持技能时可能足够；大数据集在 tail coverage、multi-base、multi-verifier 或 multi-domain 时更重要。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>证据结构：survey 的“实验设计”与纳入边界</h2>
+      <p class="section-lead">这不是实验论文，没有统一训练 run、baseline 或 leaderboard。它的 evidence design 是 question-driven synthesis：纳入公开工作时，要求至少暴露 reasoning post-training data 的一个关键组件，例如 data object、verifier、trace source、reward channel、environment、scaling rule 或 release metadata。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Source type</th><th>纳入条件</th><th>用于支持的 claim</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Model report</td><td>暴露 post-training recipe、optimizer、verifier 或 release budget。</td><td>construction and scaling context；不单独用于 data-causal attribution。</td></tr>
+            <tr><td>Dataset / benchmark</td><td>暴露 task source、split、verifier、contamination audit 或 evaluation rule。</td><td>data-object taxonomy 与 evaluation surface。</td></tr>
+            <tr><td>Verifier / reward work</td><td>暴露 checker、PRM、judge、rubric 或 failure mode。</td><td>quality support 与 audit fields。</td></tr>
+            <tr><td>Agent / environment work</td><td>暴露 state、action、observation、terminal predicate 或 replay log。</td><td>environmental verification。</td></tr>
+            <tr><td>Scaling study</td><td>暴露 compute、reuse、inference budget 或 asymptote-efficiency claim。</td><td>scaling attribution。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Appendix Table A1 重建：作者明确排除只报告 leaderboard gain、但不描述数据对象或反馈接口的工作。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>主文覆盖</h3>
+          <p>正文按四个问题组织：Section 2 定义 verification contracts；Section 3 讨论 data quality；Section 4 展开 construction ledger；Section 5 讨论 scaling、data uniqueness、inference-time compute 和 verifier lineage。</p>
+        </div>
+        <div class="note-box">
+          <h3>附录补充</h3>
+          <p>附录给出 inclusion lens、source coverage clusters、cross-cutting axes、construction schematics、scaling views、agent trajectory audit fields、source placement guide 和 AI assistance disclosure。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Construction layer</th><th>Attribution handle</th><th>主要 trainable/audit 字段</th><th>隐藏 confound</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Prompt sourcing</td><td>problem support / pass-rate band</td><td>Q 是主字段，V 和 L 是 audit 字段。</td><td>题源、过滤器、base-conditioned difficulty 和泄漏会被“domain/count”掩盖。</td></tr>
+            <tr><td>Trace writing</td><td>inherited reasoning style</td><td>T 是主字段，Q、V、L 是 audit 字段。</td><td>teacher traces 可能传递 decomposition style、formatting、stopping behavior 和 uncertainty expression。</td></tr>
+            <tr><td>Search substrate</td><td>exploration and replayability</td><td>E 和 V 是主字段，Q、T、L 是 audit 字段。</td><td>成功 transcript 会删除 failed branches、recoveries、state diffs。</td></tr>
+            <tr><td>Self-play anchor</td><td>where curation re-enters</td><td>Q、V、L 是主字段，T 和 E 是 audit 字段。</td><td>anchor 决定哪些 generated behaviors 进入训练，self-play 不是无监督。</td></tr>
+            <tr><td>Reward / verifier</td><td>what counts as success</td><td>V 与 L 是核心字段，其余是 audit 字段。</td><td>formal checker、PRM、rubric judge 和 implicit selector 有不同 failure surface。</td></tr>
+            <tr><td>Frontier pipeline</td><td>where reports appear to converge</td><td>Q/T/E/V/L 全部需要披露。</td><td>不同系统可能在 visible RL scaffold 上相似，但 upstream data object 完全不同。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 2 重建：Q = prompt/source；T = trace or teacher；E = environment/substrate；V = verifier/reward；L = lineage。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>核心结论：如何读 reasoning-data release 与 scaling claim</h2>
+      <p class="section-lead">论文的“结果”是一套审稿/复现用的判断规则。最重要的结论是：不要把 optimizer 当作最终比较单位；任何 reported gain 都要回到 prompt support、trace teacher、substrate、anchor、verifier、scaffold 与 inference budget。</p>
+
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>结论 1：verifier-bearing sample 是最小可解释单元</h3>
+          <p>prompt-response pair 太薄。可解释样本必须包括 query/state、trace/actions、answer/evidence、feedback/verifier 和 metadata，尤其是 base model、sampling policy、verifier version、split 和 lineage。</p>
+        </div>
+        <div class="note-box good">
+          <h3>结论 2：quality claim 必须指定相对对象</h3>
+          <p>correctness 相对 verifier，difficulty 相对 base，trace quality 相对 trajectory，coverage 相对 lineage。任何缺少这些相对对象的“高质量数据”说法都不可审计。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>结论 3：agent data 应该发布 replayable episodes</h3>
+          <p>环境任务的 trainable signal 常在 failed actions、state diffs、recoveries 和 hidden predicates 中；只发布 clean success transcript 会删掉 credit assignment 的证据。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>结论 4：scaling report 要拆成三种 claim</h3>
+          <p>score 提升可能来自 data substrate 提高 ceiling、optimizer/scaffold 提高 efficiency，或者 inference-time compute/search topology 改变 observable。三者不能混为“model got better”。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Scaling knob</th><th>直接影响</th><th>必须披露的 release fields</th><th>解释风险</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Prompt / filter pool</td><td>主要影响 reachable ceiling $A$，也 conditioning efficiency。</td><td>source、filter、pass-rate band。</td><td>看似数据更大，实际可能只是 base 更匹配或过滤更激进。</td></tr>
+            <tr><td>Loss / clipping / entropy</td><td>主要影响 $B$ 或 $k$ 这类 approach efficiency。</td><td>objective、KL、batch、weighting。</td><td>optimizer gain 可能被 prompt pool 和 verifier change 混淆。</td></tr>
+            <tr><td>Reuse / epochs</td><td>主要影响 efficiency。</td><td>$D_{\mathrm{unique}}$、$\tau$、replay rule。</td><td>没有 unique/reuse 分解时，数据规模报告不可比较。</td></tr>
+            <tr><td>Search / TTT topology</td><td>主要改变 efficiency 与 measurement surface。</td><td>budget rule、selector、verifier、metric。</td><td>pass@N、parallel refinement、test-time training 不是同一个 observable。</td></tr>
+            <tr><td>Environment substrate</td><td>主要影响 ceiling，也 conditioning efficiency。</td><td>state、actions、replay、terminal check。</td><td>环境变更可能被误读为模型能力提升。</td></tr>
+            <tr><td>Verifier refresh</td><td>同时影响 ceiling 与 efficiency。</td><td>verifier card、attack tests、refresh log。</td><td>verifier 变强、变脆或被 hack 都会改变训练信号。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 3 重建：论文用 $A$ 表示 reachable ceiling，用 $B/k$ 表示 approach efficiency。</p>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/page_004_img_01.png" alt="Figure 4: quality support matrix" loading="lazy" />
+          <figcaption><strong>Figure 4.</strong> Quality support matrix：correctness、difficulty、trace quality、coverage 分别依赖 verifier、base、trajectory、lineage。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_004_img_02.png" alt="Figure 5: long trace is not good trace, hard item is not useful item" loading="lazy" />
+          <figcaption><strong>Figure 5.</strong> 两个质量陷阱：long trace 不等于 good trace；hard item 不等于 useful item。有效 difficulty 位于 base 的 always-fail 与 always-pass 之间。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_007_img_01.png" alt="Figure 7: asymptote-efficiency decomposition" loading="lazy" />
+          <figcaption><strong>Figure 7.</strong> Asymptote-efficiency decomposition：scaling result 可能改变 data substrate 的 reachable frontier，也可能只是更快接近该 frontier。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_008_img_01.png" alt="Figure 8: small-pool versus large-pool coverage" loading="lazy" />
+          <figcaption><strong>Figure 8.</strong> Small-pool vs large-pool coverage：小而精选的数据在 base 已支持技能时有效；大池在覆盖 tail、多 base、多 verifier 或多 domain 时更重要。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>Figure / Table 导航</h2>
+      <p class="section-lead">抽取工具成功获得正文 Figure 1-8 与附录 Figure A1-A6。表格内容主要来自 PDF 文本抽取并在本页重建；长表 A2/A4 作为附录导航记录，没有完整复制所有参考文献细节。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/page_006_img_01.png" alt="Figure 6: verifier families and failure surfaces" loading="lazy" />
+          <figcaption><strong>Figure 6.</strong> Verifier families and failure surfaces：formal checkers、process verifiers、learned reward models、rubric judges 和 implicit selectors 都是 reward data objects。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_018_img_01.png" alt="Figure A1: cross-cutting axes over verifier contracts" loading="lazy" />
+          <figcaption><strong>Figure A1.</strong> Cross-cutting axes：supervision granularity、behaviour bounds、cross-generational lineage 必须与 contract label 正交报告。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_019_img_01.png" alt="Figure A2: reasoning-data construction stack" loading="lazy" />
+          <figcaption><strong>Figure A2.</strong> Construction stack：prompt sourcing、trace writing、search substrate、anchors、verifiers 共同决定 downstream optimizer 看到的训练对象。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_020_img_01.png" alt="Figure A3: who writes the trace" loading="lazy" />
+          <figcaption><strong>Figure A3.</strong> Trace authorship：human experts、teacher models、self-distillation、process labels、tool grounding、self-play trajectories 的成本、可扩展性和 provenance 不同。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_020_img_02.png" alt="Figure A4: self-play relocates curation" loading="lazy" />
+          <figcaption><strong>Figure A4.</strong> Self-play relocates curation：STaR、R-Zero、Absolute Zero、TTRL、AlphaEvolve-style systems 的差异在于 anchor 如何把 rollout 变成 feedback。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_020_img_03.png" alt="Figure A5: what moves ceiling and efficiency" loading="lazy" />
+          <figcaption><strong>Figure A5.</strong> Ceiling movers vs efficiency movers：data substrate、verifier、environment 和 context 常移动 ceiling；optimizer、sampling、curriculum、precision 常影响 approach speed。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_020_img_04.png" alt="Figure A6: release timeline as scaling object" loading="lazy" />
+          <figcaption><strong>Figure A6.</strong> Release timeline as scaling object：release tick 不是中性时间戳，而是 versioned data artifact。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>复现清单：这篇 primer 能复现什么，不能复现什么</h2>
+      <p class="section-lead">作为 survey/primer，论文没有提供可运行训练代码或新 benchmark 数字。更合理的复现目标是复核 PDF、图表、纳入标准、source-placement logic，并把它转化为自己的 reasoning-data release checklist。</p>
+
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>可直接复核</h3>
+          <ul class="compact-list">
+            <li>arXiv v1 PDF，发布于 2026-06-01，共 22 页。</li>
+            <li>项目仓库：Awesome-LLM-Reasoning-Data。</li>
+            <li>正文 8 张主图与附录 6 张补充图均已抽取为本地图片。</li>
+            <li>Table 1、Table 2、Table 3、Table A1、Table A3 可由文本抽取重建。</li>
+            <li>附录声明主文是 question-driven synthesis，不是 formal meta-analysis。</li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <h3>不可严格复现</h3>
+          <ul class="compact-list">
+            <li>论文没有重新训练模型，因此不存在统一的 dataset/baseline/metric/hyperparameter 表。</li>
+            <li>150+ source 的完整结构化筛选表未在 PDF 中给出；Table A2 是 coverage clusters，而非逐条机器可审计 bibliography dataset。</li>
+            <li>closed pipelines、proprietary data mixtures、undocumented release practices 被作者明确列为 evidence limitation。</li>
+            <li>作者没有 independently re-run training recipes、audit contamination 或 validate every verifier。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>若要发布自己的 reasoning-data release</th><th>最低应记录字段</th><th>为什么</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Prompt / answer data</td><td>source、filter、split、base pass-rate band、sampling temperature、rollout count、verifier version。</td><td>保证 difficulty 与 correctness 可被对应到 base 和 verifier，而不是只报 domain/count。</td></tr>
+            <tr><td>CoT / process data</td><td>trace author、teacher model、process labels、execution context、localization tests、robustness checks。</td><td>防止 long CoT 被误读为 faithful reasoning。</td></tr>
+            <tr><td>RLVR / GRPO-style runs</td><td>prompt pool、group size、reward rule、invalid-output handling、KL/objective、batch、reuse rate、unique data。</td><td>把 optimizer efficiency 与数据 substrate 分开。</td></tr>
+            <tr><td>Agent / tool trajectories</td><td>initial state、action schema、observations、state diffs、failures/retries、terminal predicate、scaffold metadata、budget。</td><td>发布 replayable episodes，而不是清洗后的成功 transcript。</td></tr>
+            <tr><td>Self-play / self-evolution</td><td>anchor、selection rule、admissibility rule、replay policy、archive、verifier refresh、failure modes。</td><td>self-play 的核心不是“无监督”，而是 curation anchor 可审计。</td></tr>
+            <tr><td>Evaluation / benchmark</td><td>evaluation protocol、inference budget、search topology、seed、decontamination audit、release timestamp。</td><td>避免把 measurement change 误读成 model capability change。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Agent trajectory audit field</th><th>应发布内容</th><th>作用</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Task state</td><td>initial state、files、UI state、repository snapshot、environment version。</td><td>决定 episode 是否可 reset 和 replay。</td></tr>
+            <tr><td>Goal and constraints</td><td>user goal、hidden tests、policy constraints、allowed/disallowed actions。</td><td>区分 task success 与 scaffold compliance。</td></tr>
+            <tr><td>Action schema</td><td>tool/API schema、action grammar、argument format、timeout 和 permission rules。</td><td>定义模型实际可用 action space。</td></tr>
+            <tr><td>Observations</td><td>tool outputs、browser/app observations、terminal logs、screenshots、error messages。</td><td>暴露 episode 中模型真正可见的反馈。</td></tr>
+            <tr><td>State diffs</td><td>file changes、patches、database changes、UI transitions、environment deltas。</td><td>让 credit assignment 和 recovery behavior 可检查。</td></tr>
+            <tr><td>Failures and retries</td><td>invalid actions、failed calls、rejected patches、recovery attempts、backtracking。</td><td>保留 cleaned SFT traces 常删除的分支。</td></tr>
+            <tr><td>Terminal predicate</td><td>success condition、unit tests、grader、judge、environment predicate。</td><td>定义 completion 或 reward。</td></tr>
+            <tr><td>Scaffold metadata</td><td>planner、tool wrapper、memory、prompt template、agent loop、stopping rule。</td><td>避免把 scaffold change 误判为 model change。</td></tr>
+            <tr><td>Budget and sampling</td><td>rollout count、token budget、time limit、temperature、pass@k or selector。</td><td>使 inference-time compute 可比较。</td></tr>
+            <tr><td>Lineage and split</td><td>generator、teacher、verifier version、filtering rule、split、contamination audit。</td><td>支持跨 generation 和 release 的 attribution。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Appendix Table A3 重建：这是对 agent、tool use、self-evolution 和 replay 数据最可操作的部分。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>Reviewer Critique</h2>
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>优点</h3>
+          <ul class="compact-list">
+            <li>把 reasoning-data release 从“数据集列表”提升到 attribution interface，直接服务 post-training recipe 审稿和复现。</li>
+            <li>三类 verification contract 把 math/code、agent/environment、medical/safety/rubric 等看似不同的任务放到同一个 feedback 框架下。</li>
+            <li>Table 1 的反直觉教训很实用，能快速识别 data release 中被省略的关键字段。</li>
+            <li>对 scaling 的 ceiling/efficiency/measurement surface 分解，能缓解 RLVR、distillation、test-time compute 讨论中的概念混淆。</li>
+            <li>Appendix A3 给 agent trajectory release 提供了非常具体的 audit fields，适合直接改造成实验日志 schema。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>不足</h3>
+          <ul class="compact-list">
+            <li>作者明确说不是 formal meta-analysis；没有完整检索 query、数据库、筛选流程、inter-rater agreement 或机器可复查的 source table。</li>
+            <li>150+ studies 的综合主要是概念归纳，缺少定量 evidence strength 分级；读者需要自己判断某个结论来自 peer-reviewed paper、arXiv preprint 还是 system report。</li>
+            <li>论文没有提供 checklist 的 JSON schema 或 benchmark card 模板，实际落地到 release 工程还需要二次结构化。</li>
+            <li>对 multimodal、multilingual、co-evolving verifier-generator 的讨论主要放在 limitation 里，尚未展开成完整 taxonomy。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="critique-box danger">
+          <h3>潜在失败模式</h3>
+          <p>如果研究者只按论文框架补字段，但不做 verifier attack、contamination audit 或 replay test，release 仍可能“看起来可审计”但实际不可复现。</p>
+        </div>
+        <div class="critique-box danger">
+          <h3>隐藏 confound</h3>
+          <p>frontier reports 常把 data mixture、teacher、scaffold、budget 和 optimizer 同时改变；即使按本框架阅读，也可能因为闭源细节缺失而无法做 causal attribution。</p>
+        </div>
+        <div class="critique-box danger">
+          <h3>伦理与安全</h3>
+          <p>privacy-bearing traces、expert rubrics、agent actions、高成本 RL pipeline 与 verifier hacking 都要求 release 同时报告 license、provenance、annotator welfare、safety boundaries 和 compute disclosure。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>对我的研究方向的启发</h2>
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>1. RLVR 数据集要从 answer verifier 升级到 release card</h3>
+          <p>数学/代码 RLVR 不应只报 final answer verifier。需要把 extractor、invalid-output handling、pass-rate band、group sampling、verifier version 和 attack tests 放进数据 card。</p>
+        </div>
+        <div class="note-box">
+          <h3>2. Agent replay 比成功率更接近训练信号</h3>
+          <p>对 tool use、SWE、browser、GUI agent，最有价值的不是 clean transcript，而是 failed calls、state diffs、recoveries、terminal predicate 和 scaffold metadata。replay buffer 应成为数据 release 的一等对象。</p>
+        </div>
+        <div class="note-box">
+          <h3>3. Self-evolution 的关键是 anchor diversity</h3>
+          <p>self-play 不会取消人工/规则 curation，只会把 curation 移到 anchor。研究 questioner-solver、archive replay、majority vote 或 interpreter feedback 时，要明确 anchor 的可靠性与覆盖边界。</p>
+        </div>
+        <div class="note-box">
+          <h3>4. Diversity 不能只按题面去重</h3>
+          <p>coverage 是 source mixture、teacher lineage、verifier failure surface 和 base-conditioned active band 的函数。数据多样性应同时测 prompt、trace author、verifier、difficulty band 和 lineage。</p>
+        </div>
+        <div class="note-box">
+          <h3>5. Evaluation 要报告 measurement surface</h3>
+          <p>pass@N、test-time training、parallel refinement、long-context search、Markovian chunking 和 tool budget 不是同一种 observable。比较前要把 inference budget 与 search topology 固定或单独报告。</p>
+        </div>
+        <div class="note-box">
+          <h3>6. 论文可直接转成实验日志 schema</h3>
+          <p>把 Table A3 做成 agent trajectory logging schema，把 Table 2/3 做成 post-training run card，可以让 RLVR/agent/self-evolution 实验更容易被审稿人追踪归因。</p>
+        </div>
+      </div>
+      <div class="note-box">
+        <h3>一句话总结</h3>
+        <p>这篇 primer 最值得带走的不是某个新 benchmark 数字，而是一个审计习惯：每次看到 reasoning model 分数提升，都先问“data object、verifier、base、lineage、scaffold、budget 中到底哪个变了”。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

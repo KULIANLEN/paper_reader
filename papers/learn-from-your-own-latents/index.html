@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Learn from your own latents and not from tokens · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --paper-ink: #172033;
+      --paper-muted: #5c6474;
+      --paper-line: rgba(45, 55, 72, 0.15);
+      --paper-bg-soft: #f6f8fb;
+      --paper-blue: #2563eb;
+      --paper-teal: #0f766e;
+      --paper-amber: #b45309;
+      --paper-rose: #be123c;
+      --paper-violet: #6d28d9;
+      --paper-panel: rgba(255, 255, 255, 0.82);
+      --paper-shadow: 0 18px 45px rgba(30, 41, 59, 0.10);
+    }
+
+    body.paper-page {
+      color: var(--paper-ink);
+      background:
+        linear-gradient(180deg, rgba(246, 248, 251, 0.96), rgba(255, 255, 255, 1) 42%),
+        radial-gradient(circle at 20% 0%, rgba(37, 99, 235, 0.08), transparent 34%),
+        radial-gradient(circle at 84% 8%, rgba(15, 118, 110, 0.08), transparent 36%);
+    }
+
+    .paper-article {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 24px 72px;
+    }
+
+    .paper-hero {
+      min-height: 68vh;
+      display: grid;
+      align-content: center;
+      gap: 28px;
+      padding: 34px 0 42px;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr);
+      gap: 32px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      color: var(--paper-teal);
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .eyebrow span {
+      width: 26px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--paper-blue), var(--paper-teal));
+    }
+
+    .paper-hero h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(2.5rem, 7vw, 5.8rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .paper-hero .subtitle {
+      margin: 0;
+      max-width: 900px;
+      color: var(--paper-muted);
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      line-height: 1.65;
+    }
+
+    .meta-panel {
+      padding: 22px;
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      background: var(--paper-panel);
+      box-shadow: var(--paper-shadow);
+    }
+
+    .meta-panel dl {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+    }
+
+    .meta-panel div {
+      display: grid;
+      gap: 4px;
+    }
+
+    .meta-panel dt {
+      color: var(--paper-muted);
+      font-size: 0.82rem;
+    }
+
+    .meta-panel dd {
+      margin: 0;
+      font-weight: 650;
+    }
+
+    .paper-tags,
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .paper-tags span,
+    .quick-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 12px;
+      border: 1px solid var(--paper-line);
+      border-radius: 999px;
+      color: var(--paper-ink);
+      background: rgba(255, 255, 255, 0.68);
+      text-decoration: none;
+      font-size: 0.93rem;
+    }
+
+    .quick-links a {
+      font-weight: 650;
+    }
+
+    .paper-section {
+      padding: 58px 0;
+      border-bottom: 1px solid var(--paper-line);
+      scroll-margin-top: 96px;
+    }
+
+    .section-kicker {
+      margin: 0 0 12px;
+      color: var(--paper-teal);
+      font-weight: 750;
+    }
+
+    .paper-section h2 {
+      margin: 0 0 18px;
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .paper-section h3 {
+      margin: 32px 0 12px;
+      font-size: 1.34rem;
+      letter-spacing: 0;
+    }
+
+    .paper-section p,
+    .paper-section li {
+      color: var(--paper-muted);
+      line-height: 1.78;
+      font-size: 1.02rem;
+    }
+
+    .paper-section strong {
+      color: var(--paper-ink);
+    }
+
+    .lead {
+      max-width: 920px;
+      font-size: 1.14rem !important;
+      color: #394154 !important;
+    }
+
+    .insight-grid,
+    .contribution-grid,
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .mini-card {
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      padding: 18px;
+      background: var(--paper-panel);
+      box-shadow: 0 12px 30px rgba(30, 41, 59, 0.06);
+    }
+
+    .mini-card b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--paper-ink);
+      font-size: 1.02rem;
+    }
+
+    .mini-card p {
+      margin: 0;
+      font-size: 0.96rem;
+    }
+
+    .formula-box {
+      overflow-x: auto;
+      margin: 20px 0;
+      padding: 18px 20px;
+      border-left: 4px solid var(--paper-blue);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .formula-box p {
+      margin: 0 0 8px;
+    }
+
+    .note-strip {
+      margin: 20px 0;
+      padding: 16px 18px;
+      border: 1px solid rgba(180, 83, 9, 0.28);
+      border-radius: 8px;
+      background: rgba(254, 243, 199, 0.45);
+      color: #6b3f0f;
+      line-height: 1.7;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .plain-list {
+      padding-left: 1.2rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 22px 0;
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--paper-line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--paper-ink);
+      background: rgba(241, 245, 249, 0.9);
+      font-weight: 750;
+    }
+
+    td {
+      color: var(--paper-muted);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .figure-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    figure.figure-card {
+      margin: 0;
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.86);
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(30, 41, 59, 0.06);
+    }
+
+    .figure-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      background: white;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .figure-card.tall img {
+      aspect-ratio: 4 / 5;
+    }
+
+    .figure-card.square img {
+      aspect-ratio: 1 / 1;
+    }
+
+    figcaption {
+      padding: 12px 14px 14px;
+      color: var(--paper-muted);
+      line-height: 1.55;
+      font-size: 0.93rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.10);
+      color: var(--paper-blue);
+      font-weight: 750;
+      font-size: 0.82rem;
+    }
+
+    .critique-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .critique-grid .mini-card:nth-child(1) {
+      border-top: 4px solid var(--paper-teal);
+    }
+
+    .critique-grid .mini-card:nth-child(2) {
+      border-top: 4px solid var(--paper-amber);
+    }
+
+    .critique-grid .mini-card:nth-child(3) {
+      border-top: 4px solid var(--paper-rose);
+    }
+
+    .critique-grid .mini-card:nth-child(4) {
+      border-top: 4px solid var(--paper-violet);
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .two-col,
+      .insight-grid,
+      .contribution-grid,
+      .metric-grid,
+      .figure-grid,
+      .critique-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .paper-article {
+        padding-inline: 18px;
+      }
+
+      .paper-hero {
+        min-height: auto;
+        padding-top: 24px;
+      }
+    }
+  </style>
+</head>
+<body class="paper-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>arXiv:2605.27734</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+      <a href="#takeaways">启发</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow"><span></span>Reasoning · Self-supervised Learning · 2026</p>
+          <h1>Learn from your own latents and not from tokens</h1>
+          <p class="subtitle">这篇理论论文用 Random Hierarchy Model 证明：如果监督信号来自模型已经学到的同层 latent，而不是原始 token，那么恢复层级潜变量的样本复杂度可从 token-level SSL 的深度指数依赖降到近似 \(v m^3\)，并用 ILC、SLC 与 data2vec 实验支持该结论。</p>
+          <div class="paper-tags" aria-label="tags">
+            <span>latent-prediction</span>
+            <span>sample-complexity</span>
+            <span>data2vec</span>
+            <span>RHM</span>
+            <span>hierarchical-representations</span>
+          </div>
+          <div class="quick-links" aria-label="paper links">
+            <a href="https://arxiv.org/abs/2605.27734">arXiv</a>
+            <a href="https://arxiv.org/pdf/2605.27734.pdf">PDF</a>
+            <a href="#figures">Figure map</a>
+            <a href="#reproduction">复现清单</a>
+          </div>
+        </div>
+        <aside class="meta-panel" aria-label="paper metadata">
+          <dl>
+            <div>
+              <dt>标题</dt>
+              <dd>Learn from your own latents and not from tokens: A sample-complexity theory</dd>
+            </div>
+            <div>
+              <dt>作者</dt>
+              <dd>Daniel J. Korchinski, Alessandro Favero, Matthieu Wyart</dd>
+            </div>
+            <div>
+              <dt>版本</dt>
+              <dd>arXiv:2605.27734v1 · submitted 2026-05-26</dd>
+            </div>
+            <div>
+              <dt>规模</dt>
+              <dd>10 页主文；28 页含附录；主文 5 图，全文 14 图 1 表</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+
+      <div class="contribution-grid">
+        <div class="mini-card">
+          <b>核心定理</b>
+          <p>在 balanced / separated RHM 和稳定 clustering 假设下，ILC 以 \(P_{\mathrm{ILC}}\asymp v m^3/(1-f)\) 的样本量恢复非 root hierarchy，深度 \(L\) 只进入对数项。</p>
+        </div>
+        <div class="mini-card">
+          <b>可训练架构</b>
+          <p>SLC 用 predictor-clusterer 模块模拟 ILC，并显示 end-to-end gradient descent 与更局部的 stop-gradient 训练都能接近同一 \(v m^3\) 缩放。</p>
+        </div>
+        <div class="mini-card">
+          <b>data2vec 解释</b>
+          <p>论文把 data2vec 的 EMA teacher target 解释为递归 latent prediction：当低层 latent 进入 teacher target 后，下一层学习又变成同样的 cousin-tuple clustering。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="paper-section" id="motivation">
+      <p class="section-kicker">1. 研究动机</p>
+      <h2>token 不是最省样本的监督尺度</h2>
+      <p class="lead">论文关注一个基础问题：为什么大规模 generative models 需要远超人类经验量级的数据？作者选择的假设不是“更多模态”或“更强环境交互”，而是<strong>监督目标的抽象层级</strong>：如果模型预测的是自己的 latent representation，而不是表层 token，组合结构中的长距离统计信号会少衰减很多。</p>
+
+      <div class="two-col">
+        <div>
+          <h3>已有目标的瓶颈</h3>
+          <p>在 RHM 这类有隐藏树结构的数据上，supervised classification 使用 root label 作为可观测量，低层规则要通过从 tuple 到 root 的长路径建立相关性。token-level SSL 使用 masked/noised token 作为目标，低层 latent 可先学到，但高层 latent 仍要通过 descendant channel 回到 token，导致每升一层多一个 \(m\) 因子。</p>
+          <div class="formula-box">
+            <p>论文给出的阶段性缩放可概括为：</p>
+            \[
+              P^{\mathrm{sup}}_{\ell}\asymp v m^{L-\ell}, \qquad
+              P^{\mathrm{tok}}_{1}\asymp v m^3, \qquad
+              P^{\mathrm{tok}}_{\ell}\asymp v m^{\ell+2}.
+            \]
+            <p>因此 token-level SSL 的整体瓶颈是最高非 root latent：\(P_{\mathrm{tok}}\asymp v m^{L+1}\)。</p>
+          </div>
+        </div>
+        <div>
+          <h3>作者的反事实</h3>
+          <p>如果第 \(\ell\) 层 latent 已经恢复，就把 conditioning object 和 prediction target 都提升到第 \(\ell\) 层。这样第 \(\ell+1\) 层学习不再经由 raw token，而是同层 cousin latent 的局部相关性问题。每一层的统计难度都像第一层一样，整体样本量不再指数依赖 \(L\)。</p>
+          <div class="note-strip">这也是题名 “learn from your own latents and not from tokens” 的精确含义：不是简单地把 token embedding 当 target，而是让已学到的 latent 成为下一层抽象的监督载体。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="paper-section" id="method">
+      <p class="section-kicker">2. 数学表示、建模与算法流程</p>
+      <h2>RHM、ILC、SLC 与 data2vec 的同一条统计主线</h2>
+
+      <h3>Random Hierarchy Model</h3>
+      <p>RHM 是固定 \(s\)-叉树上的 probabilistic context-free grammar。树深为 \(L\)，每层 vocabulary 大小为 \(v\)。第 0 层是可见序列 \(x_i=h_i^{(0)}\)，第 \(1,\dots,L\) 层是隐藏符号。每层 \(\ell\) 从 \(V_\ell^s\) 里随机选出 \(v m\) 个合法 tuple，并分成 \(v\) 个 parent group，每组 \(m\) 条规则。</p>
+      <div class="formula-box">
+        \[
+          S_\ell=\bigsqcup_{a\in V_{\ell+1}} R_{\ell,a}, \qquad |S_\ell|=v m, \qquad f=\frac{m}{v^{s-1}}.
+        \]
+        <p>若 tuple \(\nu\in R_{\ell,a}\)，则 \(\mathrm{par}_\ell(\nu)=a\)。同一 parent 下的合法 tuple 是 synonyms。因为 rule map 是 injective，合法 tuple 的 parent 唯一。</p>
+      </div>
+
+      <h3>相关性视角</h3>
+      <p>学习 grammar 本质上是把 synonyms 聚到一起。对 level-\(\ell\) tuple \(T^{(\ell)}\) 和树上另一个 observable \(Z\)，作者用 connected correlation 描述统计信号：</p>
+      <div class="formula-box">
+        \[
+          C_Z(\nu,z)=\mathbb{P}[T^{(\ell)}=\nu, Z=z]-\mathbb{P}[T^{(\ell)}=\nu]\mathbb{P}[Z=z].
+        \]
+      </div>
+      <p>如果 \(\nu,\nu'\) 是 synonyms，并且 \(Z\) 只通过 parent 依赖该 tuple，则 \(C_Z(\nu,\cdot)=C_Z(\nu',\cdot)\)。问题在于 \(Z\) 离 tuple parent 越远，沿隐藏树传播的信号越弱；每个未解析 production rule 大致带来一个 \(m\) 因子。</p>
+
+      <h3>ILC: Iterative Latent Clustering</h3>
+      <p>ILC 把上述相关性变成 clustering。给定一个 level-\(\ell\) tuple \(T\) 和同层 cousin target \(Z\)，定义条件 context vector：</p>
+      <div class="formula-box">
+        \[
+          \phi_\ell(\nu)=\mathbb{E}[e_Z\mid T=\nu]\in\Delta^{v-1}.
+        \]
+      </div>
+      <p>synonyms 共享同一个 \(\phi_\ell\)。算法从 \(\hat h^{(0)}=x\) 开始，在每层形成 tuple、估计 observed support、计算经验 cousin context vector、把 \(v m\) 个 context vector 聚成 \(v\) 类，并把 cluster id 作为 \(\hat h^{(\ell+1)}\)。</p>
+
+      <figure class="figure-card" style="max-width: 760px;">
+        <img src="assets/crops/algorithm-01-ilc.png" alt="Algorithm 1 Iterative Latent Clustering" loading="lazy" />
+        <figcaption>Algorithm 1 的原文裁剪：ILC 的 predictor 估计 cousin context vector，clusterer 把 context vector 映射为下一层 latent label。</figcaption>
+      </figure>
+
+      <h3>ILC 恢复定理</h3>
+      <p>论文正式定理依赖三个条件：grammar balanced、parent context vectors separated、clustering module 对小扰动稳定。非 root hierarchy 的恢复样本量为：</p>
+      <div class="formula-box">
+        \[
+          P \ge C\left[
+            v m \log\frac{L v m}{\delta}
+            + \frac{v m^3}{1-f}\log\frac{L v m}{\delta}
+          \right].
+        \]
+        <p>在 \(f\) 远离 1 时，主项是 \(P_{\mathrm{ILC}}\asymp v m^3\)，并以至少 \(1-\delta\) 的概率恢复 \(h^{(1)},\dots,h^{(L-1)}\)，允许每层 label 独立 permutation。</p>
+      </div>
+
+      <h3>SLC: 可微 predictor-clusterer 版本</h3>
+      <p>SLC 用 \(L-1\) 个相同结构的模块模拟 ILC。每个模块有两个子网络：<strong>Pred</strong> 对 level-\(\ell\) 的 \(s\)-tuple 预测 cousin token distribution；<strong>Clust</strong> 把 prediction vector 映射到 soft codebook，作为 level-\(\ell+1\) token 输入下一层。</p>
+      <div class="formula-box">
+        \[
+          \hat\phi^{(\ell)}(x)=
+          (\mathrm{SM}\circ\mathrm{CNN}_3\circ A\circ\mathrm{CNN}_2\circ A\circ\mathrm{CNN}_1)(x).
+        \]
+        \[
+          S_{ij}=\frac{1}{2}\left(1+\frac{\hat\phi_i\cdot\hat\phi_j}{\|\hat\phi_i\|_2\|\hat\phi_j\|_2}\right).
+        \]
+        <p>clustering loss 同时拉近高相似 prediction 的 cluster assignment、分开低相似但 assignment 重叠的样本，并用 sparsity reward 促进可解释的离散标签。</p>
+      </div>
+
+      <h3>data2vec 的归纳解释</h3>
+      <p>data2vec 使用 student-teacher setup：student 看到 masked input \(S\)，teacher 看到完整 input \(x\)，目标 \(Y_i(x)\) 是 teacher 最后 \(K\) 层 activation 的平均。作者的理论解释是：EMA teacher 会把 student 已学会的 latent 带入下一阶段 target。</p>
+      <div class="formula-box">
+        \[
+          Y_i(x)=F_i(S)+\sum_{a=0}^{\ell} B_a e_{z_i^{(a)}}+\mathrm{residual}.
+        \]
+        <p>Phase 0 等价于 masked token prediction，学到 level-1 latent，阈值 \(P\gtrsim v m^3\)。Phase \(\ell\ge 1\) 时，teacher target 中已有 \(h^{(1)},\dots,h^{(\ell)}\)，输入上下文也可解析到 level-\(\ell\)，于是下一步又变成 ILC 的 cousin-tuple clustering，仍是同一个 \(v m^3\) 门槛。</p>
+      </div>
+      <div class="note-strip">不确定性标注：data2vec 部分不是完整的 multi-step gradient descent 严格证明，而是基于 A1 “targets carry learned latents” 与 A2 “correlation learning” 的理论归纳，并通过 Figure 4、5、13、14 的实验现象支持。</div>
+    </section>
+
+    <section class="paper-section" id="experiments">
+      <p class="section-kicker">3. 实验设计与复现细节</p>
+      <h2>三个层面验证同一个 \(v m^3\) 缩放</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>实验</th>
+              <th>研究问题</th>
+              <th>设置</th>
+              <th>评估</th>
+              <th>核心结论</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ILC clustering</td>
+              <td>显式递归 clustering 是否达到理论阈值</td>
+              <td>RHM，\(L=5,s=3,v=8\)，varying \(m\)；每层用 k-means 聚类 context vectors</td>
+              <td>与 ground-truth latent label 做最佳 permutation matching 后的 reconstruction accuracy</td>
+              <td>以 \(P/(v m^3)\) 重标定后曲线 collapse，恢复阈值随 \(m^3\) 缩放</td>
+            </tr>
+            <tr>
+              <td>SLC end-to-end</td>
+              <td>gradient-trained predictor-clusterer 是否饱和 ILC 统计界</td>
+              <td>\(L=4,s=3,v=10\)，varying \(m\)；最终层 representation 冻结后训练 linear probe</td>
+              <td>top-level non-root latent 的 probe accuracy；附录用 \(L=3,\dots,7\) 做 depth sweep</td>
+              <td>SLC 曲线按 \(v m^3\) collapse，且 depth sweep 支持样本复杂度不随 \(L\) 指数增长</td>
+            </tr>
+            <tr>
+              <td>SLC local rules</td>
+              <td>是否必须 end-to-end backprop 和 EMA teacher</td>
+              <td>\(L=4,v=10,m=10,s=3\)，比较 full SGD、layer stop-gradient、predictor-to-clusterer stop-gradient</td>
+              <td>classification accuracy</td>
+              <td>仅 layer stop-gradient 且无 EMA 时可能 collapse；阻断 predictor-to-clusterer 梯度后，局部信号仍能学习</td>
+            </tr>
+            <tr>
+              <td>data2vec online</td>
+              <td>单个 latent-prediction SSL 是否隐式做 hierarchical clustering</td>
+              <td>\(L=4,s=2,v=16\)，\(m=3,\dots,7\)，online fresh samples；mask probability 0.15</td>
+              <td>mean-pooled final features 上训练 MLP probe 预测 root label</td>
+              <td>root classification accuracy 按 \(P/(v m^3)\) collapse；不符合 token-level SSL 的 \(v m^5\) 预期</td>
+            </tr>
+            <tr>
+              <td>data2vec geometry</td>
+              <td>encoder 是否真的把 synonyms 聚近</td>
+              <td>对 input 做 synonym swap 与 generic swap，比较 hidden representation 变化</td>
+              <td>synonym clustering score \(C_\ell\)，以及 teacher target 中 latent 的 linear probe accuracy</td>
+              <td>不同 \(\ell\) 的曲线也按 \(v m^3\) collapse，支持递归 latent clustering 机制</td>
+            </tr>
+            <tr>
+              <td>data2vec offline</td>
+              <td>固定训练集重复 epoch 时，样本数与优化步数能否解耦</td>
+              <td>固定 \(P\) unique strings，多 epoch pretraining</td>
+              <td>linear probe 和 MLP probe</td>
+              <td>offline 下同样观察到 \(v m^3\) collapse</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>SLC 训练细节</h3>
+      <p>附录 C 给出 SLC 的关键实现：输入 one-hot 到维度 \(d_h\)，每个模块把 \(s^{L-\ell}\) 长度序列压缩到 \(s^{L-\ell-1}\)。默认训练使用 AdamW、Jacobian descent / UPGrad，主要超参数包括 \(\alpha_{\mathrm{ema}}=0.015\)、learning rate \(3\times 10^{-3}\)、weight decay \(10^{-3}\)、hidden width \(d_{h2}=150\)、batch size 32、clustering dimension \(d_h=128\)、similarity margin \(S_m=0.8\)、\(\lambda_{\mathrm{sep}}=0.5\)、\(N_{\mathrm{compare}}=300\)、\(\lambda_{\mathrm{spars}}=10^{-2}\)。这些在 \(L=5,v=16,m=8,s=3\) 上用 Optuna TPE + Hyperband 调过。</p>
+
+      <h3>Table 1: data2vec hyperparameters</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Group</th>
+              <th>Hyperparameter</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="9">Encoder architecture</td><td>hidden dim \(d_{\mathrm{model}}\)</td><td>2048</td></tr>
+            <tr><td>attention heads \(n_h\)</td><td>32</td></tr>
+            <tr><td>head dim</td><td>64</td></tr>
+            <tr><td>encoder layers \(n_l\)</td><td>8</td></tr>
+            <tr><td>FFN dim \(d_{\mathrm{ff}}\)</td><td>8192 \(=4d_{\mathrm{model}}\)</td></tr>
+            <tr><td>non-linearity</td><td>GELU</td></tr>
+            <tr><td>dropout</td><td>0.1</td></tr>
+            <tr><td>positional / token embeddings</td><td>learned, \(T\times d_{\mathrm{model}}\); learned, \(V_{\mathrm{tok}}=v+2\) ids</td></tr>
+            <tr><td>LayerNorm placement</td><td>pre-LN</td></tr>
+            <tr><td rowspan="8">data2vec objective</td><td>mask probability</td><td>0.15</td></tr>
+            <tr><td>mask span length</td><td>1</td></tr>
+            <tr><td>top-\(K\) teacher layers averaged</td><td>\(K=4\)</td></tr>
+            <tr><td>per-layer LayerNorm of targets</td><td>yes</td></tr>
+            <tr><td>global LayerNorm of targets</td><td>no</td></tr>
+            <tr><td>regression head depth</td><td>1 linear layer</td></tr>
+            <tr><td>loss</td><td>smooth L1, \(\beta=4\)</td></tr>
+            <tr><td>teacher EMA decay \(\mu\)</td><td>0.99, constant, no annealing</td></tr>
+            <tr><td rowspan="8">Optimization</td><td>optimizer</td><td>AdamW</td></tr>
+            <tr><td>\((\beta_1,\beta_2)\)</td><td>(0.9, 0.98)</td></tr>
+            <tr><td>weight decay</td><td>0.01, excluding bias / LayerNorm</td></tr>
+            <tr><td>learning rate</td><td>\(\eta=10^{-4}\), constant</td></tr>
+            <tr><td>LR schedule</td><td>none, no warmup, no decay</td></tr>
+            <tr><td>gradient clipping</td><td>global L2 norm \(\le 1.0\)</td></tr>
+            <tr><td>batch size \(B\)</td><td>512</td></tr>
+            <tr><td>training steps \(T_{\mathrm{steps}}\)</td><td>262,144</td></tr>
+            <tr><td rowspan="5">Probes</td><td>pooling</td><td>mean over positions</td></tr>
+            <tr><td>linear probe</td><td>\(\mathrm{Linear}(d_{\mathrm{model}},v)\)</td></tr>
+            <tr><td>MLP probe</td><td>\(d_{\mathrm{model}}\rightarrow 2d_{\mathrm{model}}\rightarrow v\), GELU, dropout 0.1</td></tr>
+            <tr><td>probe optimizer</td><td>Adam, lr \(10^{-3}\)</td></tr>
+            <tr><td>probe steps per eval</td><td>2000 for each linear / MLP probe</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Compute budget</h3>
+      <p>作者报告：SLC Figure 3 约 10 H100 hours；\(L\)-scaling Figure 12 约 100 H100 hours；Figure 9 约 3 H100 hours；data2vec experiments 约 1000 H100 hours。Optuna sweeps 和 preliminary experiments 没有给出估计。</p>
+    </section>
+
+    <section class="paper-section" id="results">
+      <p class="section-kicker">4. 实验结果与核心结论</p>
+      <h2>最重要的结论不是“data2vec 更好”，而是“latent target 改变了可见相关性的距离”</h2>
+
+      <div class="metric-grid">
+        <div class="mini-card">
+          <b>理论缩放</b>
+          <p>token-level SSL: \(P_{\mathrm{tok}}\asymp v m^{L+1}\)。learn-from-latent: \(P_{\mathrm{latent}}\asymp v m^3\)，对 \(L\) 无指数依赖。</p>
+        </div>
+        <div class="mini-card">
+          <b>ILC 验证</b>
+          <p>k-means 递归恢复全非 root hierarchy；在 \(P/(v m^3)\) 轴上 collapse，说明第一层门槛足以逐层爬升。</p>
+        </div>
+        <div class="mini-card">
+          <b>SLC 验证</b>
+          <p>可微模块通过 gradient descent 达到同一缩放；局部 stop-gradient 条件下仍可工作，提示不一定需要全局 end-to-end credit assignment。</p>
+        </div>
+        <div class="mini-card">
+          <b>data2vec 验证</b>
+          <p>online 与 offline regimes 都支持 \(v m^3\)；root probe 需要解析所有非 root latent，因此这是强于只看低层表示的证据。</p>
+        </div>
+        <div class="mini-card">
+          <b>geometry 证据</b>
+          <p>synonym swap 引起的 representation shift 小于 generic swap，且 \(C_\ell\) 曲线 collapse，说明 encoder 几何上在聚合 synonyms。</p>
+        </div>
+        <div class="mini-card">
+          <b>H-JEPA 启示</b>
+          <p>若单个 data2vec 已经隐式做 multi-scale latent prediction，显式堆叠 H-JEPA 可能收益有限；但这只在 RHM 和本文 assumptions 下成立。</p>
+        </div>
+      </div>
+
+      <h3>如何读 Figure 1</h3>
+      <p>Figure 1 把三类目标的 weakest pertinent correlation 可视化。supervised classification 的 target 在 root，低层 tuple 到 root 的 tree-distance 最大；token-level SSL 的 target 在 leaf，高层 latent 要向下穿过 descendant channel；latent SSL 则把 target 提升到同层 cousin，使每一层都保持局部统计问题。</p>
+
+      <h3>如何读 Figure 4 和 Figure 5</h3>
+      <p>Figure 4 的右图不是直接预测某个低层 latent，而是冻结 data2vec encoder 后，用 pooled final-layer features 做 root classification。因为 root classification 需要所有非 root hierarchy 被解析，再加上顶层 tuple 到 root partition 的少量 labeled examples，所以 \(v m^3\) collapse 是对“隐式层级恢复”的更强证据。Figure 5 进一步展示 encoder representation 对 synonyms 的不变性：\(C_\ell&gt;0\) 表示 synonym swap 比 generic swap 更少改变表示。</p>
+
+      <h3>负结果和边界</h3>
+      <p>Figure 11 用 token-level SSL 的 \(m^{L+1}\) 轴尝试 collapse，结果明显变差；这支持作者选择 \(m^3\) 而不是 token baseline。另一方面，论文没有在真实语言或图像上验证“突破 scaling laws”，主文最后也把 controlled comparison with next-token baseline 作为后续建议，而非已完成结论。</p>
+    </section>
+
+    <section class="paper-section" id="figures">
+      <p class="section-kicker">5. Figure / Table 导航</p>
+      <h2>实际图表裁剪与阅读索引</h2>
+      <p class="lead">原 PDF 的图多为矢量绘制，PyMuPDF 未抽出独立图片；这里使用渲染页手工裁剪。每张 crop 都来自本 build 目录的 `assets/pages/page_*.png`，caption 在多数 crop 中保留，复杂数值仍以原 PDF 为准。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/crops/figure-01-sample-complexity.png" alt="Figure 1 sample complexity comparison" loading="lazy" />
+          <figcaption><strong>Figure 1.</strong> 三种目标的样本复杂度示意：supervised、token-level SSL、learn-from-latent SSL。</figcaption>
+        </figure>
+        <figure class="figure-card square">
+          <img src="assets/crops/figure-02-ilc-graphical.png" alt="Figure 2 ILC graphical representation" loading="lazy" />
+          <figcaption><strong>Figure 2.</strong> Algorithm 1 的图形化版本：predictor 估计 context vector，clusterer 产生下一层 latent。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-03-ilc-slc-scaling.png" alt="Figure 3 ILC and SLC scaling" loading="lazy" />
+          <figcaption><strong>Figure 3.</strong> ILC 与 SLC 在 \(P/(v m^3)\) 轴上的 scaling collapse。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-04-data2vec-rhm.png" alt="Figure 4 data2vec on RHM" loading="lazy" />
+          <figcaption><strong>Figure 4.</strong> data2vec teacher-student 目标与 online RHM pretraining 的 root probe collapse。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-05-data2vec-synonyms.png" alt="Figure 5 data2vec clusters synonyms" loading="lazy" />
+          <figcaption><strong>Figure 5.</strong> data2vec encoder 对不同层 synonyms 的 clustering score。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-06-ssl-architectures.png" alt="Figure 6 SSL architectures comparison" loading="lazy" />
+          <figcaption><strong>Figure 6.</strong> H-JEPA、V-JEPA 2.1、Bootleg、SLC 的 loss/target 结构对比。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-07-slc-module.png" alt="Figure 7 SLC module" loading="lazy" />
+          <figcaption><strong>Figure 7.</strong> 单个 SLC module 的 prediction loss 与 contrastive clustering loss。</figcaption>
+        </figure>
+        <figure class="figure-card square">
+          <img src="assets/crops/figure-08-multiple-predictions.png" alt="Figure 8 multiple predictions improve signal" loading="lazy" />
+          <figcaption><strong>Figure 8.</strong> 多 cousin target 训练增强统计信号，改善 prefactor。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-09-local-learning.png" alt="Figure 9 local learning ablation" loading="lazy" />
+          <figcaption><strong>Figure 9.</strong> local-learning / stop-gradient ablation，展示 collapse 与可恢复条件。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-10-layerwise-training.png" alt="Figure 10 layer-wise training dynamics" loading="lazy" />
+          <figcaption><strong>Figure 10.</strong> SLC 训练逐层推进：前一层 cluster 改善后，后一层 prediction loss 才下降。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-11-token-ssl-collapse-fail.png" alt="Figure 11 token SSL scaling collapse fails" loading="lazy" />
+          <figcaption><strong>Figure 11.</strong> 用 token-level SSL 的 \(m^{L+1}\) 缩放尝试 collapse，效果明显较差。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-12-depth-independent.png" alt="Figure 12 depth independent sample complexity" loading="lazy" />
+          <figcaption><strong>Figure 12.</strong> SLC depth sweep：\(L=3,\dots,7\) 支持深度无关的样本复杂度。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-13-data2vec-latent-traces.png" alt="Figure 13 data2vec latent traces" loading="lazy" />
+          <figcaption><strong>Figure 13.</strong> data2vec encoder layers 中的 synonym clustering 与 teacher target 中的 latent traces。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure-14-offline-data2vec.png" alt="Figure 14 offline data2vec pretraining" loading="lazy" />
+          <figcaption><strong>Figure 14.</strong> offline data2vec pretraining，linear / MLP probes 均显示 \(v m^3\) collapse。</figcaption>
+        </figure>
+        <figure class="figure-card tall">
+          <img src="assets/crops/table-01-data2vec-hyperparameters.png" alt="Table 1 data2vec hyperparameters" loading="lazy" />
+          <figcaption><strong>Table 1.</strong> data2vec 超参数原表裁剪；正文实验部分已用 HTML 复现主要行。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="paper-section" id="reproduction">
+      <p class="section-kicker">6. 复现清单</p>
+      <h2>可复现性中等：合成数据和超参数清楚，但未发现官方代码链接</h2>
+      <p class="lead">论文对 RHM、ILC、SLC、data2vec 设置给了足够多的数学和超参数细节；但 arXiv 页面没有显示官方 code URL，本次构建也未检索到随论文发布的仓库。因此复现路径清楚，工程成本和算力成本较高。</p>
+
+      <div class="two-col">
+        <div>
+          <h3>最小复现路径</h3>
+          <ol class="plain-list">
+            <li>实现 fixed-tree RHM：参数 \(s,v,m,L\)，按每层 \(v m\) 个合法 tuple、每 parent \(m\) 个 rules 的方式采样 grammar。</li>
+            <li>实现 ILC：枚举 observed grammatical tuples，估计 \(\hat\phi_\ell(\nu)\)，用 k-means 或稳定 clustering module 聚成 \(v\) 类。</li>
+            <li>复现 Figure 3 left：固定 \(L=5,s=3,v=8\)，扫 \(m\)，报告 matched reconstruction accuracy，并以 \(P/(v m^3)\) 重标定。</li>
+            <li>实现 SLC predictor-clusterer：用 cross-entropy cousin prediction、contrastive clustering、EMA teacher 或 stop-gradient stabilizer。</li>
+            <li>复现 Figure 3 right 和 Figure 12：训练后冻结 representation，用 linear probe 预测 highest non-root latent 或 root latent。</li>
+            <li>实现 data2vec text recipe：8-layer transformer，mask probability 0.15，teacher target top-\(K=4\)，smooth L1 loss，EMA \(\mu=0.99\)。</li>
+            <li>用 online 和 offline 两种 regime 训练，分别复现 root probe accuracy 与 synonym clustering score。</li>
+          </ol>
+        </div>
+        <div>
+          <h3>需要特别核对</h3>
+          <ul class="plain-list">
+            <li>balanced / separated grammar 是否在有限 \(v,m,L\) 下稳定成立，特别是 \(f\) 接近 1 时。</li>
+            <li>clustering stability 的具体实现：理论定理要求 perturbation 小于 separation 的固定比例。</li>
+            <li>SLC contrastive loss 的 memory sampling：\(N_{\mathrm{compare}}=300\) 是实用折中，可能影响 prefactor。</li>
+            <li>data2vec 的 online \(P\) 表示 pretraining samples，而 offline \(P\) 是 unique strings；不要混淆优化步数和样本复杂度。</li>
+            <li>作者没有给 Optuna preliminary sweeps 的算力估计，完整调参成本可能显著高于正文复现曲线。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="paper-section" id="critique">
+      <p class="section-kicker">7. Reviewer Critique</p>
+      <h2>理论清晰、实验对齐，但真实数据外推仍是主风险</h2>
+
+      <div class="critique-grid">
+        <div class="mini-card">
+          <b>优点</b>
+          <p>把 latent prediction 的数据效率优势转化为可计算的 sample-complexity statement，并用 RHM 提供 token-level SSL、ILC、SLC、data2vec 的统一比较框架。Figure 1 的弱相关路径解释很有说服力。</p>
+        </div>
+        <div class="mini-card">
+          <b>证据强度</b>
+          <p>ILC 定理相对扎实；SLC 和 data2vec 的 scaling collapse 与几何分析互相补强。data2vec 部分仍依赖 A1/A2 和 phase idealization，不是完整训练动态证明。</p>
+        </div>
+        <div class="mini-card">
+          <b>缺失实验</b>
+          <p>作者自己指出需要 same-architecture data2vec vs next-token prediction controlled comparison。真实语言/图像数据上的 scaling-law 验证、不同 mask span、teacher depth、model size sweep 也缺失。</p>
+        </div>
+        <div class="mini-card">
+          <b>潜在混杂</b>
+          <p>RHM 的固定树、非递归、unambiguous grammar 让 “same-level cousin target” 很干净；自然数据里 latent 边界、branching factor、valid tuple fraction 和 context-dependence 都可能破坏同样的 \(m^3\) 结论。</p>
+        </div>
+      </div>
+
+      <h3>我会要求的补充</h3>
+      <ul class="plain-list">
+        <li>在同一 transformer architecture 上加入 next-token / masked-token baseline，固定 compute 和 optimizer，直接比较 sample efficiency。</li>
+        <li>系统扫 \(f=m/v^{s-1}\)，验证 \((1-f)^{-1}\) 因子及接近 \(f=1\) 时的失效模式。</li>
+        <li>对 data2vec teacher target 的 linear latent trace 做时间序列分析，验证“phase-by-phase”不是事后解释。</li>
+        <li>把 RHM 扩展到 variable topology 或 recursive rules，再测 latent prediction 是否仍能保持深度无关样本复杂度。</li>
+        <li>发布代码和 exact seeds，否则 1000 H100-hour 级别的 data2vec 复现实验门槛很高。</li>
+      </ul>
+    </section>
+
+    <section class="paper-section" id="takeaways">
+      <p class="section-kicker">8. 对我的研究方向的启发</p>
+      <h2>把 replay 和 self-evolution 的监督对象从答案 token 提升到 latent state</h2>
+
+      <div class="insight-grid">
+        <div class="mini-card">
+          <b>RLVR / agent replay</b>
+          <p>不要只 replay final answer 或 reward-labeled trajectory。可以让 agent 预测自己的 higher-level task state、plan embedding、tool-result abstraction，使训练信号停留在同一抽象层，减少 token-level 稀释。</p>
+        </div>
+        <div class="mini-card">
+          <b>questioner-solver</b>
+          <p>questioner 可被设计成产生“同层 cousin view”：不同问题或 mask 暴露同一 latent concept 的相关视图，solver 学的是 latent equivalence class，而不是表面答案模板。</p>
+        </div>
+        <div class="mini-card">
+          <b>diversity 与 collapse</b>
+          <p>SLC 的 contrastive clustering loss 提醒我们：latent 自蒸馏必须同时防止 trivial collapse 和 synonym over-splitting。replay buffer 需要保留同义变体与非同义负例。</p>
+        </div>
+        <div class="mini-card">
+          <b>evaluation</b>
+          <p>可用 representation-level synonym swap / generic swap 度量 agent 是否学到任务不变量，而不是仅看最终成功率。这个指标对自进化系统尤其有用。</p>
+        </div>
+        <div class="mini-card">
+          <b>scaling diagnostics</b>
+          <p>构造可控层级任务时，应该同时扫 branching/depth/valid fraction，看样本复杂度是随 depth 指数增长，还是主要由局部 synonym multiplicity 决定。</p>
+        </div>
+        <div class="mini-card">
+          <b>方法边界</b>
+          <p>latent prediction 不是免费午餐。teacher target 如果没有携带可解析 latent，或 replay views 不共享同层语义，机制会退化成普通 token prediction 或 collapse。</p>
+        </div>
+      </div>
+
+      <p class="lead">一句话 takeaway：这篇论文为“从自己的中间表征学习”提供了一个可检验的理论理由。对 agent / RLVR / self-evolution，最有价值的迁移不是照搬 data2vec，而是设计训练数据和 replay 机制，让监督信号尽量落在与待学习概念相同的 latent scale。</p>
+    </section>
+  </main>
+</body>
+</html>

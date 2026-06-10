@@ -1,0 +1,42 @@
+{
+  "id": "2605.27734",
+  "slug": "learn-from-your-own-latents",
+  "title": "Learn from your own latents and not from tokens: A sample-complexity theory",
+  "titleZh": "从自己的潜变量而非 token 学习：一个样本复杂度理论",
+  "authors": [
+    "Daniel J. Korchinski",
+    "Alessandro Favero",
+    "Matthieu Wyart"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Reasoning",
+  "tags": [
+    "self-supervised-learning",
+    "latent-prediction",
+    "sample-complexity",
+    "data2vec",
+    "hierarchical-representations",
+    "theory"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "论文在 Random Hierarchy Model 上证明，使用模型自己的同层 latent 作为监督目标，可以把恢复非 root 层级潜变量的样本复杂度从 token-level SSL 的深度指数依赖降到近似 v m^3。作者用 Iterative Latent Clustering、可微 Stacked Latent-Clustering 和 data2vec 实验支持该理论，并指出单个 data2vec 可能已经隐式执行多尺度 latent prediction。",
+  "takeaways": [
+    "latent prediction 的关键收益来自把 prediction target 提升到同一抽象层，减少 token descendant channel 对相关性的稀释。",
+    "data2vec 的 EMA teacher target 可被理解为递归携带已学 latent，从而逐层触发同样的 cousin-tuple clustering。",
+    "对 agent/RLVR replay，值得把监督对象从 final answer token 提升到 plan/state/tool-result latent，并用 synonym-swap 几何指标评估不变量学习。"
+  ],
+  "arxivId": "2605.27734",
+  "paperUrl": "https://arxiv.org/abs/2605.27734",
+  "pdfUrl": "https://arxiv.org/pdf/2605.27734.pdf",
+  "pageUrl": "papers/learn-from-your-own-latents/index.html",
+  "codeUrl": "",
+  "repro": {
+    "available": false,
+    "level": "medium",
+    "notes": "未在 arXiv 页面发现官方代码链接；RHM、ILC、SLC、data2vec 超参数与算力信息较完整，但 data2vec 约需 1000 H100 hours，完整复现成本高。"
+  }
+}

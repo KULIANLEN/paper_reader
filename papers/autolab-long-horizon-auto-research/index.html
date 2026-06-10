@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>AutoLab: Can Frontier Models Solve Long-Horizon Auto Research and Engineering Tasks? · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .autolab-page * { letter-spacing: 0 !important; }
+    .autolab-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .autolab-page .paper-hero {
+      padding: 3.25rem 0 2.4rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .autolab-page .paper-hero h1 {
+      max-width: 1100px;
+      font-size: 3.2rem;
+      line-height: 1.07;
+    }
+    .autolab-page .hero-subtitle {
+      max-width: 980px;
+      margin: 1.05rem 0 0;
+      color: var(--text-soft);
+      font-size: 1.12rem;
+      line-height: 1.82;
+    }
+    .autolab-page .content-card {
+      margin: 0;
+      padding: 3.2rem 0;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .autolab-page .content-card h2 {
+      margin: 0 0 1rem;
+      font-size: 2.1rem;
+      line-height: 1.22;
+    }
+    .autolab-page .content-card h3 {
+      margin: 0 0 0.48rem;
+      font-size: 1.02rem;
+      line-height: 1.38;
+    }
+    .autolab-page .section-lead {
+      max-width: 990px;
+      margin: 0 0 1.35rem;
+      color: var(--text-soft);
+      font-size: 1.03rem;
+      line-height: 1.86;
+    }
+    .autolab-page .meta-row,
+    .autolab-page .link-row,
+    .autolab-page .paper-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+    }
+    .autolab-page .meta-row {
+      margin-top: 1.15rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+    .autolab-page .paper-tags,
+    .autolab-page .link-row { margin-top: 1rem; }
+    .autolab-page .tag-pill,
+    .autolab-page .link-row a,
+    .autolab-page .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.32rem 0.66rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text-soft);
+      background: rgba(127, 127, 140, 0.08);
+      font-size: 0.88rem;
+    }
+    .autolab-page .metric-grid,
+    .autolab-page .grid-2,
+    .autolab-page .grid-3,
+    .autolab-page .figure-grid,
+    .autolab-page .flow-grid {
+      display: grid;
+      gap: 1rem;
+    }
+    .autolab-page .metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 1.25rem;
+    }
+    .autolab-page .grid-2,
+    .autolab-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .autolab-page .grid-3,
+    .autolab-page .flow-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .autolab-page .note-box,
+    .autolab-page .metric,
+    .autolab-page .table-wrap,
+    .autolab-page .figure-card,
+    .autolab-page .formula-box,
+    .autolab-page .flow-step,
+    .autolab-page .critique-box,
+    .autolab-page .algo-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface-strong) 88%, transparent);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+    }
+    .autolab-page .note-box,
+    .autolab-page .formula-box,
+    .autolab-page .flow-step,
+    .autolab-page .critique-box,
+    .autolab-page .algo-box { padding: 1rem; }
+    .autolab-page .metric { padding: 1rem; }
+    .autolab-page .metric strong {
+      display: block;
+      font-size: 1.58rem;
+      line-height: 1.15;
+    }
+    .autolab-page .metric span {
+      display: block;
+      margin-top: 0.34rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .autolab-page .note-box p,
+    .autolab-page .formula-box p,
+    .autolab-page .flow-step p,
+    .autolab-page .critique-box p,
+    .autolab-page .algo-box p {
+      margin: 0.45rem 0 0;
+      color: var(--text-soft);
+      line-height: 1.76;
+    }
+    .autolab-page .flow-step b {
+      display: inline-grid;
+      width: 1.72rem;
+      height: 1.72rem;
+      place-items: center;
+      margin-bottom: 0.55rem;
+      border-radius: 999px;
+      color: #fff;
+      background: #0f766e;
+    }
+    .autolab-page .flow-step:nth-child(2) b { background: #3b5bdb; }
+    .autolab-page .flow-step:nth-child(3) b { background: #b45309; }
+    .autolab-page .flow-step:nth-child(4) b { background: #7c3aed; }
+    .autolab-page .formula-box {
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+    .autolab-page .formula-box mjx-container {
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+    }
+    .autolab-page .compact-list {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+    }
+    .autolab-page .compact-list li {
+      margin: 0.3rem 0;
+      color: var(--text-soft);
+      line-height: 1.72;
+    }
+    .autolab-page .table-wrap {
+      margin: 1rem 0 1.35rem;
+      overflow-x: auto;
+    }
+    .autolab-page table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .autolab-page .wide-table { min-width: 1040px; }
+    .autolab-page .anchor-table { min-width: 900px; }
+    .autolab-page th,
+    .autolab-page td {
+      padding: 0.64rem 0.7rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    .autolab-page th {
+      color: var(--text);
+      background: rgba(127, 127, 140, 0.09);
+      font-weight: 700;
+    }
+    .autolab-page td { color: var(--text-soft); }
+    .autolab-page .table-caption {
+      margin: 0.75rem 0 0;
+      padding: 0 0.8rem 0.85rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+    .autolab-page .figure-card {
+      margin: 0;
+      overflow: hidden;
+    }
+    .autolab-page .figure-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+    }
+    .autolab-page .figure-card figcaption {
+      padding: 0.9rem 1rem 1rem;
+      color: var(--text-soft);
+      line-height: 1.65;
+    }
+    .autolab-page .figure-card figcaption strong { color: var(--text); }
+    .autolab-page .good {
+      border-color: color-mix(in srgb, var(--success) 35%, var(--line));
+      background: color-mix(in srgb, var(--success) 8%, var(--surface-strong));
+    }
+    .autolab-page .warn {
+      border-color: color-mix(in srgb, var(--warning) 42%, var(--line));
+      background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong));
+    }
+    .autolab-page .danger {
+      border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
+      background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong));
+    }
+    .autolab-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .autolab-page .metric-grid,
+      .autolab-page .grid-2,
+      .autolab-page .grid-3,
+      .autolab-page .figure-grid,
+      .autolab-page .flow-grid { grid-template-columns: 1fr; }
+      .autolab-page .paper-hero h1 { font-size: 2.25rem; }
+      .autolab-page .content-card h2 { font-size: 1.7rem; }
+      .autolab-page table { min-width: 720px; }
+      .autolab-page .wide-table { min-width: 980px; }
+    }
+  </style>
+</head>
+<body class="paper-page autolab-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2606.05080v1</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Evaluation / Benchmark · arXiv 2026</div>
+      <h1>AutoLab: Can Frontier Models Solve Long-Horizon Auto Research and Engineering Tasks?</h1>
+      <p class="hero-subtitle">AUTOLAB 把“自动研究/工程能力”定义为持续数小时的 closed-loop optimization：agent 必须读代码、改实现、跑实验、看指标、再迭代。论文构造 36 个真实任务并评测 17 个 frontier models，核心结论是：最终成绩更受 persistence、time awareness 和 empirical feedback loop 影响，而不是一次性初始方案质量。</p>
+      <div class="meta-row">
+        <span>Zhangchen Xu, Junda Chen, Yue Huang, Dongfu Jiang, Jiefeng Chen, Hang Hua, Zijian Wu, Zheyuan Liu, Zexue He, Lichi Li, Shizhe Diao, Jiaxin Pei, Jinsung Yoon, Hao Zhang, Mengdi Wang, Radha Poovendran, Misha Sra, Alex Pentland, Zichen Chen</span>
+        <span>arXiv:2606.05080v1</span>
+        <span>Published: 2026-06-03</span>
+        <span>28-page PDF, Appendix inspected</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">benchmark</span>
+        <span class="tag-pill">evaluation</span>
+        <span class="tag-pill">long-horizon</span>
+        <span class="tag-pill">tool-use</span>
+        <span class="tag-pill">systems</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2606.05080">arXiv</a>
+        <a href="https://arxiv.org/pdf/2606.05080">PDF</a>
+        <a href="https://github.com/autolabhq/autolab">Code</a>
+        <a href="https://autolab.moe/">Website</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>36</strong><span>expert-curated tasks，覆盖 system optimization、puzzle &amp; challenge、model development、CUDA。</span></div>
+        <div class="metric"><strong>17</strong><span>评测模型：11 个 main set 加 6 个 ablation variants；每个模型-任务 3 次 rollout。</span></div>
+        <div class="metric"><strong>2,544h</strong><span>总 wall-clock evaluation time；同时消耗 8.60B tokens。</span></div>
+        <div class="metric"><strong>0.68</strong><span><code>claude-opus-4.6</code> Overall Avg@3，领先第二名 <code>gemini-3.1-pro</code> 的 0.50。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机：为什么短任务 benchmark 不够</h2>
+      <p class="section-lead">论文关注的是“实践中的研究与工程循环”：提出修改、执行实验、读取指标、修正方向。这个能力在单轮问答、一次性 coding benchmark、甚至短交互 agent benchmark 中都很难被测到，因为真正困难的部分是长期保持有效迭代，而不是第一步写出看似合理的 patch。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>现有评测的盲区</h3>
+          <p>HumanEval、LiveCodeBench、SWE-bench 等更偏 one-shot 或短轨迹；GAIA、AgentBench、Terminal-Bench 虽然引入工具调用，但通常不把数小时 empirical optimization 作为核心对象。</p>
+        </div>
+        <div class="note-box">
+          <h3>长时程任务的额外难点</h3>
+          <p>agent 要管理 wall-clock time、上下文、算力、局部评估噪声和错误回滚；失败常来自 premature termination、timeout/context exhaustion 或提交流程错误，而不只是代码不会写。</p>
+        </div>
+        <div class="note-box good">
+          <h3>AUTOLAB 的定位</h3>
+          <p>每个任务给一个正确但低效的 baseline，目标是在固定 budget 内持续优化。score 是连续值，因此能度量 partial progress，而不是只看 pass/fail。</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="note-box warn">
+          <h3>两个历史障碍</h3>
+          <ul class="compact-list">
+            <li>最强展示常依赖模型专属 harness、工具与搜索策略，难以分离 model capability 与 system engineering。</li>
+            <li>已有 long-horizon benchmarks 多集中在单一领域，如 ML engineering、kernel optimization 或工程任务，缺少跨域统一协议。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>论文的核心假设</h3>
+          <p>如果要评估 autonomous research agents，必须同时固定 action interface、task budget、scoring function 和 verifier，观察模型能否在同一环境里持续利用 empirical feedback。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 方法：任务形式、连续评分与防 hack verifier</h2>
+      <p class="section-lead">AUTOLAB 的基本单元不是一道静态题，而是一个 executable optimization environment。agent 可以自由读代码、编辑、运行 local evaluator、profile、debug，并在最终提交时由 held-out verifier 给出 metric，再映射成标准化 score。</p>
+
+      <figure class="figure-card" style="margin-bottom:1rem;">
+        <img src="assets/crops/fig2_pipeline.png" alt="AUTOLAB task formulation and evaluation pipeline" />
+        <figcaption><strong>Figure 2.</strong> 任务由 instruction、environment、verifier、reference solution、baseline solution 和 wall-clock budget 组成。agent 在 container 内迭代，最终由 sealed verifier 评分。</figcaption>
+      </figure>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Task package</h3><p>包含代码库、baseline、local evaluation script、instruction、metadata、不可见 held-out tests 与 reference solution。</p></div>
+        <div class="flow-step"><b>2</b><h3>Agent loop</h3><p>读代码、修改、运行、等待训练或 benchmark、根据结果继续调整；episode 可能持续 2 到 12 小时。</p></div>
+        <div class="flow-step"><b>3</b><h3>Verifier</h3><p>最终实现必须通过 correctness gate、immutable-file check、sealed test inputs，再把 raw metric 转成统一分数。</p></div>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.1 Log-stretch scoring</h3>
+        <p>对 runtime、throughput 这类跨数量级变化的 performance tasks，设实现 \(x\) 的 raw metric 为 \(m(x)\)，baseline 与 reference 分别为 \(m_B\)、\(m_R\)。低值更好时，论文使用：</p>
+        \[
+        s(x)=\operatorname{clip}\left(\frac{1}{2}\cdot\frac{\log(m_B/m(x))}{\log(m_B/m_R)},0,1\right).
+        \]
+        <p>minimum-improvement gate 使得未超过 baseline 的提交得 0 分；在 reference performance 处 \(s=0.5\)，接近 practical optimum 时趋近 1。高值更好任务使用方向相反的 analogue。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.2 Anchored linear scoring</h3>
+        <p>对自然有界的 quality metrics，使用 baseline 与 reference 之间的线性插值：</p>
+        \[
+        s(x)=\operatorname{clip}\left(\frac{m_B-m(x)}{m_B-m_R},0,1\right),
+        \]
+        <p>若 metric 越高越好则方向相反。Puzzle 中的 <code>smallest_game_player</code>、<code>safety_router</code> 使用 implicit \(m_R=0\) 的参数量压缩形式；<code>resnet_bit_flip</code> 还要求 accuracy 低于 12% 才能拿正分。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.3 Dominance metric</h3>
+        <p>除 Avg@3 与 Best@3 外，论文用 tournament-style Dominance 衡量模型在所有任务上相对其他模型的胜率。设 \(M\) 为模型集合、\(T\) 为任务集合，\(s_{m,t}\) 是模型 \(m\) 在任务 \(t\) 的 Avg@3：</p>
+        \[
+        \mathrm{Dominance}(m)=\frac{1}{|T|(|M|-1)}\sum_{t\in T}\sum_{\substack{o\in M\\o\ne m}}\left(\mathbf{1}[s_{m,t}>s_{o,t}]+\frac{1}{2}\mathbf{1}[s_{m,t}=s_{o,t}]\right).
+        \]
+        <p>这个指标降低了单个高杠杆任务或不同 reward scale 对总排名的影响。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>Quality control</h3>
+          <ul class="compact-list">
+            <li>每个任务至少由 2 名独立专家和一个 format audit agent 审核。</li>
+            <li>审核维度包括 validity、solvability、integrity、measurement stability。</li>
+            <li>reference solution 需要在指定 hardware/budget 下可靠达到目标。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>Anti-reward-hacking</h3>
+          <ul class="compact-list">
+            <li>sealed verifier，不暴露 held-out inputs/reference outputs。</li>
+            <li>ML tasks 先过 correctness gate，再记录优化 metric。</li>
+            <li>critical files 做 SHA-pinned immutable check。</li>
+            <li>构造阶段运行 adversarial agent 搜索 shortcut 或 verifier exploit。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">主实验固定 HARBOR framework 和 <code>terminus-2</code> agent harness。每个模型在每个任务上运行 3 个 independent rollouts，报告 Avg@3、Best@3、Dominance。CPU tasks 在本地 Docker sandbox 上运行；GPU tasks 在 Modal cloud sandbox 上使用 H100 与 L40S。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>任务域</h3>
+          <ul class="compact-list">
+            <li>System Optimization：15 个任务，C/Rust/Go/Python，覆盖 AES、BM25、FFT、FlashAttention、regex、hash join 等。</li>
+            <li>Puzzle &amp; Challenge：10 个任务，包括 sorting network、splay adversary、stack VM golf、VLIW scheduler 等。</li>
+            <li>Model Development：7 个任务，包括 data selection、LoRA、GRPO、serving、OCR、scaling law、world model。</li>
+            <li>CUDA：4 个任务，覆盖 Huffman decode、ICP correspondence、MSM、NTT butterfly。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>执行环境</h3>
+          <ul class="compact-list">
+            <li>本地 CPU：AMD Ryzen 9 9950X，16 cores / 32 threads，64 GB RAM。</li>
+            <li>GPU：Modal sandboxes，H100 与 L40S。</li>
+            <li>budget：小 puzzle 2 小时，端到端 LLM development 最高 12 小时。</li>
+            <li>总量：2,544 wall-clock hours，8.60B tokens。</li>
+          </ul>
+        </div>
+      </div>
+
+      <figure class="figure-card" style="margin-top:1rem;">
+        <img src="assets/crops/fig3_task_distribution.png" alt="AUTOLAB task distribution" />
+        <figcaption><strong>Figure 3.</strong> AUTOLAB 的 36 个任务分布。图中列出每个 domain 的具体 task names；Appendix A.1 给出语言、tier 与详细挑战描述。</figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table class="anchor-table">
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>Count</th>
+              <th>Examples</th>
+              <th>Scoring family</th>
+              <th>关键复现约束</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>System Optimization</td>
+              <td>15</td>
+              <td><code>flash_attention</code>, <code>radix_sort</code>, <code>hash_join</code>, <code>regex_engine</code></td>
+              <td>log-stretch runtime</td>
+              <td>统一 hardware/sandbox；必须超过 baseline；reference anchors 依赖标准化环境。</td>
+            </tr>
+            <tr>
+              <td>Puzzle &amp; Challenge</td>
+              <td>10</td>
+              <td><code>discover_sorting</code>, <code>toy_isa_opt</code>, <code>resnet_bit_flip</code></td>
+              <td>anchored linear 或 log-stretch</td>
+              <td>部分任务有 gates，例如 <code>resnet_bit_flip</code> 需 accuracy &lt; 12%。</td>
+            </tr>
+            <tr>
+              <td>Model Development</td>
+              <td>7</td>
+              <td><code>grpo_multisource</code>, <code>multilingual_ocr</code>, <code>scaling_law</code></td>
+              <td>anchored linear quality metric</td>
+              <td>需 GPU、训练脚本、held-out eval；<code>grpo_multisource</code> 有 VQA retention gate。</td>
+            </tr>
+            <tr>
+              <td>CUDA</td>
+              <td>4</td>
+              <td><code>ntt_butterfly_cuda</code>, <code>msm_pippenger_bls12_381_cuda</code></td>
+              <td>log-stretch runtime</td>
+              <td>禁止 Thrust/CUB/cuBLAS/cuFFT 等第三方库；需要 H100 上 bit-exact/correctness checks。</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="table-caption">任务 anchor 与 gates 来自 Appendix A.2；完整数值见 Figure/Table 导航中的 Table 2-4 crop。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Model group</th>
+              <th>Models</th>
+              <th>API provider notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Proprietary frontier</td>
+              <td><code>claude-opus-4.6</code>, <code>gemini-3.1-pro</code>, <code>gpt-5.4</code>, <code>grok-4-20</code></td>
+              <td>论文 Table 5 标注 provider：Azure AI Foundry、TokenRouter、xAI 等；具体 API 版本随时间可能变化，复现需锁定论文发布时接口。</td>
+            </tr>
+            <tr>
+              <td>Open-weight side / provider models</td>
+              <td><code>qwen-3.6-plus</code>, <code>deepseek-v4-pro</code>, <code>glm-5</code>, <code>kimi-k2.6</code>, <code>hunyuan-3-preview</code>, <code>mimo-v2.5-pro</code>, <code>minimax-m2.7</code></td>
+              <td>论文没有测试 &lt;200B small open-weight models，因为 benchmark 难度较高。</td>
+            </tr>
+            <tr>
+              <td>Ablation variants</td>
+              <td><code>kimi-k2.5</code>, <code>minimax-m2.5</code>, <code>mimo-v2-pro</code>, <code>mimo-v2.5</code>, <code>deepseek-v4-flash</code>, <code>qwen-3.5-plus</code></td>
+              <td>用于 generation delta、cost 和 harness ablation 等分析，不参与 main-set Dominance。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">整体上，<code>claude-opus-4.6</code> 以 Overall Avg@3 0.68、Best@3 0.76、Dominance 0.93 明显领先。第二名 <code>gemini-3.1-pro</code> 的 Overall Avg@3 为 0.50。论文最重要的解释不是“谁会写代码”，而是“谁能在长时间里持续评估、保留最好结果、继续探索并按时提交”。</p>
+
+      <figure class="figure-card" style="margin-bottom:1rem;">
+        <img src="assets/crops/fig1_leaderboard.png" alt="AUTOLAB leaderboard and category rose charts" />
+        <figcaption><strong>Figure 1.</strong> 11 个 provider flagship 的整体与分域表现。solid bar 是 Avg@3，translucent extension 到 Best@3；rose charts 显示四个 domain 的 Avg@3。</figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Overall Avg@3</th>
+              <th>Overall Best@3</th>
+              <th>Dominance</th>
+              <th>CUDA Avg</th>
+              <th>Model Dev Avg</th>
+              <th>Puzzle Avg</th>
+              <th>System Opt Avg</th>
+              <th>Interpretation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>claude-opus-4.6</code></td><td>0.68</td><td>0.76</td><td>0.93</td><td>0.38</td><td>0.63</td><td>0.85</td><td>0.67</td><td>四个 domain 全领先；trajectory 更长、更稳定。</td></tr>
+            <tr><td><code>gemini-3.1-pro</code></td><td>0.50</td><td>0.59</td><td>0.62</td><td>0.22</td><td>0.36</td><td>0.72</td><td>0.49</td><td>Puzzle 强，但 CUDA 与 model development 相对弱。</td></tr>
+            <tr><td><code>kimi-k2.6</code></td><td>0.46</td><td>0.60</td><td>0.62</td><td>0.25</td><td>0.42</td><td>0.48</td><td>0.52</td><td>open-weight side 中强，Best@3 高于 Avg@3，波动较大。</td></tr>
+            <tr><td><code>mimo-v2.5-pro</code></td><td>0.45</td><td>0.58</td><td>0.53</td><td>0.18</td><td>0.47</td><td>0.64</td><td>0.39</td><td>model development 与 puzzle 较强，CUDA 弱。</td></tr>
+            <tr><td><code>glm-5</code></td><td>0.43</td><td>0.55</td><td>0.57</td><td>0.24</td><td>0.45</td><td>0.49</td><td>0.44</td><td>较均衡，但 instruction violations 在零分中较集中。</td></tr>
+            <tr><td><code>deepseek-v4-pro</code></td><td>0.38</td><td>0.51</td><td>0.47</td><td>0.00</td><td>0.35</td><td>0.43</td><td>0.46</td><td>CUDA 上许多 rollout 因长 reasoning 或 timeout 失败。</td></tr>
+            <tr><td><code>gpt-5.4</code></td><td>0.36</td><td>0.53</td><td>0.39</td><td>0.14</td><td>0.35</td><td>0.45</td><td>0.37</td><td>论文归因于 premature termination，而非完全缺乏 raw ability。</td></tr>
+            <tr><td><code>grok-4-20</code></td><td>0.35</td><td>0.44</td><td>0.42</td><td>0.18</td><td>0.13</td><td>0.53</td><td>0.38</td><td>flash_attention case 中几乎不迭代，低端表现明显。</td></tr>
+            <tr><td><code>hunyuan-3-preview</code></td><td>0.31</td><td>0.45</td><td>0.34</td><td>0.07</td><td>0.27</td><td>0.35</td><td>0.36</td><td>timeout/context exhaustion 比例高。</td></tr>
+            <tr><td><code>minimax-m2.7</code></td><td>0.27</td><td>0.43</td><td>0.28</td><td>0.12</td><td>0.42</td><td>0.26</td><td>0.25</td><td>model development 相对强，其他域低。</td></tr>
+            <tr><td><code>qwen-3.6-plus</code></td><td>0.27</td><td>0.39</td><td>0.32</td><td>0.00</td><td>0.39</td><td>0.26</td><td>0.29</td><td>Appendix C 显示相对 <code>qwen-3.5-plus</code> 回退。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">重建自论文 Table 1 的 main set。为可读性只列核心列；完整 per-category Avg/Best/Dominance 见论文裁剪图。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>FlashAttention case study</h3>
+          <p><code>flash_attention</code> 从 750 ms baseline 开始。<code>claude-opus-4.6</code> 约 40 分钟内通过 44 次 feedback-driven iterations 降到 18 ms，实现 42.4x speedup，并超过 100 ms reference。<code>kimi-k2.6</code>、<code>gemini-3.1-pro</code>、<code>glm-5</code> 达到 50-80 ms 后停滞。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>失败模式比总分更有信息</h3>
+          <p>作者人工检查 302 个 zero-score rollouts，分成 Timeout / Context Exhaustion、Capability Gap、Instruction Violation、Others。最突出的结论是 models 不会校准探索与剩余时间：有的过早提交，有的耗尽 budget 不提交。</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <figure class="figure-card">
+          <img src="assets/crops/fig4_flash_attention.png" alt="FlashAttention optimization trajectories" />
+          <figcaption><strong>Figure 4.</strong> <code>flash_attention</code> 的 self-reported runtime vs wall-clock time。图中能看到持续 benchmark-edit loop 与早停/长思考失败的差异。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/fig6_zero_failure_modes.png" alt="Zero-score failure mode distribution" />
+          <figcaption><strong>Figure 6.</strong> 302 个零分 rollout 的人工分类。<code>deepseek-v4-pro</code>、<code>hunyuan-3-preview</code>、<code>qwen-3.6-plus</code> timeout 更突出；<code>gpt-5.4</code> 的 capability gap/早停问题更明显。</figcaption>
+        </figure>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="note-box">
+          <h3>Harness ablation 的含义</h3>
+          <p>在 25 个 CPU tasks 上，作者比较 <code>terminus-2</code>、<code>pi-mono</code> 和修改过提示的 <code>mini-swe-agent*</code>。同一模型跨 harness 的 mean score 可移动最多 \(\Delta=0.43\)，说明 harness 不是无关实现细节。</p>
+        </div>
+        <div class="note-box">
+          <h3>Stability analysis</h3>
+          <p>Appendix C.2 指出 capability 与 reliability 相关但不同。<code>claude-opus-4.6</code> 同时最高分且最稳定，\(\bar{\sigma}=0.099\)。高 variance 模型如果只报 Best@3，会被显著高估。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">下面是本页使用的实际论文 page crops。裁剪来自 PyMuPDF 渲染页面，不是原始矢量图导出；数值表已在正文重建，图片仍建议作为视觉核对依据。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/crops/table1_main_results.png" alt="Table 1 main results" />
+          <figcaption><strong>Table 1.</strong> 主榜单 per-category results。用于核对 Overall、CUDA、Model Development、Puzzle &amp; Challenge、System Optimization 的 Avg@3/Best@3/Dominance。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/fig5_cost_analysis.png" alt="Figure 5 cost and resource utilization analysis" />
+          <figcaption><strong>Figure 5.</strong> Avg@3 与 average agent steps、runtime、inference cost 的关系。论文据此支持 persistence/resource utilization 与成绩正相关。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/fig7_8_harness_ablation.png" alt="Figures 7 and 8 harness ablation and cost tradeoff" />
+          <figcaption><strong>Figures 7-8.</strong> 三种 harness 下的 per-task scores 与 score-cost trade-off。重要 takeaway：harness design 会改变模型排名和成本曲线。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/tables2_3_scoring_anchors.png" alt="Tables 2 and 3 scoring anchors" />
+          <figcaption><strong>Tables 2-3.</strong> System/CUDA 与 Puzzle tasks 的 metrics、directions、baseline/reference anchors、scoring family。复现评分必须使用这些 anchors。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/tables4_5_modeldev_providers.png" alt="Tables 4 and 5 model development anchors and API providers" />
+          <figcaption><strong>Tables 4-5.</strong> Model Development 任务的 gates 与 API provider mapping。复现时 provider/API 版本漂移是主要不确定性之一。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/table8_stability.png" alt="Table 8 across-trial stability metrics" />
+          <figcaption><strong>Table 8.</strong> Across-trial stability：\(\bar{\sigma}\)、\(\bar{R}\)、CV、\(\bar{\sigma}/\mathrm{Best}\)。支持 Avg@3 比单次或 Best@3 更稳健。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/fig9_generation_deltas.png" alt="Figure 9 generation deltas" />
+          <figcaption><strong>Figure 9.</strong> Provider 内代际变化。MiMo、MiniMax、Kimi 有 modest gains；Qwen 3.6 Plus 相对 3.5 Plus 回退。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/fig3_task_distribution.png" alt="Figure 3 task distribution" />
+          <figcaption><strong>Figure 3.</strong> 36 个任务的 domain 分布与名称总览。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">论文声称 open-source benchmark、evaluation harness 和 task artifacts。仅从 PDF 可确认宏观协议与 anchor values；要完全复现主表，需要同步代码仓库中的 task definitions、verifiers、harness 配置、API 模型版本和硬件环境。</p>
+
+      <div class="grid-2">
+        <div class="algo-box">
+          <h3>最低可复现路径</h3>
+          <ol class="compact-list">
+            <li>获取 <code>https://github.com/autolabhq/autolab</code>，锁定论文对应 commit 或 release。</li>
+            <li>准备 HARBOR framework 与默认 <code>terminus-2</code> harness。</li>
+            <li>为 36 个任务构建 Docker/Modal environments，确认 CPU/GPU caps 与 task metadata。</li>
+            <li>对每个 model-task pair 运行 3 个 independent rollouts。</li>
+            <li>使用 Appendix A.2 的 anchors/gates，把 raw metrics 映射为 normalized score。</li>
+            <li>聚合 Avg@3、Best@3、Dominance，并保存 trajectories、agent steps、runtime、token/cost。</li>
+            <li>对 zero-score rollouts 做 failure-mode audit；如果要复现 Figure 6，需要人工标注或复刻作者标注协议。</li>
+          </ol>
+        </div>
+        <div class="note-box warn">
+          <h3>复现风险</h3>
+          <ul class="compact-list">
+            <li>proprietary model API 版本、provider routing、默认 decoding/timeout policy 可能漂移。</li>
+            <li>long-horizon rollouts 成本高，GPU/CPU 性能差异会影响 runtime anchors。</li>
+            <li>PDF 未给出所有 task TOML、完整 harness prompts、每个模型的 exact sampling parameters；需以开源仓库为准。</li>
+            <li>Figure 6 的人工 failure categories 需要 reviewer agreement，否则结论可能受标注者影响。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>复现对象</th>
+              <th>PDF 中可见信息</th>
+              <th>仍需仓库/人工核对</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>主榜单 Table 1</td>
+              <td>模型列表、Avg@3、Best@3、Dominance、四域分数。</td>
+              <td>所有 raw trajectories、随机种子、API response settings。</td>
+            </tr>
+            <tr>
+              <td>Task scoring</td>
+              <td>公式、anchors、direction、部分 gates。</td>
+              <td>verifier implementation、local evaluator 与 held-out set。</td>
+            </tr>
+            <tr>
+              <td>Harness ablation</td>
+              <td>25-task subset、三种 harness、修改过的 mini-swe-agent prompt 的核心行为要求。</td>
+              <td>完整 system prompt、agent runtime policy、tool definitions。</td>
+            </tr>
+            <tr>
+              <td>Failure analysis</td>
+              <td>四类 failure modes 与模型级分布。</td>
+              <td>302 个 zero-score trace 的原始标注与一致性检查。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">这篇论文的价值在于把“长时程闭环优化能力”从宏大口号变成可执行 benchmark，并且把 trajectory、成本和失败模式纳入分析。但它仍然是 benchmark paper，结论边界主要受任务集合、harness 固定方式、API 漂移和人工标注影响。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>任务设计贴近真实工程与研究循环，不是孤立 coding puzzle。</li>
+            <li>连续评分能捕捉 partial progress，对高难任务比 pass/fail 更有诊断性。</li>
+            <li>Appendix 给出 anchors/gates，复现比只给 leaderboard 更透明。</li>
+            <li>failure-mode 与 harness ablation 把 agent system 层问题显式暴露出来。</li>
+            <li>报告 cost、runtime、steps，避免把 benchmark score 与资源使用割裂。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>只固定一种 default harness 不能完全隔离 model capability；Section 4.3 反而显示 harness 足以改变排名。</li>
+            <li>36 个任务虽然多样，但仍可能偏向作者熟悉的 systems/ML engineering workflows。</li>
+            <li>reference anchors 依赖特定 hardware/sandbox，跨环境复现需要重新校准。</li>
+            <li>proprietary frontier models 的名称、API 和 provider 行为未来可能不可复现。</li>
+            <li>zero-score failure labels 是人工分类，论文摘要未说明标注一致性指标。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="critique-box danger">
+          <h3>Missing ablations</h3>
+          <ul class="compact-list">
+            <li>budget scaling：同一模型在 2/4/8/12 小时下是否出现临界点？</li>
+            <li>explicit time-awareness prompt 是否能显著减少 premature termination 与 timeout？</li>
+            <li>best-so-far submission policy、auto-checkpointing、rollback memory 对结果贡献多大？</li>
+            <li>local evaluator 噪声与 held-out verifier gap 是否导致 overfitting？</li>
+            <li>不同 decoding parameters 对 long-horizon persistence 的影响。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>Possible failure modes of the benchmark</h3>
+          <ul class="compact-list">
+            <li>agent 可能学会优化 local evaluator 而不是真实 held-out metric，尽管 sealed verifier 会缓解。</li>
+            <li>benchmark 变流行后，模型训练数据可能包含 task artifacts，后续需要版本化和 contamination checks。</li>
+            <li>高成本评测容易限制社区复现，使 leaderboard 被少数有算力/API 额度的组织主导。</li>
+            <li>某些任务的 scoring function 与真实工程价值之间可能存在 reward mismatch。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究方向的启发</h2>
+      <p class="section-lead">如果关注 RLVR、agent self-evolution、tool use、questioner-solver、replay、diversity 或 evaluation，这篇论文最有用的不是某个模型排名，而是它把“持续迭代行为”变成了可观测、可奖励、可失败归因的对象。</p>
+
+      <div class="grid-3">
+        <div class="note-box good">
+          <h3>把 persistence 变成训练信号</h3>
+          <p>不要只奖励 final answer。可以把 benchmark/edit/eval/rollback/submit 的事件序列作为 RLVR 或 process reward 的对象，明确奖励“有效继续探索”和“保留 best-so-far”。</p>
+        </div>
+        <div class="note-box">
+          <h3>Replay 应该保留失败轨迹</h3>
+          <p>302 个 zero-score rollouts 的手工分析说明失败轨迹很有价值。replay buffer 不应只收成功样本，也要保存 timeout、instruction violation、discarded good solution 等可学习 failure signatures。</p>
+        </div>
+        <div class="note-box">
+          <h3>Harness 是变量，不是背景</h3>
+          <p>Section 4.3 说明 harness choice 会改变 ranking 和 cost curve。做 agent 评测或 self-evolution 时，应把 harness lineage、prompt、tool policy 当作一等实验变量记录。</p>
+        </div>
+        <div class="note-box">
+          <h3>Questioner-solver 可借鉴 sealed verifier</h3>
+          <p>让 questioner 生成 local feedback，但最终由 held-out verifier 打分，可以缓解 reward hacking；同时允许 solver 在 local evaluator 上探索。</p>
+        </div>
+        <div class="note-box">
+          <h3>Diversity 不只在答案上</h3>
+          <p>需要多样化 exploration strategy、tool-call cadence、checkpoint policy 与 final-submission timing。AUTOLAB 的失败模式显示同质化“长思考”或“早提交”都会伤害成绩。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>评测要同时报 mean 与 stability</h3>
+          <p>Avg@3、Best@3、\(\bar{\sigma}\)、CV 一起报告，比单次成功更能反映 agent 是否可靠。对自进化系统尤其要防止 Best@k 过度奖励高方差策略。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

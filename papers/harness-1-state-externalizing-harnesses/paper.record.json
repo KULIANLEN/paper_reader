@@ -1,0 +1,47 @@
+{
+  "id": "2606.02373",
+  "slug": "harness-1-state-externalizing-harnesses",
+  "title": "Harness-1: Reinforcement Learning for Search Agents with State-Externalizing Harnesses",
+  "titleZh": "Harness-1：用状态外置 harness 训练搜索代理",
+  "authors": [
+    "Pengcheng Jiang",
+    "Zhiyi Shi",
+    "Kelly Hong",
+    "Xueqiang Xu",
+    "Jiashuo Sun",
+    "Jimeng Sun",
+    "Hammad Bashir",
+    "Jiawei Han"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "reasoning",
+    "rlvr",
+    "retrieval",
+    "evaluation"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "Harness-1 将多轮搜索中的候选池、curated set、证据图、验证记录和预算渲染外置到 stateful harness，让 20B policy 专注于搜索、读取、curate、verify 和停止决策。论文在八个检索 benchmark 上达到 0.730 average curated recall，超过下一强 open search subagent 11.4 个点，并在 held-out transfer benchmarks 上取得更大的增益。关键价值在于把 harness design 作为 retrieval-agent RL 的核心方法，而不是实现细节。",
+  "takeaways": [
+    "Agent RL 不应只调 reward，必须先设计 policy 可操作的显式 state 和稳定 renderer。",
+    "Trajectory Recall 与 Curated Recall 的差距能区分 discovery gap 与 selection/curation gap。",
+    "Diversity reward 和 auto-seeded curation 能降低长 horizon search RL 的工具坍缩风险。"
+  ],
+  "arxivId": "2606.02373",
+  "paperUrl": "https://arxiv.org/abs/2606.02373",
+  "pdfUrl": "https://arxiv.org/pdf/2606.02373.pdf",
+  "pageUrl": "papers/harness-1-state-externalizing-harnesses/index.html",
+  "codeUrl": "https://github.com/pat-jj/harness-1",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文给出工具签名、reward 权重、SFT/RL 超参数、benchmark 统计、working-memory 渲染、算法伪代码和 prompts，并在摘要中声明代码可用；本次构建未验证 GitHub 仓库、模型权重、外部检索服务或训练环境是否完整可用。"
+  }
+}
