@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Do Language Models Need Sleep? Offline Recurrence for Improved Online Inference · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .sleep-page * { letter-spacing: 0 !important; }
+    .sleep-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .sleep-page .paper-hero { padding: 3.4rem 0 2.25rem; border-bottom: 1px solid var(--line); }
+    .sleep-page .paper-hero h1 { max-width: 1100px; font-size: clamp(2.05rem, 4.8vw, 4.25rem); line-height: 1.05; }
+    .sleep-page .hero-subtitle { max-width: 980px; margin: 1.05rem 0 0; color: var(--text-soft); font-size: clamp(1.02rem, 2vw, 1.24rem); line-height: 1.78; }
+    .sleep-page .content-card { margin: 0; padding: clamp(2.1rem, 5vw, 4.2rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .sleep-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.55rem, 3vw, 2.42rem); line-height: 1.18; }
+    .sleep-page .content-card h3 { margin: 0 0 0.48rem; font-size: 1.05rem; line-height: 1.35; }
+    .sleep-page .section-lead { max-width: 980px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.03rem; line-height: 1.86; }
+    .sleep-page .meta-row, .sleep-page .link-row, .sleep-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .sleep-page .meta-row { margin-top: 1.2rem; color: var(--muted); font-size: 0.93rem; line-height: 1.55; }
+    .sleep-page .paper-tags, .sleep-page .link-row { margin-top: 1rem; }
+    .sleep-page .tag-pill, .sleep-page .link-row a, .sleep-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .sleep-page .grid-2, .sleep-page .grid-3, .sleep-page .metric-grid, .sleep-page .figure-grid, .sleep-page .flow-grid { display: grid; gap: 1rem; }
+    .sleep-page .grid-2, .sleep-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sleep-page .grid-3, .sleep-page .flow-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .sleep-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .sleep-page .note-box, .sleep-page .metric, .sleep-page .table-wrap, .sleep-page .figure-card, .sleep-page .formula-box, .sleep-page .flow-step, .sleep-page .critique-box, .sleep-page .algo-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .sleep-page .note-box, .sleep-page .formula-box, .sleep-page .flow-step, .sleep-page .critique-box, .sleep-page .algo-box { padding: 1rem; }
+    .sleep-page .note-box p, .sleep-page .formula-box p, .sleep-page .flow-step p, .sleep-page .critique-box p, .sleep-page .algo-box p { margin: 0.45rem 0 0; }
+    .sleep-page .metric { padding: 1rem; }
+    .sleep-page .metric strong { display: block; font-size: 1.55rem; line-height: 1.15; }
+    .sleep-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .sleep-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .sleep-page .flow-step:nth-child(2) b { background: #475569; }
+    .sleep-page .flow-step:nth-child(3) b { background: #b45309; }
+    .sleep-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .sleep-page .formula-box .MathJax, .sleep-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .sleep-page .algo-box ol { margin: 0.5rem 0 0; padding-left: 1.3rem; }
+    .sleep-page .algo-box li { margin: 0.28rem 0; color: var(--text-soft); line-height: 1.65; }
+    .sleep-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .sleep-page table { width: 100%; min-width: 780px; border-collapse: collapse; font-size: 0.88rem; }
+    .sleep-page th, .sleep-page td { padding: 0.68rem 0.72rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .sleep-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .sleep-page td { color: var(--text-soft); }
+    .sleep-page .wide-table { min-width: 1040px; }
+    .sleep-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .sleep-page .figure-card { margin: 0; overflow: hidden; }
+    .sleep-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .sleep-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .sleep-page .figure-card figcaption strong { color: var(--text); }
+    .sleep-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .sleep-page .compact-list li { margin: 0.28rem 0; }
+    .sleep-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .sleep-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .sleep-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .sleep-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .sleep-page .grid-2, .sleep-page .grid-3, .sleep-page .metric-grid, .sleep-page .figure-grid, .sleep-page .flow-grid { grid-template-columns: 1fr; }
+      .sleep-page .paper-hero { padding-top: 2.4rem; }
+      .sleep-page table { min-width: 720px; }
+      .sleep-page .wide-table { min-width: 980px; }
+    }
+  </style>
+</head>
+<body class="paper-page sleep-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2605.26099v3</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Long Context / Memory · arXiv 2026</div>
+      <h1>Do Language Models Need Sleep? Offline Recurrence for Improved Online Inference</h1>
+      <p class="hero-subtitle">这篇论文把“sleep”定义成一种离线 memory consolidation：当 attention KV cache 达到窗口边界时，模型不立刻继续读新 token，而是在当前 chunk 上做 $N$ 次 recurrent forward passes，把信息写入 SSM fast weights，然后清空 KV cache。这样额外计算发生在 sleep/consolidation 阶段，wake-time prediction 仍保持单次 forward pass。</p>
+      <div class="meta-row">
+        <span>Sangyun Lee, Sean McLeish, Tom Goldstein, Giulia Fanti</span>
+        <span>Carnegie Mellon University; University of Maryland</span>
+        <span>arXiv:2605.26099v3</span>
+        <span>Published: 2026-05-25</span>
+        <span>Updated: 2026-06-05</span>
+        <span>15-page PDF; no appendix section found</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">long-context</span>
+        <span class="tag-pill">memory</span>
+        <span class="tag-pill">ssm</span>
+        <span class="tag-pill">recurrence</span>
+        <span class="tag-pill">reasoning</span>
+        <span class="tag-pill">inference</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2605.26099">arXiv</a>
+        <a href="https://arxiv.org/pdf/2605.26099">PDF</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>$N$ sleep passes</strong><span>窗口满时对当前 context 做多次 recurrent consolidation，而不是在预测 token 时增加循环。</span></div>
+        <div class="metric"><strong>$L$ capped context</strong><span>hard eviction 或 sliding-window eviction 下 active attention cache 不超过窗口长度。</span></div>
+        <div class="metric"><strong>0.615 vs 0.419</strong><span>Ouro 1.4B 在 GSM-Infinite 6-operation 上，4 loops 相比 no loop 的最终准确率。</span></div>
+        <div class="metric"><strong>1-2 H100 days</strong><span>Depo 与 GSM-Infinite 每个 run 约需 1-2 个 H100 GPU-day；automaton 小于 1 个 A6000 GPU-day。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机：长上下文记住了，不代表会推理</h2>
+      <p class="section-lead">Transformer 的 KV cache 能精确访问近邻 token，但计算随 context length 呈二次增长，cache memory 线性增长。SSM/linear recurrent layers 用固定大小的 fast-weight memory 压缩历史，能缓解长上下文成本；问题是，压缩进 fast weights 的历史是否还能支持深层 reasoning？论文的答案是：单 pass 的 vanilla SSM-attention hybrid 不够，瓶颈不只是 memory capacity，而是把即将被 eviction 的 context 转换成可用内部状态所需的计算量。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>已有 hybrid 的承诺</h3>
+          <p>attention 负责高保真近期访问，SSM fast weights 负责更长历史的压缩记忆。Samba、Griffin、Jet-Nemotron 一类模型都在探索这种路线。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>本文发现的缺口</h3>
+          <p>在 Rule 110 和 Depo 这类可控任务里，保持信息量不变、只提高 reasoning depth，vanilla hybrid 会明显退化。这说明它不是简单“容量不够”。</p>
+        </div>
+        <div class="note-box good">
+          <h3>Sleep 的核心假设</h3>
+          <p>把历史写入 fast weights 本身是一个非平凡计算过程，应该允许模型在 eviction 前多花几步计算，就像 replay/consolidation。</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>类比对象</th><th>机器学习中的对应物</th><th>论文中的作用</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>动物 sleep / hippocampal replay</td><td>离线重放短期记忆并固化到更持久的权重中</td><td>启发模型在无法响应新输入的 sleep 阶段反复处理当前 context。</td></tr>
+            <tr><td>Depth-recurrent models</td><td>用循环深度增加 test-time 或 latent-time compute</td><td>本文把 recurrence 用于 memory consolidation，而不是预测时再循环。</td></tr>
+            <tr><td>Context compression / distillation</td><td>把长 context 压成短 hidden state、small KV cache 或临时权重</td><td>本文不做梯度式 test-time training，而用 learned recurrent forward rule 更新 fast weights。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 数学表示、建模与算法流程</h2>
+      <p class="section-lead">方法建立在 attention 与 SSM fast-weight memory 的互补性上：attention 保留窗口内 token，SSM 维护固定大小状态 $S_t$。Sleep 的新增动作是：每个窗口 eviction 前，重复运行 blocks $N$ 次，让 SSM 状态被同一段 context 迭代更新；随后丢弃 refined features 和 KV cache，只保留 refined fast weights。</p>
+
+      <div class="formula-box">
+        <h3>2.1 Attention 与 fixed-size fast weights</h3>
+        <p>给定 token representation $x_t$，standard self-attention 先产生 query、key、value：</p>
+        $$q_t=W_Qx_t,\qquad k_t=W_Kx_t,\qquad v_t=W_Vx_t.$$
+        <p>KV cache 记为 $K_t=[k_1,\ldots,k_t]^\top$ 与 $V_t=[v_1,\ldots,v_t]^\top$，输出为：</p>
+        $$o_t=V_t^\top \operatorname{softmax}\left(\frac{K_tq_t}{\sqrt{d}}\right).$$
+        <p>相比之下，Mamba2-style 或 GDN-style linear recurrent layer 可被看作固定大小 fast-weight state 的在线更新：</p>
+        $$S_t=\alpha_t S_{t-1}+\beta_t v_t k_t^\top,\qquad o_t=S_tq_t.$$
+        <p>这里 $\alpha_t\in(0,1)$ 是 forget gate，$\beta_t\in(0,1)$ 是 input gate。论文实验实际使用 Gated Delta Networks，但作者强调具体 SSM update rule 不是论点核心。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.2 Hybrid blocks 与 sleep recurrence</h3>
+        <p>一个 hybrid 模型交替堆叠 attention blocks 与 SSM blocks，例如：</p>
+        $$\operatorname{Embed}\rightarrow B^{\mathrm{attn}}_0\rightarrow B^{\mathrm{ssm}}_1\rightarrow B^{\mathrm{attn}}_2\rightarrow B^{\mathrm{ssm}}_3\rightarrow\cdots\rightarrow B^{\mathrm{attn}}_{D-1}\rightarrow\operatorname{OutProj}.$$
+        <p>Sleep 把 eviction boundary 前的 block computation 改成 $N$ 次循环：</p>
+        $$\operatorname{Embed}\rightarrow\left[B^{\mathrm{attn}}_0\rightarrow B^{\mathrm{ssm}}_1\rightarrow\cdots\rightarrow B^{\mathrm{attn}}_{D-1}\right]^{\times N}\rightarrow\operatorname{OutProj}.$$
+        <p>当 $N=1$ 时，它退化为普通 SSM-attention hybrid；当 $N>1$ 时，模型在 consolidation phase 花更多计算形成 fast weights，但 prediction phase 仍只做一次 standard forward pass。</p>
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>分块读入</h3><p>把 token sequence 按窗口 $L$ 切为 non-overlapping chunks。hard eviction 下每个 chunk 结束后清空 attention cache。</p></div>
+        <div class="flow-step"><b>2</b><h3>Sleep consolidation</h3><p>若当前 chunk 的 loss mask 全零，说明它属于 context consolidation 阶段，运行 $N$ 次 blocks 并递归更新 SSM fast weights。</p></div>
+        <div class="flow-step"><b>3</b><h3>Wake prediction</h3><p>若 chunk 包含待预测 token，只运行一次 blocks，计算 masked cross entropy loss，并通过完整计算图反传。</p></div>
+      </div>
+
+      <figure class="figure-card" style="margin-top:1rem;">
+        <img src="assets/figures/figure-1-sleep-architecture.png" alt="Figure 1 sleep architecture with recurrent passes before eviction" />
+        <figcaption><strong>Figure 1.</strong> 在 eviction boundary，SSM-attention hybrid 对当前 context 做 $N$ 次 offline recurrent passes。图中 KV cache 之后被清空，SSM fast weights 被保留到后续预测阶段。</figcaption>
+      </figure>
+
+      <div class="algo-box">
+        <h3>Algorithm 1 的可读版：hard eviction sleep training</h3>
+        <ol>
+          <li>输入 tokens $x$、loss mask $m$、window size $L$、sleep passes $N$；初始化 SSM fast weights $S$。</li>
+          <li>把 $x,m$ 切成长度不超过 $L$ 的 chunks。</li>
+          <li>对每个 chunk $c$，先计算 $h\leftarrow\operatorname{Embed}(c)$。</li>
+          <li>如果 chunk 的 loss mask 全零，则进入 consolidation phase：对 $n=1,\ldots,N$ 执行 $h,S\leftarrow\operatorname{Blocks}(h,S)$。</li>
+          <li>否则进入 prediction phase：只执行一次 $h,S\leftarrow\operatorname{Blocks}(h,S)$，再用 $\mathcal{L}\leftarrow\operatorname{MaskedCE}(\operatorname{OutProj}(h),c,m_c)$ 计算损失。</li>
+          <li>通过整个过程反传并更新模型参数。注意：sleep 后 refined features 被丢弃，梯度主要通过 refined fast weights 的形成过程传回。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">实验的共同检验问题是：在 context 已经被 eviction、预测阶段只能 single forward pass 的约束下，更多 sleep-time recurrence 是否能帮助模型对历史 context 做更深推理？论文使用两个合成可控任务和一个更接近自然语言数学推理的 GSM-Infinite。</p>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>实验</th><th>任务/数据</th><th>模型与窗口</th><th>变量</th><th>指标</th><th>关键信息</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Motivating Rule 110</td><td>4 个独立 length-24 binary states，预测各自经过 $t$ 次 Rule 110 rollout 后的 first bit。</td><td>4-layer GDN-attention hybrid，layout 为 attention -> GDN -> attention -> GDN；hard eviction，$L=24$。</td><td>rollout depth $t$。</td><td>exact accuracy。</td><td>sequence length 固定，改变 $t$ 隔离 reasoning depth；vanilla hybrid 随 $t$ 增大明显退化。</td></tr>
+            <tr><td>Cellular automaton with sleep</td><td>同 Rule 110，但使用困难设置 $t=32$。</td><td>同 4-layer hybrid，hidden dimension $d=256$。</td><td>$N\in\{1,2,3,4\}$ sleep loops。</td><td>accuracy over training tokens。</td><td>no-loop Muon LR 先调优为 $2\times10^{-3}$，looped models 沿用同一 LR，给 baseline 有利条件。</td></tr>
+            <tr><td>Depo</td><td>shuffled directed cycle + 10 query-answer pairs；cycle 至多 75 nodes、300 tokens，query 部分至多 60 tokens。</td><td>Jet-Nemotron-style 10-layer model from scratch，$d=512$，hard eviction $L=75$，总长 $T=360$。</td><td>$N\in\{1,2,4\}$；训练时 $k\sim[1,16]$，测试 $k\in\{1,2,4,8,16\}$。</td><td>held-out test loss。</td><td>cycle 被分散到 4 个 cache windows；query 未知，必须形成 query-agnostic graph memory。</td></tr>
+            <tr><td>GSM-Infinite</td><td>procedurally generated math word problems，2,000-3,300 tokens，operations uniform from 1 to 8；1,600 held-out examples。</td><td>Jet-Nemotron 2B 与 Ouro 1.4B；hard eviction $L=2000$。</td><td>Jet: $N\in\{1,2,4,6\}$；Ouro: $N\in\{1,2,4\}$。</td><td>accuracy by operation count。</td><td>question 放在 context 前，数据不含 Chain-of-Thought，强制 single-pass final answer。</td></tr>
+            <tr><td>Sliding-window eviction</td><td>GSM-Infinite。</td><td>Ouro 1.4B + inserted Jet layers，sliding-window $L=512$。</td><td>$N\in\{1,2,4\}$。</td><td>accuracy by operation count。</td><td>先只 warm up Jet layers 1 epoch，再全模型训练 2 epochs；作者指出 $N>1$ 时 hard-eviction warm-up 很关键。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Optimizer 与 LR</h3>
+          <p>所有实验使用 Muon optimizer。AdamW learning rate 固定为 $5\times10^{-5}$，只调 Muon LR；automaton 与 Depo 的 no-loop baseline 调得 $2\times10^{-3}$ 后，looped models 复用同一值。</p>
+        </div>
+        <div class="note-box">
+          <h3>Batch size 与 compute</h3>
+          <p>batch size: automaton 512，Depo 128，GSM-Infinite 256。automaton 小于 1 个 A6000 GPU-day；Depo 与 GSM-Infinite 每 run 约 1-2 个 H100 GPU-day。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>复现缺口</h3>
+          <p>论文没有发现公开代码链接；Muon 配置、数据生成脚本、exact prompt/template、随机种子列表与训练稳定化细节仍需从作者代码或人工实现中补齐。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">整体结果支持一个清晰趋势：当任务需要对已 eviction 的 context 做更深 sequential computation 时，增加 sleep duration $N$ 能提高学习速度和最终性能；最明显的收益出现在高 rollout steps、高 hop count、更多 arithmetic operations 或更小 attention window 的设置。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-2-cellular-automaton.png" alt="Figure 2 cellular automaton accuracy with rollout step and offline loops" />
+          <figcaption><strong>Figure 2.</strong> 左图说明 vanilla hybrid 在 Rule 110 上随 rollout step $t$ 增加而退化；右图固定 $t=32$，sleep loops 从 no loop 到 2/3/4 loops 后准确率显著上升。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-3-depo.png" alt="Figure 3 Depo test loss by hop count and offline loops" />
+          <figcaption><strong>Figure 3.</strong> Depo 中 higher-hop 查询更依赖 consolidation-time compute。4 loops 在 4-hop、8-hop、16-hop 上明显优于 no loop；16-hop 只有 4-loop 在预算内开始改善。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>结果点</th><th>论文报告的数字</th><th>解释</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Rule 110, $t=32$</td><td>no loop 约 10%；2 loops 约 20%；3/4 loops 超过 30%。</td><td>context length、eviction rule、prediction-time compute 都固定，因此提升来自 sleep-time consolidation。</td></tr>
+            <tr><td>Jet-Nemotron 2B, GSM-Infinite op6</td><td>6 loops: 0.812；no loop: 0.742。</td><td>更复杂 arithmetic chain 下，额外 offline recurrence 提升最终 accuracy 约 9%。</td></tr>
+            <tr><td>Jet-Nemotron 2B, GSM-Infinite op8</td><td>6 loops: 0.388；no loop: 0.351。</td><td>8-operation 设置仍难，但 loop count 增加保持正向收益。</td></tr>
+            <tr><td>Ouro 1.4B, GSM-Infinite op6</td><td>4 loops: 0.615；no loop: 0.419。</td><td>相对提升更大，作者推测可能与 Ouro 的 depth-recurrent pretraining 有关。</td></tr>
+            <tr><td>Ouro 1.4B, GSM-Infinite op8</td><td>4 loops: 0.272；no loop: 0.210。</td><td>hard problems 上收益存在，但 absolute accuracy 仍低，说明方法不是完全解决长推理。</td></tr>
+            <tr><td>Sliding-window, Ouro 1.4B, $L=512$</td><td>op2: 0.596 -> 0.905；op4: 0.839 -> 0.926；op6: 0.251 -> 0.320；op8: 0.116 -> 0.137。</td><td>窗口远小于总长时，sleep 不只帮助多步推理，也帮助压缩和检索 relevant context。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">论文没有正式实验表；本表重建自正文明确数值与 Figure 4/5 标注的终点值。曲线中未在正文给出的中间点不作为精确数值主张。</p>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-4-gsm-infinite.png" alt="Figure 4 GSM-Infinite accuracy for Jet-Nemotron and Ouro" />
+          <figcaption><strong>Figure 4.</strong> GSM-Infinite hard eviction。easier op2/op4 接近饱和，op6/op8 随 loop count 增加差距变大；Ouro 的 loop gain 比 Jet 更明显。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-5-sliding-window.png" alt="Figure 5 GSM-Infinite sliding-window eviction accuracy" />
+          <figcaption><strong>Figure 5.</strong> GSM-Infinite sliding-window eviction，$L=512$。active attention window 只有总长约四分之一到六分之一时，4 loops 对 op2 也有大幅帮助。</figcaption>
+        </figure>
+      </div>
+
+      <figure class="figure-card">
+        <img src="assets/figures/figure-6-throughput.png" alt="Figure 6 training throughput for windowed recurrence and loop depth" />
+        <figcaption><strong>Figure 6.</strong> Training throughput。context windows 之间的顺序依赖在 $L$ 足够大时未显著拖慢吞吐；但 recurrent depth cost 基本随 $N$ 线性增加。实验使用 1 张 NVIDIA H200、sequence length 12,000、FlashAttention 2。</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">自动 PDF image extraction 只提取到 1 个很小的嵌入图像，因此本页使用 PDF rendered pages 的本地裁剪作为主要 figure 来源。图像来自实际论文页面，不是重绘图；细小曲线读数需人工核对，页面只引用正文或图中清楚标注的数字。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>编号</th><th>PDF 页</th><th>内容</th><th>页面覆盖情况</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Algorithm 1</td><td>Page 6</td><td>LLM sleep training with hard eviction。</td><td>已在方法区用中文逐步重写，并保留 loss mask、window size、sleep passes 等变量。</td></tr>
+            <tr><td>Figure 1</td><td>Page 6</td><td>eviction boundary 前 $N$ 次 offline recurrent passes 更新 SSM fast weights。</td><td>已用页面裁剪图嵌入。</td></tr>
+            <tr><td>Figure 2</td><td>Page 8</td><td>Cellular automaton: rollout step 与 sleep loops 的影响。</td><td>已用页面裁剪图嵌入，并重述正文关键数字。</td></tr>
+            <tr><td>Figure 3</td><td>Page 8</td><td>Depo: 不同 hop count 下 test loss 随 training step 变化。</td><td>已用页面裁剪图嵌入；曲线终点未全部读数，不编造精确表格。</td></tr>
+            <tr><td>Figure 4</td><td>Page 10</td><td>GSM-Infinite hard eviction: Jet-Nemotron 2B 与 Ouro 1.4B。</td><td>已用页面裁剪图嵌入，并重建 op6/op8 关键结果表。</td></tr>
+            <tr><td>Figure 5</td><td>Page 10</td><td>GSM-Infinite sliding-window eviction, Ouro 1.4B, $L=512$。</td><td>已用页面裁剪图嵌入，并列出图中终点值。</td></tr>
+            <tr><td>Figure 6</td><td>Page 11</td><td>training throughput: windowed recurrence 与 varying $N$。</td><td>已用页面裁剪图嵌入；精确 throughput 数字只按图展示，需人工核对。</td></tr>
+            <tr><td>Tables</td><td>无正式表格</td><td>论文未包含编号 Table。</td><td>本页重建实验矩阵、关键结果表和复现清单。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note-box warn">
+        <h3>需人工核对</h3>
+        <p>PDF 渲染页可确认主要图形、图注和趋势；但 Figure 2/3/6 中部分曲线点没有正文数值，若后续需要精确 CSV 或 plot data，需要作者代码或手动 digitization。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">复现这篇论文需要两个层次：先复现 hard-eviction sleep training 的机制，再复现实验曲线。论文给了较多 training setup，但没有代码链接，也没有 appendix；因此严格复现仍缺数据生成脚本、完整模型配置和训练稳定化细节。</p>
+
+      <div class="grid-3">
+        <div class="critique-box good">
+          <h3>最小机制复现</h3>
+          <ul class="compact-list">
+            <li>实现一个交替 attention/GDN 或 attention/linear-attention 的小模型。</li>
+            <li>支持按窗口 $L$ 切 chunk，并在 consolidation chunk 上运行 $N$ 次 blocks。</li>
+            <li>每个 eviction boundary 后清空 attention cache，只保留 SSM fast weights。</li>
+            <li>prediction chunk 只运行一次 forward，使用 masked cross entropy。</li>
+            <li>反传必须覆盖 sleep passes，否则学不到如何形成 fast weights。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>数据与评估</h3>
+          <ul class="compact-list">
+            <li>Rule 110: 4 个 length-24 binary strings，label 是 $t$ rollout 后 first bit。</li>
+            <li>Depo: shuffled directed cycle，最多 75 nodes，10 个 query-answer pairs。</li>
+            <li>GSM-Infinite: 1,600 held-out examples，2,000-3,300 tokens，operations 1 到 8。</li>
+            <li>按 operation count 或 hop count 分桶报告，不只看整体平均。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>仍缺的实现细节</h3>
+          <ul class="compact-list">
+            <li>GDN/Jet layer 的 exact implementation 和 initialization。</li>
+            <li>Muon optimizer 的完整参数、scheduler、weight decay、gradient clipping。</li>
+            <li>GSM-Infinite 的 exact generation prompts/templates。</li>
+            <li>Jet-Nemotron 与 Ouro 改层位置、插入 Jet layers 的代码。</li>
+            <li>随机种子列表和训练失败/重跑策略。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>复现实验</th><th>建议目的</th><th>成功判据</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>$N$ sweep</td><td>验证 sleep duration 与 reasoning depth 的单调关系。</td><td>在 $t=32$ Rule 110 或 higher-hop Depo 上，$N>1$ 明显优于 $N=1$。</td></tr>
+            <tr><td>Hold capacity fixed</td><td>排除“只是参数更多/内存更大”的解释。</td><td>保持模型大小、sequence length、window $L$ 不变，只改变 sleep passes。</td></tr>
+            <tr><td>Prediction latency audit</td><td>确认方法没有偷偷在 wake-time 增加 chain-of-thought 或 recurrent decoding。</td><td>prediction chunk 每 token 仅一次 forward；额外计算只发生在 eviction 前。</td></tr>
+            <tr><td>Sliding-window warm-up ablation</td><td>检查 hard-eviction warm-up 对 $N>1$ 的必要性。</td><td>去掉 SSM-only warm-up 或 hard-eviction warm-up 后，Figure 5 趋势应有可测下降。</td></tr>
+            <tr><td>Throughput benchmark</td><td>评估序列维度串行化与 recurrent depth 的成本。</td><td>复现 Figure 6 的两个结论：大 $L$ 时 window serialness 开销小，成本随 $N$ 近似线性增长。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">这篇论文的主要贡献是把长上下文记忆问题从“容量够不够”推进到“eviction 前是否有足够计算把 context 组织成可用 fast weights”。证据链比较干净，尤其是 Rule 110 和 Depo 对 reasoning depth 的控制；但实证规模、代码可复现性和与其他 context-compression/test-time-training 方法的直接比较仍不够强。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>问题定义清楚：额外 compute 移到 consolidation phase，prediction latency 保持 single-pass。</li>
+            <li>合成任务设计能独立改变 reasoning depth，而不是把长度、检索量和推理难度混在一起。</li>
+            <li>从 scratch 小模型到 pretrained Jet/Ouro 都看到同向趋势，说明现象不是单一玩具任务。</li>
+            <li>讨论了训练吞吐和 serialness，不只报告 accuracy。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>没有公开代码链接，导致 layer insertion、training stability、data generation 的复现成本较高。</li>
+            <li>GSM-Infinite 仍是 synthetic math benchmark，离真实长上下文 agent/QA/workflow 还有距离。</li>
+            <li>loop count 增加带来训练成本近似线性增加，收益是否抵得过成本需要更多 cost-normalized 分析。</li>
+            <li>与 context distillation、test-time gradient update、KV compression 的 head-to-head baseline 还不充分。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="critique-box danger">
+          <h3>Missing Ablations</h3>
+          <ul class="compact-list">
+            <li>同等训练 FLOPs 下，更多 sleep passes vs 更长训练 token budget。</li>
+            <li>只循环 SSM blocks、只循环 attention blocks、循环 middle blocks vs all blocks。</li>
+            <li>不同 window sizes $L$ 与 sequence length $T$ 的交互。</li>
+            <li>fast-weight state size 改变时，capacity 与 computation 的相对贡献。</li>
+            <li>使用真实 long-context QA 或 coding agent trajectory 的外部有效性测试。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>Possible Failure Modes</h3>
+          <ul class="compact-list">
+            <li>如果任务需要精确逐 token recall，固定 fast weights 仍可能损失不可压缩信息。</li>
+            <li>sleep consolidation 使训练跨窗口串行，长序列和大 $N$ 下更难稳定扩展。</li>
+            <li>模型可能学习到 dataset-specific compression shortcut，而不是真正通用的 planning/reasoning。</li>
+            <li>online serving 中 sleep 阶段会暂停接收新输入；适合批处理或明确 chunk boundary 的场景，不一定适合低延迟交互。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究方向的启发</h2>
+      <p class="section-lead">对 agent、RLVR、自进化、replay、diversity 和 evaluation 方向，这篇论文最可迁移的不是“睡眠”这个比喻，而是把 offline compute 用于整理未来会被反复使用的内部状态。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Agent memory consolidation</h3>
+          <p>长程 agent 轨迹不必全部留在 active context；可以在 episode/chunk boundary 做 learned replay，把关键 state 写入 compact memory。</p>
+        </div>
+        <div class="note-box">
+          <h3>Questioner-Solver</h3>
+          <p>Questioner 生成的问题可作为 sleep-time replay curriculum，让 solver 在回答前先把历史证据压缩成可查询 fast state。</p>
+        </div>
+        <div class="note-box">
+          <h3>RLVR / self-evolution</h3>
+          <p>奖励不只评价最终答案，也可以评价 consolidation 后的 latent memory 是否支持后续 verifier queries。</p>
+        </div>
+        <div class="note-box">
+          <h3>Replay buffer</h3>
+          <p>睡眠阶段像可微 replay：不是采样旧经验再训练参数，而是在当前 inference episode 内迭代更新 fast weights。</p>
+        </div>
+        <div class="note-box">
+          <h3>Diversity of compute</h3>
+          <p>把 compute 分成 wake-time prediction compute 与 sleep-time state-formation compute，有助于设计更细粒度的 test-time scaling 策略。</p>
+        </div>
+        <div class="note-box">
+          <h3>Evaluation design</h3>
+          <p>应构造能固定 information load、单独改变 reasoning depth 的 benchmark，否则很难判断模型是在记不住还是算不动。</p>
+        </div>
+      </div>
+
+      <div class="note-box good" style="margin-top:1rem;">
+        <h3>一句话结论</h3>
+        <p>LLM sleep 的实质是“在遗忘 attention cache 之前，多花可学习的离线计算把历史转成 fast weights”；它把长上下文瓶颈从存储问题扩展为存储加计算分配问题。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

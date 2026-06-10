@@ -937,6 +937,227 @@
         "level": "medium",
         "notes": "论文给出工具签名、reward 权重、SFT/RL 超参数、benchmark 统计、working-memory 渲染、算法伪代码和 prompts，并在摘要中声明代码可用；本次构建未验证 GitHub 仓库、模型权重、外部检索服务或训练环境是否完整可用。"
       }
+    },
+    {
+      "id": "2605.23904",
+      "slug": "skillopt-self-evolving-agent-skills",
+      "title": "SkillOpt: Executive Strategy for Self-Evolving Agent Skills",
+      "titleZh": "SkillOpt：面向自进化 Agent 技能的执行式优化策略",
+      "authors": [
+        "Yifan Yang",
+        "Ziyang Gong",
+        "Weiquan Huang",
+        "Qihao Yang",
+        "Ziwei Zhou",
+        "Zisu Huang",
+        "Yan Li",
+        "Xuemei Gao",
+        "Qi Dai",
+        "Bei Liu",
+        "Kai Qiu",
+        "Yuqing Yang",
+        "Dongdong Chen",
+        "Xue Yang",
+        "Chong Luo"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "tool-use",
+        "self-evolution",
+        "skill-optimization",
+        "validation-gate"
+      ],
+      "status": "精读",
+      "priority": 5,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "SkillOpt 将 agent 的 markdown skill 当作冻结模型之外的可训练状态，用 rollout evidence、bounded add/delete/replace edits、held-out validation gate、rejected-edit buffer 和 slow/meta update 组成离线优化循环。论文在六个 benchmark、七个 target models、三类 execution harness 上报告 52/52 单元最优或并列最优，部署阶段只需携带紧凑 best_skill.md，不增加 optimizer model 调用。",
+      "takeaways": [
+        "skill document 可以像外部参数一样训练：核心不是生成更长 prompt，而是给文本更新加入 batch、learning rate、validation 和 rejected replay。",
+        "held-out selection gate 是 agent 自进化的关键安全阀；没有可靠 verifier 的开放式任务需要先解决评价问题。",
+        "跨模型、跨 harness、跨邻近 benchmark 的 transfer 结果说明优化后的 skill 更像可复用程序知识，而不是单一 benchmark prompt。"
+      ],
+      "arxivId": "2605.23904",
+      "paperUrl": "https://arxiv.org/abs/2605.23904",
+      "pdfUrl": "https://arxiv.org/pdf/2605.23904",
+      "pageUrl": "papers/skillopt-self-evolving-agent-skills/index.html",
+      "codeUrl": "https://github.com/microsoft/SkillOpt",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文给出算法、默认超参数、split_seed=42、JSON prompt contracts 和代码入口；但精确数据索引、闭源模型 API snapshot、decoding 参数与 harness adapter 细节仍需结合代码仓库和模型权限核对。"
+      }
+    },
+    {
+      "id": "2605.22502",
+      "slug": "compiling-agentic-workflows-into-llm-weights",
+      "title": "Compiling Agentic Workflows into LLM Weights: Near-Frontier Quality at Two Orders of Magnitude Less Cost",
+      "titleZh": "将 Agentic Workflow 编译进 LLM 权重：以低两个数量级成本接近前沿质量",
+      "authors": [
+        "Simon Dennis",
+        "Rivaan Patil",
+        "Kevin Shabahang",
+        "Hao Guo"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "post-training",
+        "evaluation",
+        "systems",
+        "workflow"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "论文比较 surface orchestration、in-context self-orchestration 与把流程编译进小模型权重的 subterranean agent。作者在 travel、Zoom support 和 insurance claims 三个流程任务上显示，3B/8B 全参微调模型可接近 Claude in-context 质量，同时每轮成本降低 128-462 倍。",
+      "takeaways": [
+        "持久流程知识适合进入权重，临时会话状态适合留在 prompt。",
+        "同模型对照显示 compilation 本身减少路由错误和局部节点模板带来的状态断裂。",
+        "成本优势随流程复杂度增长，因为 compiled model 的 prompt 尺寸不随节点数扩张。"
+      ],
+      "arxivId": "2605.22502",
+      "paperUrl": "https://arxiv.org/abs/2605.22502",
+      "pdfUrl": "https://arxiv.org/pdf/2605.22502.pdf",
+      "pageUrl": "papers/compiling-agentic-workflows-into-llm-weights/index.html",
+      "codeUrl": "",
+      "repro": {
+        "available": false,
+        "level": "medium",
+        "notes": "给出数据生成规模、模型、优化器、学习率、batch、硬件和 judge 设置；未提供明确代码仓库链接，flowchart 与完整 transcripts 需另行获取。"
+      }
+    },
+    {
+      "id": "2605.28655",
+      "slug": "autoscientists-self-organizing-agent-teams",
+      "title": "AutoScientists: Self-Organizing Agent Teams for Long-Running Scientific Experimentation",
+      "titleZh": "AutoScientists：用于长周期科学实验的自组织智能体团队",
+      "authors": [
+        "Shanghua Gao",
+        "Ada Fang",
+        "Marinka Zitnik"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "tool-use",
+        "planning",
+        "scientific-discovery",
+        "evaluation",
+        "self-organization"
+      ],
+      "status": "精读",
+      "priority": 5,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "AutoScientists 将长周期科学实验组织为去中心化多智能体搜索：agents 通过 shared state、research forum、team queues 和 dead-end registry 自组织成团队，并用 noise-aware gate 保护 champion 更新。论文在 BioML-Bench、GPT nanochat training optimization 和 ProteinGym 上显示，它在相同实验预算下能比 single-agent Autoresearch 更持续地发现有效改进。",
+      "takeaways": [
+        "长周期 agentic science 的关键状态不是聊天上下文，而是可审计的 champion、实验日志、论坛、队列和 dead-end registry。",
+        "Noise-aware promotion gate 可迁移到 RLVR checkpoint/data admission，避免 noisy reward 污染后续搜索。",
+        "多 agent 的收益依赖 analyst、cross-agent feedback、self-organization 和 shared record 的组合；crew size 并非越大越好。"
+      ],
+      "arxivId": "2605.28655",
+      "paperUrl": "https://arxiv.org/abs/2605.28655",
+      "pdfUrl": "https://arxiv.org/pdf/2605.28655",
+      "pageUrl": "papers/autoscientists-self-organizing-agent-teams/index.html",
+      "codeUrl": "https://github.com/mims-harvard/AutoScientists",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文提供代码仓库、benchmark 依赖、默认团队配置、硬件预算、算法伪代码、noise gate、BioML/ProteinGym/GPT 细节；完整复现仍依赖 Claude Code/Claude Sonnet 4.6、H100 预算、外部 benchmark 环境和代码仓库中的完整 prompts/logging。"
+      }
+    },
+    {
+      "id": "2605.26099",
+      "slug": "language-models-need-sleep",
+      "title": "Do Language Models Need Sleep? Offline Recurrence for Improved Online Inference",
+      "titleZh": "语言模型需要睡眠吗？用于改进在线推理的离线递归",
+      "authors": [
+        "Sangyun Lee",
+        "Sean McLeish",
+        "Tom Goldstein",
+        "Giulia Fanti"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Long Context / Memory",
+      "tags": [
+        "long-context",
+        "memory",
+        "ssm",
+        "recurrence",
+        "reasoning",
+        "inference"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "论文提出一种 sleep-like offline recurrence：在 attention cache 被 eviction 前，对当前 context 做多次 recurrent passes，把信息写入 SSM fast weights。额外计算发生在 consolidation phase，prediction phase 仍保持 single forward pass；在 Rule 110、Depo 和 GSM-Infinite 上，增加 sleep duration 对更深推理任务提升最明显。",
+      "takeaways": [
+        "长上下文瓶颈不只是记忆容量，还包括 eviction 前把 context 组织成可用 fast weights 的计算量。",
+        "把额外 compute 放在 sleep/consolidation 阶段，可以在不增加 wake-time prediction latency 的前提下改善已 eviction context 上的推理。",
+        "可控 benchmark 应固定 information load、单独改变 reasoning depth，否则难以区分模型是记不住还是算不动。"
+      ],
+      "arxivId": "2605.26099",
+      "paperUrl": "https://arxiv.org/abs/2605.26099",
+      "pdfUrl": "https://arxiv.org/pdf/2605.26099",
+      "pageUrl": "papers/language-models-need-sleep/index.html",
+      "codeUrl": "",
+      "repro": {
+        "available": false,
+        "level": "medium",
+        "notes": "论文给出算法、主要模型配置、学习率、batch size、窗口大小和 compute 估计，但未发现公开代码链接；严格复现仍需数据生成脚本、GDN/Jet/Ouro 具体实现、完整 Muon 配置和随机种子。"
+      }
+    },
+    {
+      "id": "2605.22166",
+      "slug": "life-harness-runtime-interface-adaptation",
+      "title": "Adapting the Interface, Not the Model: Runtime Harness Adaptation for Deterministic LLM Agents",
+      "titleZh": "适配接口而非模型：面向确定性 LLM Agent 的运行时 Harness 适配",
+      "authors": [
+        "Tianshi Xu",
+        "Huifeng Wen",
+        "Meng Li"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "tool-use",
+        "runtime-harness",
+        "evaluation",
+        "self-evolution"
+      ],
+      "status": "精读",
+      "priority": 5,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "LIFE-HARNESS 把确定性 agent 失败定位为模型与环境之间的 runtime interface 错配，而不是只靠 SFT/RL 更新权重。它从训练轨迹中把 contract、skill、action realization 和 trajectory regulation 问题沉淀为固定 harness，在 7 个环境、18 个模型上改善 116/126 个 settings，平均相对提升 88.5%。",
+      "takeaways": [
+        "agent 自进化的产物可以是可审计的 interface delta，而不一定是模型参数 delta。",
+        "评估 agent 时应区分 reasoning failure、tool protocol failure、invalid action 与 trajectory degeneration。",
+        "固定 harness 从 Qwen3-4B-Instruct 迁移到 17 个模型，说明很多收益来自可复用环境侧结构。"
+      ],
+      "arxivId": "2605.22166",
+      "paperUrl": "https://arxiv.org/abs/2605.22166",
+      "pdfUrl": "https://arxiv.org/pdf/2605.22166",
+      "pageUrl": "papers/life-harness-runtime-interface-adaptation/index.html",
+      "codeUrl": "https://github.com/Tianshi-Xu/Life-Harness",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文给出数据划分、评估预算、harness evolution prompt template 和四层 harness inventory，并提供代码链接；但完整训练轨迹、每轮 Codex 修改日志、硬件成本和具体模型/API 版本需要仓库与人工核对。"
+      }
     }
   ]
 }

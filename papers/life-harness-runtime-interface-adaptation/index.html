@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Adapting the Interface, Not the Model · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .lifeharness-page * { letter-spacing: 0 !important; }
+    .lifeharness-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .lifeharness-page .topbar { margin-top: 14px; }
+    .lifeharness-page .paper-hero { padding: 3.25rem 0 2.4rem; border-bottom: 1px solid var(--line); }
+    .lifeharness-page .paper-hero h1 { max-width: 1120px; font-size: clamp(2.05rem, 5vw, 4.5rem); line-height: 1.05; }
+    .lifeharness-page .hero-subtitle { max-width: 980px; margin: 1.05rem 0 0; color: var(--text-soft); font-size: clamp(1.02rem, 2vw, 1.24rem); line-height: 1.82; }
+    .lifeharness-page .content-card { margin: 0; padding: clamp(2.05rem, 5vw, 4.1rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .lifeharness-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.58rem, 3.2vw, 2.45rem); line-height: 1.16; }
+    .lifeharness-page .content-card h3 { margin: 0 0 0.58rem; font-size: 1.08rem; line-height: 1.35; }
+    .lifeharness-page .section-lead { max-width: 980px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.03rem; line-height: 1.86; }
+    .lifeharness-page .meta-row,
+    .lifeharness-page .link-row,
+    .lifeharness-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .lifeharness-page .meta-row { margin-top: 1.1rem; color: var(--muted); font-size: 0.93rem; }
+    .lifeharness-page .paper-tags,
+    .lifeharness-page .link-row { margin-top: 1rem; }
+    .lifeharness-page .tag-pill,
+    .lifeharness-page .chip,
+    .lifeharness-page .link-row a { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.68rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .lifeharness-page .link-row a:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 34%, var(--line)); }
+    .lifeharness-page .grid-2,
+    .lifeharness-page .grid-3,
+    .lifeharness-page .metric-grid,
+    .lifeharness-page .figure-grid,
+    .lifeharness-page .flow-grid { display: grid; gap: 1rem; }
+    .lifeharness-page .grid-2,
+    .lifeharness-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .lifeharness-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .lifeharness-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .lifeharness-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .lifeharness-page .panel,
+    .lifeharness-page .metric,
+    .lifeharness-page .table-wrap,
+    .lifeharness-page .figure-card,
+    .lifeharness-page .formula-box,
+    .lifeharness-page .flow-step,
+    .lifeharness-page .quote-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 90%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .lifeharness-page .panel,
+    .lifeharness-page .formula-box,
+    .lifeharness-page .flow-step,
+    .lifeharness-page .quote-box { padding: 1rem; }
+    .lifeharness-page .panel p,
+    .lifeharness-page .formula-box p,
+    .lifeharness-page .flow-step p,
+    .lifeharness-page .quote-box p { margin: 0.45rem 0 0; }
+    .lifeharness-page .metric { padding: 1rem; }
+    .lifeharness-page .metric strong { display: block; font-size: 1.55rem; line-height: 1.15; }
+    .lifeharness-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .lifeharness-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .lifeharness-page .flow-step:nth-child(2) b { background: #2563eb; }
+    .lifeharness-page .flow-step:nth-child(3) b { background: #c2410c; }
+    .lifeharness-page .flow-step:nth-child(4) b { background: #7c3aed; }
+    .lifeharness-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .lifeharness-page .formula-box .MathJax,
+    .lifeharness-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .lifeharness-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .lifeharness-page table { width: 100%; min-width: 820px; border-collapse: collapse; font-size: 0.88rem; }
+    .lifeharness-page .tight-table { min-width: 640px; }
+    .lifeharness-page .wide-table { min-width: 1080px; }
+    .lifeharness-page th,
+    .lifeharness-page td { padding: 0.68rem 0.72rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .lifeharness-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .lifeharness-page td { color: var(--text-soft); }
+    .lifeharness-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .lifeharness-page .figure-card { margin: 0; overflow: hidden; }
+    .lifeharness-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .lifeharness-page .figure-card .img-frame { overflow-x: auto; background: white; }
+    .lifeharness-page .figure-card.wide img { min-width: 760px; }
+    .lifeharness-page .figure-card.long img { min-width: 700px; }
+    .lifeharness-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .lifeharness-page .figure-card figcaption strong { color: var(--text); }
+    .lifeharness-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .lifeharness-page .compact-list li { margin: 0.28rem 0; }
+    .lifeharness-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .lifeharness-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .lifeharness-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .lifeharness-page .code-block { margin: 0; padding: 1rem; overflow-x: auto; border-radius: 8px; color: var(--text-soft); background: rgba(127, 127, 140, 0.1); font-family: var(--mono); font-size: 0.86rem; line-height: 1.65; }
+    .lifeharness-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .lifeharness-page .grid-2,
+      .lifeharness-page .grid-3,
+      .lifeharness-page .metric-grid,
+      .lifeharness-page .figure-grid,
+      .lifeharness-page .flow-grid { grid-template-columns: 1fr; }
+      .lifeharness-page .paper-hero { padding-top: 2.25rem; }
+      .lifeharness-page table { min-width: 720px; }
+      .lifeharness-page .wide-table { min-width: 960px; }
+      .lifeharness-page .figure-card.wide img,
+      .lifeharness-page .figure-card.long img { min-width: 680px; }
+    }
+  </style>
+</head>
+<body class="paper-page lifeharness-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2605.22166v2</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Agent / Tool Use · arXiv 2026</div>
+      <h1>Adapting the Interface, Not the Model: Runtime Harness Adaptation for Deterministic LLM Agents</h1>
+      <p class="hero-subtitle">这篇论文把 agent 失败从“模型能力不够”重新定位为“模型与确定性环境之间的 runtime interface 不匹配”。LIFE-HARNESS 不改模型权重、不改评测环境，而是从训练轨迹中把反复出现的 contract、skill、action realization 和 trajectory degeneration 问题沉淀成固定 harness，在 7 个确定性 agent 环境、18 个模型 backbone 上改善 116/126 个 model-environment settings。</p>
+      <div class="meta-row">
+        <span>Tianshi Xu, Huifeng Wen, Meng Li</span>
+        <span>Peking University</span>
+        <span>Published: 2026-05-21</span>
+        <span>Updated: 2026-05-27</span>
+        <span>18-page PDF, appendix included</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">tool-use</span>
+        <span class="tag-pill">runtime-harness</span>
+        <span class="tag-pill">evaluation</span>
+        <span class="tag-pill">deterministic-env</span>
+        <span class="tag-pill">self-evolution</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2605.22166">arXiv</a>
+        <a href="https://arxiv.org/pdf/2605.22166">PDF</a>
+        <a href="https://github.com/Tianshi-Xu/Life-Harness">GitHub</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>116/126</strong><span>model-environment settings 得到改善，覆盖 instruct、reasoning 和 agent-trained 模型。</span></div>
+        <div class="metric"><strong>+88.5%</strong><span>论文报告的平均 relative improvement；median 为 +24.0%，max 为 +1468%。</span></div>
+        <div class="metric"><strong>7</strong><span>评测环境来自 \( \tau \)-bench、\( \tau^2 \)-bench 和 AgentBench。</span></div>
+        <div class="metric"><strong>1 source</strong><span>harness 只用 Qwen3-4B-Instruct 训练轨迹演化，然后迁移到另外 17 个模型。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机：agent 不是单独一个 LLM</h2>
+      <p class="section-lead">论文的核心判断是：在数据库、网页购物、OS 控制、客服 workflow、ALFWorld 等 deterministic, rule-governed environments 中，许多失败不是静态 reasoning benchmark 能力不足，而是 observations、tools、actions、feedback、stopping conditions 与模型输出之间的接口错配。把所有环境约束吸收到模型参数里代价高、模型相关，也很难跨 backbone 复用。</p>
+
+      <div class="grid-3">
+        <div class="panel danger">
+          <h3>模型侧适配的局限</h3>
+          <p>SFT、RL、distillation 或 tool-use training 会把环境规则写进某个 checkpoint。换模型、换环境或协议微调后，训练成本和分布耦合会重新出现。</p>
+        </div>
+        <div class="panel warn">
+          <h3>确定性环境的结构外显</h3>
+          <p>工具 schema、SQL 方言、可执行 action set、错误反馈、预算耗尽、重复无效动作等规则通常是稳定的，适合作为 runtime harness 的显式约束。</p>
+        </div>
+        <div class="panel good">
+          <h3>LIFE-HARNESS 的定位</h3>
+          <p>它不是训练新 policy，也不是只改 prompt；它把训练轨迹中的 recurring interaction failures 转换成 evaluation 时固定、可审计的接口干预。</p>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>从参数适配转向 runtime interface adaptation</h3>
+        <p>普通 agent 适配从训练轨迹 \(T_{\mathrm{train}}\) 更新模型参数：</p>
+        $$\theta' \leftarrow A_{\mathrm{param}}(\theta,T_{\mathrm{train}}).$$
+        <p>LIFE-HARNESS 固定模型权重，只更新 harness \(H\)：</p>
+        $$H' \leftarrow A_{\mathrm{harness}}(H,T_{\mathrm{train}}), \qquad \theta \text{ fixed}.$$
+        <p>这个区别决定了它是 environment-specific 但 model-agnostic：同一环境协议下，演化出的 harness 可以被其他模型复用。</p>
+      </div>
+
+      <figure class="figure-card">
+        <img src="assets/figures/figure-03-failure-diagnosis.png" alt="Figure 3 failure diagnosis on training tasks" />
+        <figcaption><strong>Figure 3.</strong> 作者用 Qwen3-4B-Instruct 在训练任务上的失败轨迹做人工和 Codex 辅助诊断：393 个失败 episode 中，Action realization 占 23.2%，Environment contract 占 33.3%，Trajectory degeneration 占 33.6%，General reasoning 只有 9.9%。这支撑了论文的主张：大头问题确实落在 runtime interface，而不只是模型推理。</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 方法：四层生命周期 harness</h2>
+      <p class="section-lead">LIFE-HARNESS 把 agent 交互写成一个带 contract 的状态机，然后在生命周期的四个位置插入干预：交互前校准 contract，任务条件阶段检索 procedural skill，执行前校验 action，执行后监控 trajectory。它的关键约束是：不使用测试标签，不修改 benchmark task，不改变 environment transition 或 evaluator。</p>
+
+      <div class="formula-box">
+        <h3>2.1 LLM agent runtime formalization</h3>
+        <p>一个 episode 由 task \(x\)、环境 \(E\)、环境契约 \(C\) 和 step budget \(B\) 定义。初始化为：</p>
+        $$s_0,o_0 = E.\mathrm{INIT}(x).$$
+        <p>第 \(t\) 步的轨迹包含 contract、task、历史 action 与 observation：</p>
+        $$\tau_t=(C,x,o_0,a_0,o_1,\ldots,a_{t-1},o_t).$$
+        <p>模型产生 action，环境执行并返回新状态和 observation：</p>
+        $$a_t \sim \pi_\theta(\cdot \mid \tau_t), \qquad s_{t+1},o_{t+1}=E.\mathrm{STEP}(s_t,a_t).$$
+        <p>如果 action 不可执行，错误反馈仍是轨迹的一部分。LIFE-HARNESS 的切入点就是在 \(a_t\) 前后对这个接口做确定性、可复用的约束。</p>
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Environment Contract Layer</h3><p>在交互前把稳定工具规则、policy 约束、answer format、常见陷阱写入增强 contract \(C'=C\oplus\Delta C\)。</p></div>
+        <div class="flow-step"><b>2</b><h3>Procedural Skill Layer</h3><p>从训练轨迹沉淀 reusable skills，用 BM25 对当前 task description 检索 top-1 skill，作为非参数 guidance。</p></div>
+        <div class="flow-step"><b>3</b><h3>Action Realization Layer</h3><p>模型输出后、环境执行前，用 tool schema、admissible action set、argument constraints、task policy 做校验和 canonicalization。</p></div>
+        <div class="flow-step"><b>4</b><h3>Trajectory Regulation Layer</h3><p>环境反馈后监控 repetition、stagnation、invalid retries、budget exhaustion，并在退化明显时给 recovery message 或 corrective directive。</p></div>
+      </div>
+
+      <figure class="figure-card" style="margin-top:1rem;">
+        <img src="assets/figures/figure-04-life-harness-framework.png" alt="Figure 4 overview of LIFE-HARNESS" />
+        <figcaption><strong>Figure 4.</strong> LIFE-HARNESS 的 offline evolution 读取 training trajectories，挖掘 failure pattern，然后把补丁放入四个 lifecycle layer；inference 时模型冻结，harness 在初始化、task conditioning、pre-execution 和 post-execution 四个阶段工作。</figcaption>
+      </figure>
+
+      <div class="formula-box">
+        <h3>2.2 Action realization 与 trajectory regulation</h3>
+        <p>Action Realization Layer 对模型 action \(a_t\)、轨迹 \(\tau_t\) 和状态 \(s_t\) 做执行前判定：</p>
+        $$z_t=\mathrm{REALIZEACTION}(a_t,\tau_t,s_t), \qquad z_t\in\{\mathrm{EXEC}(a_t),\mathrm{BLOCK}(m_t)\}.$$
+        <p>Trajectory Regulation Layer 在环境反馈后计算 recovery signal，其中 \(b_t=B-t-1\) 是剩余 budget：</p>
+        $$r_t=\mathrm{REGULATETRAJECTORY}(\tau_t,a_t,o_{t+1},b_t).$$
+        <p>实现上，\(r_t\) 可以为空，也可以是软提示、重复失败警告，或在确定性退化时更强的纠正指令。</p>
+      </div>
+
+      <div class="grid-2">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-02-agent-runtime-vs-interface.png" alt="Figure 2 agent runtime and interface adaptation" />
+          <figcaption><strong>Figure 2.</strong> 论文把 agent 从 “standard LLM” 扩展为带 runtime harness 的交互系统，并对比 parameter adaptation 与 runtime interface adaptation。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/algorithm-01-life-harness-loop.png" alt="Algorithm 1 LIFE-HARNESS loop" />
+          <figcaption><strong>Algorithm 1.</strong> 完整 loop：先增强 contract 和 task，再每步调用 LLM、realize action、执行或 block、更新轨迹、regulate trajectory，直到结束或预算耗尽。</figcaption>
+        </figure>
+      </div>
+
+      <div class="quote-box">
+        <h3>轨迹驱动的 harness evolution</h3>
+        <p>作者用 Codex 读取上一轮完整训练轨迹、summary metrics 和当前 harness 代码，要求它找出 recurring failure patterns，并把每个 pattern 映射到最早可可靠干预的 lifecycle point。论文附录 A.2 给出了 prompt template，附录 A.3 给出了最终 harness inventory；但 PDF 没有列出每一轮 raw trajectory 文件，严格复现实验仍需依赖开源仓库和原始 benchmark 运行环境。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">实验覆盖三个 benchmark suites：\( \tau \)-bench、\( \tau^2 \)-bench 和 AgentBench。作者只用 Qwen3-4B-Instruct 的训练轨迹演化 harness，测试集在演化中始终隐藏；最终 frozen harness 复用于其他 17 个模型 backbone。</p>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Benchmarks and tasks</h3>
+          <ul class="compact-list">
+            <li>\( \tau \)-bench: Airline, Retail，报告 Pass@1 与 Pass<sup>3</sup>。</li>
+            <li>\( \tau^2 \)-bench: Telecom，报告 Pass@1 与 Pass<sup>3</sup>。</li>
+            <li>AgentBench: ALFWorld, WebShop, OS, DBBench，按官方实现单次评估。</li>
+            <li>这些任务都有稳定工具接口、可复现状态转移和确定性评估标准。</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Models and evaluation</h3>
+          <ul class="compact-list">
+            <li>Source model for harness evolution: Qwen3-4B-Instruct。</li>
+            <li>Backbones: Qwen family、Llama family、xLAM family，含 instruct、reasoning、agent-trained 模型。</li>
+            <li>所有评估 temperature 为 0.0。</li>
+            <li>\( \tau \)-bench 和 \( \tau^2 \)-bench 使用 DeepSeek-V4-Flash 作为 user LLM，每个 task 运行 3 次。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>Task</th><th>Raw Train Pool</th><th>Train Used</th><th>Test / Eval</th><th>Raw Pool Total</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>ALFWorld</td><td>3,150</td><td>100</td><td>109</td><td>3,259</td></tr>
+            <tr><td>DBBench</td><td>4,803</td><td>100</td><td>300</td><td>5,103</td></tr>
+            <tr><td>OS Interaction</td><td>1,000</td><td>100</td><td>144</td><td>1,144</td></tr>
+            <tr><td>WebShop</td><td>9,000</td><td>100</td><td>200</td><td>9,200</td></tr>
+            <tr><td>Airline</td><td>30</td><td>30</td><td>20</td><td>50</td></tr>
+            <tr><td>Retail</td><td>74</td><td>74</td><td>40</td><td>114</td></tr>
+            <tr><td>Telecom</td><td>74</td><td>74</td><td>40</td><td>114</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 3 重建：Train Used 是每次 harness-evolution run 实际采样的训练样本数，不是每轮执行全部 raw pool。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>Benchmark</th><th>Temperature</th><th>Max tokens per step</th><th>Max step</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>ALFWorld</td><td>0.0</td><td>4096</td><td>50</td></tr>
+            <tr><td>DBBench</td><td>0.0</td><td>4096</td><td>15</td></tr>
+            <tr><td>OS</td><td>0.0</td><td>4096</td><td>8</td></tr>
+            <tr><td>WebShop</td><td>0.0</td><td>4096</td><td>20</td></tr>
+            <tr><td>Airline</td><td>0.0</td><td>2048</td><td>200</td></tr>
+            <tr><td>Retail</td><td>0.0</td><td>2048</td><td>200</td></tr>
+            <tr><td>Telecom</td><td>0.0</td><td>2048</td><td>200</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 4 重建：论文未在 PDF 中报告硬件成本、每轮 Codex 调用成本或完整 trajectory log 数量；这些属于复现时需要核对的外部信息。</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="panel good">
+          <h3>最强复现信号</h3>
+          <p>附录 A.3 把 7 个环境的 harness inventory 按四层列出，具体到工具描述、skill retrieval、action guard、SQL/MySQL repair、WebShop buy-now precheck 等。</p>
+        </div>
+        <div class="panel warn">
+          <h3>需要仓库补全</h3>
+          <p>PDF 对最终代码只给 inventory 和 GitHub 链接，未在正文逐行展示所有 harness implementation；严格复现实验需拉取仓库核对。</p>
+        </div>
+        <div class="panel warn">
+          <h3>评测漂移风险</h3>
+          <p>DeepSeek-V4-Flash user LLM、Qwen3.x/Llama/xLAM 具体 checkpoint、benchmark 版本如果变动，Pass@1 和 Pass<sup>3</sup> 可能漂移。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">结论并不只是“平均分涨了”：更关键的是同一个 frozen harness 从 Qwen3-4B-Instruct 轨迹演化后能迁移到 17 个其他模型，说明它捕获的是环境侧结构，而不是某个模型的行为模式。</p>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>Suite</th><th>Benchmark</th><th>Metric</th><th>w/o</th><th>w/ LIFE-HARNESS</th><th>Rel. Gain</th><th>Improved</th></tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="4">AgentBench</td><td>ALFWorld</td><td>Pass@1</td><td>41.1%</td><td><strong>75.7%</strong></td><td>+84%</td><td>17/18</td></tr>
+            <tr><td>WebShop</td><td>Pass@1</td><td>31.4%</td><td><strong>44.0%</strong></td><td>+40%</td><td>18/18</td></tr>
+            <tr><td>OS</td><td>Pass@1</td><td>34.7%</td><td><strong>41.2%</strong></td><td>+19%</td><td>18/18</td></tr>
+            <tr><td>DBBench</td><td>Pass@1</td><td>48.4%</td><td><strong>64.6%</strong></td><td>+34%</td><td>18/18</td></tr>
+            <tr><td rowspan="4">\( \tau \)-bench</td><td rowspan="2">Airline</td><td>Pass@1</td><td>49.7%</td><td><strong>62.6%</strong></td><td>+26%</td><td>16/18</td></tr>
+            <tr><td>Pass<sup>3</sup></td><td>34.7%</td><td><strong>52.2%</strong></td><td>+50%</td><td>17/18</td></tr>
+            <tr><td rowspan="2">Retail</td><td>Pass@1</td><td>56.2%</td><td><strong>61.8%</strong></td><td>+10%</td><td>14/18</td></tr>
+            <tr><td>Pass<sup>3</sup></td><td>37.9%</td><td><strong>45.3%</strong></td><td>+19%</td><td>15/18</td></tr>
+            <tr><td rowspan="2">\( \tau^2 \)-bench</td><td rowspan="2">Telecom</td><td>Pass@1</td><td>55.3%</td><td><strong>69.0%</strong></td><td>+25%</td><td>17/18</td></tr>
+            <tr><td>Pass<sup>3</sup></td><td>41.5%</td><td><strong>52.6%</strong></td><td>+27%</td><td>18/18</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 1 重建：所有数字是 18 个 backbone 的平均。Improved 表示该 benchmark/metric 下被 LIFE-HARNESS 改善的模型数。</p>
+      </div>
+
+      <div class="grid-2">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-05-model-benchmark-heatmap.png" alt="Figure 5 model by benchmark improvements" />
+          <figcaption><strong>Figure 5.</strong> 18 个模型 × 7 个 benchmark 的 absolute improvement 热图。少数负例存在，例如个别强 reasoning 模型在 WebShop 或 ALFWorld 上略降，但整体 92% settings 改善。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-06-evolution-dynamics.png" alt="Figure 6 evolution dynamics" />
+          <figcaption><strong>Figure 6.</strong> Qwen3-4B-Instruct 在训练集上的 best performance 随 evolution iteration 稳步提升并趋于饱和，说明局部 failure-driven harness patch 能逐轮累积。</figcaption>
+        </figure>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-07-prompt-evolving-comparison.png" alt="Figure 7 prompt evolving comparison" />
+          <figcaption><strong>Figure 7.</strong> Prompt-only evolving 有提升，但 LIFE-HARNESS 平均相对额外提升 120%，说明 agentic tasks 的瓶颈不仅在初始 prompt，还在工具执行和多步轨迹控制。</figcaption>
+        </figure>
+        <figure class="figure-card wide">
+          <div class="img-frame"><img src="assets/figures/figure-08-training-vs-harness.png" alt="Figure 8 specialized training versus harnessing" /></div>
+          <figcaption><strong>Figure 8.</strong> 对比 Qwen2.5-32B-Instruct 与其 tool-use-trained derivative xLAM-2-32B：harnessing 在 in-domain \( \tau \)-bench 上让 base 模型超过 xLAM 7.5 个百分点，并且对 xLAM 本身仍有 6.8 到 28.9 个百分点增益。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>Removed layer</th><th>Airline</th><th>Retail</th><th>Telecom</th><th>ALFWorld</th><th>WebShop</th><th>OS</th><th>DBBench</th><th>主要解读</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>w/o Contract</td><td>-8.3%</td><td>-17.5%</td><td>-16.0%</td><td>-1.0%</td><td>-4.4%</td><td>-14.1%</td><td>-16.9%</td><td>客服和数据库任务强依赖稳定 tool/policy/answer-format contract。</td></tr>
+            <tr><td>w/o Skill</td><td>-8.3%</td><td>-15.9%</td><td>-17.4%</td><td>-1.0%</td><td>-2.2%</td><td>-14.1%</td><td>-3.1%</td><td>Procedural skill 对 workflow 和 OS 任务帮助更明显。</td></tr>
+            <tr><td>w/o Action</td><td>-61.7%</td><td>-15.9%</td><td>-10.1%</td><td>-1.0%</td><td>-6.6%</td><td>-59.6%</td><td>-4.6%</td><td>Airline 和 OS 对可执行 action/formatted command 极敏感。</td></tr>
+            <tr><td>w/o Trajectory</td><td>-3.3%</td><td>-16.7%</td><td>-36.2%</td><td>-86.5%</td><td>-26.4%</td><td>-14.1%</td><td>-4.6%</td><td>ALFWorld 和 WebShop 的长程循环、stagnation、budget exhaustion 是主要失败源。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 2 重建：值为相对 full LIFE-HARNESS 的 accuracy drop。每个 layer 都在至少部分环境中不可替代。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航与覆盖情况</h2>
+      <p class="section-lead">PDF 中很多图表是矢量对象，`arxiv_prepare.py` 不能可靠抽成独立位图；本页面对关键 figures/tables 使用页面渲染图裁剪，并对 Table 1/2/3/4 用 HTML 重建。长附录表 5/6/7 和完整 Table 8 保留原文裁图，正文只重排核心信息。</p>
+
+      <div class="grid-2">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-01-overview.png" alt="Figure 1 runtime harness overview" />
+          <figcaption><strong>Figure 1.</strong> 运行时 harness 而不是模型适配的总览。裁自第 1 页；图内结果分布另有高分辨率抽取件。</figcaption>
+        </figure>
+        <figure class="figure-card wide">
+          <div class="img-frame"><img src="assets/figures/figure-01-result-distribution-extracted.png" alt="Extracted high resolution result distribution" /></div>
+          <figcaption><strong>Figure 1 inset.</strong> 高分辨率抽取出的 “results across 18 models × 7 benchmarks” 分布图。由于 PDF 图像 xref 页码记录不完全可靠，已与第 1 页总览交叉核对；需人工核对的是它在 PDF 内部对象中的原始页码，而不是图中数值。</figcaption>
+        </figure>
+      </div>
+
+      <div class="figure-grid" style="margin-top:1rem;">
+        <figure class="figure-card"><img src="assets/figures/table-01-main-results.png" alt="Table 1 original crop" /><figcaption><strong>Table 1 crop.</strong> Main results averaged over 18 model backbones；正文已重建可读 HTML 表格。</figcaption></figure>
+        <figure class="figure-card"><img src="assets/figures/table-02-layer-ablation.png" alt="Table 2 original crop" /><figcaption><strong>Table 2 crop.</strong> Leave-one-layer-out ablation；正文已重建并解释各层贡献。</figcaption></figure>
+        <figure class="figure-card"><img src="assets/figures/table-03-dataset-statistics.png" alt="Table 3 original crop" /><figcaption><strong>Table 3 crop.</strong> Dataset statistics and splits；正文已重建。</figcaption></figure>
+        <figure class="figure-card"><img src="assets/figures/table-04-eval-config.png" alt="Table 4 original crop" /><figcaption><strong>Table 4 crop.</strong> Evaluation sampling and interaction-budget settings；正文已重建。</figcaption></figure>
+      </div>
+
+      <div class="figure-grid" style="margin-top:1rem;">
+        <figure class="figure-card long">
+          <div class="img-frame"><img src="assets/figures/table-05-tau-harness-inventory.png" alt="Table 5 harness inventory crop" /></div>
+          <figcaption><strong>Table 5.</strong> \( \tau \)-bench 与 \( \tau^2 \)-bench 的 Airline/Retail/Telecom harness inventory。小字较密，页面仅作原文核对入口。</figcaption>
+        </figure>
+        <figure class="figure-card long">
+          <div class="img-frame"><img src="assets/figures/table-06-agentbench-alfworld-webshop-inventory.png" alt="Table 6 harness inventory crop" /></div>
+          <figcaption><strong>Table 6.</strong> AgentBench 中 ALFWorld 与 WebShop 的 four-layer harness inventory，尤其展示 trajectory monitors 和 buy-now precheck。</figcaption>
+        </figure>
+        <figure class="figure-card long">
+          <div class="img-frame"><img src="assets/figures/table-07-agentbench-os-dbbench-inventory.png" alt="Table 7 harness inventory crop" /></div>
+          <figcaption><strong>Table 7.</strong> OS Interaction 与 DBBench 的 command/SQL rescue、dialect repair、answer normalization 和 budget forcing。</figcaption>
+        </figure>
+        <figure class="figure-card long">
+          <div class="img-frame"><img src="assets/figures/table-08-full-results.png" alt="Table 8 full results crop" /></div>
+          <figcaption><strong>Table 8.</strong> 全部 18 个 backbone 的完整结果。正文只汇总主表和关键对比；完整逐模型数字以该裁图为准，密集小字需人工核对。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">复现 LIFE-HARNESS 的难点不在跑一个 prompt，而在复建“轨迹收集 → failure mining → layer-local patch → regression check → frozen harness evaluation”的闭环。论文给出了高层 prompt、数据划分、评估预算和 harness inventory；完整代码与细节需要结合 GitHub 仓库。</p>
+
+      <div class="grid-2">
+        <div class="panel good">
+          <h3>可以直接从论文固定的内容</h3>
+          <ul class="compact-list">
+            <li>Source model: Qwen3-4B-Instruct。</li>
+            <li>Evaluation temperature: 0.0。</li>
+            <li>AgentBench max steps: ALFWorld 50, DBBench 15, OS 8, WebShop 20。</li>
+            <li>\( \tau \)-bench / \( \tau^2 \)-bench max steps: 200, max tokens per step 2048。</li>
+            <li>Procedural Skill Layer: all experiments use top-1 retrieved skill。</li>
+            <li>Training/eval split sizes: Table 3。</li>
+          </ul>
+        </div>
+        <div class="panel warn">
+          <h3>需要代码仓库或人工核对的内容</h3>
+          <ul class="compact-list">
+            <li>每个环境最终 harness 的完整实现和触发阈值。</li>
+            <li>训练轨迹文件、Codex 迭代轮次、每轮 regression cases。</li>
+            <li>DeepSeek-V4-Flash user simulator 版本和服务端行为。</li>
+            <li>所有模型的确切 checkpoint、推理框架、并发和 tokenizer 版本。</li>
+            <li>硬件、运行时间和成本在 PDF 中未报告。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>层</th><th>复现时要实现的最小接口</th><th>论文中的具体例子</th><th>常见失败风险</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Environment Contract</td><td>可注入 system/tool descriptions 的 contract patcher。</td><td>Airline search 只能 origin/destination/date；Retail pending order tool 的 cancellation reason；DBBench schema card 和 MySQL syntax。</td><td>把 test-specific clue 写进 contract 会污染评测。</td></tr>
+            <tr><td>Procedural Skill</td><td>从训练轨迹蒸馏 skill library，并对 task description 做 BM25 top-1 retrieval。</td><td>WebShop category/color/size matching；OS count-files/count-lines templates；Telecom overdue-bill workflow。</td><td>检索过多 skill 会污染上下文，top-1 是论文的重要约束。</td></tr>
+            <tr><td>Action Realization</td><td>执行前 parser、schema validator、safe canonicalizer、block message。</td><td>OS malformed text 转 bash/action；DBBench SQLite-to-MySQL repair；WebShop invisible click target blocking。</td><td>过度 canonicalization 可能把错误 intent 改成看似合法 action。</td></tr>
+            <tr><td>Trajectory Regulation</td><td>状态跟踪器、重复/停滞检测、预算 warning、强制 recovery 的安全条件。</td><td>ALFWorld world model 与 subgoal advancement；WebShop back-to-search loop；DBBench repeated SQL loop。</td><td>强制 action 只能在确定性条件充分时触发，否则会覆盖模型正确策略。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">这张表不是论文原表，而是从附录 A.3 的 Table 5/6/7 抽象出的复现接口清单。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">我会把这篇论文看作“agent interface engineering”的强实证论文，而不是新模型训练算法论文。它最有价值的地方是把 failure taxonomy、harness layer 和跨模型迁移结果连起来；最需要谨慎的地方是 harness evolution 中人工/Codex 介入的可复现性和 benchmark-specific 工程量。</p>
+
+      <div class="grid-2">
+        <div class="panel good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>问题定义清楚：明确把适配对象从 \(\theta\) 转到 \(H\)，并限定在 deterministic environments。</li>
+            <li>证据链完整：failure diagnosis、四层方法、主结果、prompt-only 对比、leave-one-layer-out ablation、tool-use training 对比都有覆盖。</li>
+            <li>跨模型迁移是强信号：只用 Qwen3-4B-Instruct 演化，迁移到 17 个 backbone，说明 harness 学到的主要是环境侧结构。</li>
+            <li>附录 inventory 具体到环境和层，避免停留在抽象框架。</li>
+          </ul>
+        </div>
+        <div class="panel danger">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>Codex 辅助 harness evolution 的 human-in-the-loop 边界不够量化：每轮花了多少工程时间、失败 patch 如何筛选、负例如何回归，都需要更多日志。</li>
+            <li>评测环境虽然 deterministic，但 harness 很可能吸收 benchmark implementation quirks；OOD 到真正开放工具生态仍未证明。</li>
+            <li>强模型个别任务出现负增益，说明固定 harness 仍可能 over-trigger 或压制模型策略。</li>
+            <li>没有和更系统的 program synthesis / verifier-based harness search 做同等预算对比。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:1rem;">
+        <div class="panel warn"><h3>Missing ablations</h3><p>应报告每层内部组件的 ablation，例如只保留 action block、不做 canonicalization，或只做 trajectory warning、不做 forced next action。</p></div>
+        <div class="panel warn"><h3>Failure modes</h3><p>当环境规则本身变化、工具 schema 不稳定、反馈有噪声、用户目标开放时，基于稳定 contract 的 harness 可能快速失效。</p></div>
+        <div class="panel warn"><h3>Suggested experiments</h3><p>加入 time-budget matched human prompt engineering、automated harness-code search、跨 benchmark family 迁移，以及真实在线工具 API 漂移测试。</p></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究方向的启发</h2>
+      <p class="section-lead">这篇论文对 agent、RLVR、自进化、questioner-solver、replay、diversity 和 evaluation 的启发，不是“不要训练模型”，而是把可验证、可复用、可回归的环境侧结构从模型更新中解耦出来。</p>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3>1. 把 self-evolution 的产物从 model delta 扩展到 interface delta</h3>
+          <p>如果训练轨迹暴露的是稳定外部规则，最合适的产物可能不是 gradient update，而是 contract patch、validator、canonicalizer、recovery policy 或 skill memory。这样更容易审计，也更容易跨模型迁移。</p>
+        </div>
+        <div class="panel">
+          <h3>2. Evaluation 应区分 reasoning failure 与 interface failure</h3>
+          <p>论文的优点在于先做 failure taxonomy，再决定优化位置。对 RLVR 或 agent benchmark，应该把 invalid action、wrong tool protocol、loop/stagnation 和 semantic reasoning 错误拆开，否则 reward 会混合多个问题。</p>
+        </div>
+        <div class="panel">
+          <h3>3. Replay 可以是 harness regression set</h3>
+          <p>传统 replay 防止模型遗忘；这里的 replay 形态可以是“以前成功轨迹不能被新 harness patch 破坏”。这给 agent harness 自进化提供了一个更稳定的 regression protocol。</p>
+        </div>
+        <div class="panel">
+          <h3>4. Diversity 不只发生在问题空间，也发生在 failure/intervention 空间</h3>
+          <p>若要做 questioner-solver 或自动环境生成，可以让 questioner 生成能覆盖不同 lifecycle failure 的任务，而不是只追求任务文本多样性。</p>
+        </div>
+      </div>
+
+      <div class="quote-box" style="margin-top:1rem;">
+        <h3>一句话判断</h3>
+        <p>LIFE-HARNESS 适合被当作 agent 系统里的“外部可验证适配层”：当失败来自规则、接口、格式、循环和反馈解释时，先改 harness；当失败来自真正的知识和推理能力时，再考虑模型训练。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

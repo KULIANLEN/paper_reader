@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Compiling Agentic Workflows into LLM Weights · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .paper-article { width: min(calc(100% - 34px), 1120px); }
+    .paper-hero h1, .content-card h2 { letter-spacing: 0; }
+    .paper-hero h1 { max-width: 1050px; font-size: clamp(2.25rem, 5vw, 4.65rem); line-height: 1.04; }
+    .paper-hero .subtitle { max-width: 880px; font-size: 1.08rem; }
+    .eyebrow { display: inline-flex; align-items: center; gap: .55rem; margin-bottom: 1.1rem; color: var(--muted); font-weight: 700; }
+    .eyebrow span { width: .7rem; height: .7rem; border-radius: 999px; background: var(--accent-3); box-shadow: 0 0 0 .34rem color-mix(in srgb, var(--accent-3) 16%, transparent); }
+    .paper-tags, .chip-row { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1rem; }
+    .tag-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .45rem .7rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: var(--surface); font-size: .9rem; }
+    .hero-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin-top: 1.35rem; }
+    .meta-box, .note-box, .formula-box, .finding-box { border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface-strong) 86%, transparent); padding: .95rem; }
+    .meta-box strong, .finding-box strong { display: block; color: var(--text); }
+    .meta-box span, .note-box, .finding-box p { color: var(--text-soft); }
+    .section-lead { font-size: 1.04rem; color: var(--text-soft); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
+    .metric-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1rem 0; }
+    .metric { padding: .9rem; border: 1px solid var(--line); border-radius: 15px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 75%, transparent), transparent); }
+    .metric b { display: block; font-size: 1.35rem; color: var(--text); }
+    .metric span { color: var(--muted); font-size: .88rem; }
+    .flow-list { counter-reset: step; list-style: none; padding-left: 0; }
+    .flow-list li { counter-increment: step; position: relative; padding-left: 2.55rem; margin: .72rem 0; }
+    .flow-list li::before { content: counter(step); position: absolute; left: 0; top: .2rem; display: grid; place-items: center; width: 1.65rem; height: 1.65rem; border-radius: 50%; color: white; background: var(--accent); font-weight: 700; }
+    .formula-box { overflow-x: auto; margin: .9rem 0; }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border: 1px solid var(--line); border-radius: 16px; }
+    table { width: 100%; border-collapse: collapse; min-width: 650px; background: color-mix(in srgb, var(--surface-strong) 92%, transparent); }
+    th, td { padding: .66rem .72rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--text); font-weight: 760; background: color-mix(in srgb, var(--accent-soft) 62%, transparent); }
+    td { color: var(--text-soft); }
+    tr:last-child td { border-bottom: 0; }
+    .best { color: var(--text); font-weight: 800; }
+    .figure-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    figure { margin: 1rem 0; }
+    .figure-card { border: 1px solid var(--line); border-radius: 18px; padding: .8rem; background: color-mix(in srgb, var(--surface-strong) 86%, transparent); }
+    .figure-card img { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); background: white; }
+    figcaption { margin-top: .65rem; color: var(--text-soft); line-height: 1.7; font-size: .93rem; }
+    .warn { border-color: color-mix(in srgb, var(--warning) 45%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .ok { border-color: color-mix(in srgb, var(--success) 42%, var(--line)); background: color-mix(in srgb, var(--success) 9%, var(--surface-strong)); }
+    .danger { border-color: color-mix(in srgb, var(--danger) 38%, var(--line)); background: color-mix(in srgb, var(--danger) 8%, var(--surface-strong)); }
+    .compact-list { margin: .4rem 0 0; padding-left: 1.15rem; }
+    .source-note { color: var(--muted); font-size: .9rem; }
+    @media (max-width: 860px) {
+      .hero-meta, .grid-2, .grid-3, .metric-strip, .figure-grid { grid-template-columns: 1fr; }
+      .paper-hero { padding-top: 2.5rem; }
+      .topbar { border-radius: 24px; }
+    }
+  </style>
+</head>
+<body class="paper-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>arXiv:2605.22502</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+      <a href="#takeaways">启发</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Agent / Tool Use · 2026 · 精读</div>
+      <h1>Compiling Agentic Workflows into LLM Weights</h1>
+      <p class="subtitle">这篇论文把“工作流编排”从运行时 orchestrator 移到训练阶段：用 flowchart 生成合成对话，全参微调 3B/8B 模型，让流程知识进入权重，运行时只保留一个极简 system prompt。</p>
+      <div class="paper-tags">
+        <span class="tag-chip">subterranean agent</span>
+        <span class="tag-chip">workflow compilation</span>
+        <span class="tag-chip">full fine-tuning</span>
+        <span class="tag-chip">LLM-as-judge</span>
+        <span class="tag-chip">inference cost</span>
+      </div>
+      <div class="hero-meta">
+        <div class="meta-box"><strong>标题</strong><span>Near-Frontier Quality at Two Orders of Magnitude Less Cost</span></div>
+        <div class="meta-box"><strong>作者</strong><span>Simon Dennis, Rivaan Patil, Kevin Shabahang, Hao Guo</span></div>
+        <div class="meta-box"><strong>版本</strong><span>arXiv:2605.22502v1, 2026-05-21, 19 pages</span></div>
+        <div class="meta-box"><strong>一句话</strong><span>持久流程知识进权重，临时状态留 prompt。</span></div>
+      </div>
+      <div class="metric-strip">
+        <div class="metric"><b>87-98%</b><span>8B compiled model 达到 Claude in-context 质量区间</span></div>
+        <div class="metric"><b>128-462x</b><span>相对 in-context baseline 的每对话成本降低</span></div>
+        <div class="metric"><b>30-50 min</b><span>作者估计的生产硬件 recompile 周期</span></div>
+        <div class="metric"><b>55 nodes</b><span>最大 insurance workflow，含 6 个 decision hubs</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机</h2>
+      <p class="section-lead">论文要反驳一个工程直觉：agent workflow 一定要在运行时由 LangGraph/CrewAI/Agents SDK 这类外部 orchestrator 管理。作者认为，对 procedural tasks，外部编排会带来上下文膨胀、路由错误、模板化交互和 API 成本，而这些持久结构本应进入模型权重。</p>
+      <div class="grid-3">
+        <div class="finding-box">
+          <strong>问题</strong>
+          <p>surface orchestration 每轮把节点 prompt、状态和路由逻辑插进上下文，由外部控制器解析输出并选择下一节点。</p>
+        </div>
+        <div class="finding-box">
+          <strong>已有替代</strong>
+          <p>把完整流程放进 Claude Sonnet 4.5 system prompt 可获得接近满分质量，但会消耗 context window、暴露流程、并要求每个会话都用 frontier API。</p>
+        </div>
+        <div class="finding-box">
+          <strong>本文主张</strong>
+          <p>用流程图生成训练数据并全参微调小模型，形成 subterranean agent；运行时没有 orchestrator、没有流程图 prompt、没有 router。</p>
+        </div>
+      </div>
+      <p>作者把阻碍 adoption 的原因拆成三类：质量是否足够、self-hosting 后成本是否真的更低、流程变化后是否需要很久重训。三类问题都用实验而不是概念论证回答。</p>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 方法：把流程图编译进权重</h2>
+      <p>核心对象是一个 directed workflow graph：</p>
+      <div class="formula-box">
+        $$F = (N, E, n_0, T), \qquad E \subseteq N \times N \times C$$
+        <p>其中 $N$ 是带 role 和 prompt template 的节点，$E$ 是带可选条件 $C$ 的边，$n_0$ 是起点，$T$ 是 terminal nodes，例如 success、abandonment、escalation。</p>
+      </div>
+      <ol class="flow-list">
+        <li>把业务流程定义成 flowchart，节点对应 agent/user turns，边对应状态转移。</li>
+        <li>遍历或采样有效路径，结合 scenario variables，用 Claude Sonnet 4.5 逐轮生成自然对话。</li>
+        <li>用这些对话对 Qwen 2.5 3B Instruct 或 Qwen3-8B 做 full parameter fine-tuning。</li>
+        <li>部署时只给极简 system prompt，例如 “You are a helpful travel booking assistant”，不再注入节点 prompt 或路由逻辑。</li>
+      </ol>
+      <figure class="figure-card">
+        <img src="assets/figures/figure-1-architecture.png" alt="Figure 1 architecture comparison from the paper" />
+        <figcaption><strong>Figure 1.</strong> 左侧 surface orchestration 在用户和 LLM 之间插入 orchestrator；右侧 subterranean agent 只在训练数据生成阶段使用 orchestrator，运行时用户直接与 LLM 对话。</figcaption>
+      </figure>
+      <div class="grid-2">
+        <div class="note-box ok">
+          <strong>为什么强调 full fine-tuning?</strong>
+          <p>作者声称 procedural internalization 需要改变模型的隐式状态追踪行为；他们引用 Dennis et al. 2026b 的 LoRA rank 16-128 研究，认为 low-rank 方法难以接近 full fine-tuning。本文自身没有做 LoRA ablation，属于依赖相关工作支撑。</p>
+        </div>
+        <div class="note-box">
+          <strong>训练和推理的边界</strong>
+          <p>训练阶段：flowchart、node prompt、scenario variables、Claude data generator。推理阶段：用户历史 + 极简 prompt + 已微调权重。这个边界是本文所有成本与隐私论证的前提。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">实验覆盖三个 workflow：Travel Booking、Zoom Support、Insurance Claims。每个 domain 每个 condition 评测 $n=200$ 个动态用户场景，Claude Sonnet 4.5 作为 user simulator；主评测用 Claude Sonnet 4.5 judge，Appendix C 用 GPT-4.1 judge 复核。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Domain</th><th>Workflow</th><th>模型与条件</th><th>训练数据</th><th>关键复现设置</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Travel Booking</td>
+              <td>14 nodes, 3 decision hubs, 3 terminal states, 86 unique acyclic paths, 4-17 turns</td>
+              <td>3B Subterranean；3B same-model orchestrator；LangGraph + Claude Sonnet 4.5；Claude in-context</td>
+              <td>2,125 synthetic conversations；1,912 train / 213 held-out eval</td>
+              <td>Qwen 2.5 3B Instruct bf16；single RTX 5090；AdamW 8-bit；lr $2 \times 10^{-5}$ cosine decay；effective batch 16；20 epochs；best checkpoint around epoch 4</td>
+            </tr>
+            <tr>
+              <td>Zoom Support</td>
+              <td>14 nodes, parallel troubleshooting, 60 paths, 4-17 turns；含 Zoom UI/settings/error-code 知识</td>
+              <td>8B Subterranean；LangGraph + Claude；Claude in-context</td>
+              <td>每 run 870 conversations，8 个 seeds 42-49 合并训练 split：6,264 train conversations</td>
+              <td>Qwen3-8B bf16；full fine-tuning；DeepSpeed ZeRO-3 on 8xA100；lr $2 \times 10^{-5}$；effective batch 32；10 epochs；best checkpoint epoch 2</td>
+            </tr>
+            <tr>
+              <td>Insurance Claims</td>
+              <td>55 nodes, 6 decision hubs, 5 terminal states, 2,381 paths, 9-39 turns</td>
+              <td>8B Subterranean；LangGraph + Claude；Claude in-context</td>
+              <td>3,000 synthetic conversations；2,700 train / 300 held-out eval</td>
+              <td>Qwen3-8B bf16；DeepSpeed ZeRO-3 on 8xA100；AdamW；lr $2 \times 10^{-5}$；effective batch 32；20 epochs；best checkpoint epoch 3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid-2">
+        <div class="note-box">
+          <strong>评测维度</strong>
+          <p>Task Success、Information Accuracy、Consistency、Graceful Handling、Naturalness，均为 1-5 分并带行为 anchor。失败率定义为 task success $\leq 3$ 的会话比例。</p>
+        </div>
+        <div class="note-box">
+          <strong>统计检验</strong>
+          <p>同 run 条件用 Wilcoxon signed-rank，跨 run 条件用 Mann-Whitney U；报告 Cohen's $d$、10,000 bootstrap percentile 95% CI，并在每个 pairwise comparison 的 5 个指标内做 Holm-Bonferroni correction。</p>
+        </div>
+      </div>
+      <p class="source-note">复现限制：PDF 没有给出明确 GitHub/code URL；正文说完整未编辑 transcripts 在 repository 中，但本文元数据和正文未提供仓库地址。</p>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 结果与核心结论</h2>
+      <p class="section-lead">结果可以压缩成一句话：compiled model 不总是赢质量，但在接近 in-context frontier 质量的同时，把成本降到两个数量级以下，且复杂流程越大，成本优势越明显。</p>
+
+      <h3>4.1 质量：same-model 对照支持“编译本身有用”</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Travel criterion</th><th>3B Sub.</th><th>3B Orch.</th><th>LG Orch.</th><th>In-Context</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Task Success</td><td>4.11</td><td>3.93</td><td>4.17</td><td class="best">4.53</td></tr>
+            <tr><td>Info. Accuracy</td><td class="best">4.75</td><td>4.69</td><td>4.21</td><td>4.64</td></tr>
+            <tr><td>Consistency</td><td>4.34</td><td>4.12</td><td>4.32</td><td class="best">4.96</td></tr>
+            <tr><td>Graceful Handling</td><td>4.07</td><td>3.87</td><td>4.62</td><td class="best">4.96</td></tr>
+            <tr><td>Naturalness</td><td>4.12</td><td>3.96</td><td>4.84</td><td class="best">5.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Travel 的关键不是 3B Sub 全面超过 Claude，而是它在同模型对照中超过 3B surface orchestrator：Task Success +0.18、Consistency +0.22、Graceful Handling +0.20、Naturalness +0.17，均 $p < .001$；Info Accuracy +0.05 不显著。作者据此把收益归因到 compilation，而不是模型规模。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Criterion</th><th>Zoom 8B Sub.</th><th>Zoom LG</th><th>Zoom In-Context</th><th>Insurance 8B Sub.</th><th>Insurance LG</th><th>Insurance In-Context</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Task Success</td><td>4.50</td><td>4.62</td><td class="best">4.92</td><td>4.47</td><td>4.42</td><td class="best">4.78</td></tr>
+            <tr><td>Info. Accuracy</td><td>4.26</td><td>4.75</td><td class="best">4.92</td><td>4.40</td><td>4.45</td><td class="best">4.78</td></tr>
+            <tr><td>Consistency</td><td>4.42</td><td>4.55</td><td class="best">5.00</td><td>4.51</td><td>4.39</td><td class="best">4.82</td></tr>
+            <tr><td>Graceful Handling</td><td>4.62</td><td>4.52</td><td class="best">5.00</td><td>4.81</td><td>4.38</td><td class="best">4.96</td></tr>
+            <tr><td>Naturalness</td><td>4.87</td><td>4.64</td><td class="best">5.00</td><td>4.92</td><td>4.58</td><td class="best">5.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Zoom/Insurance 的 8B compiled model 把 3B 的 naturalness 与 graceful handling 缺口显著缩小。Zoom 中主要短板变成 Info Accuracy：4.26 vs in-context 4.92，作者解释为 world knowledge 而非 procedure following 瓶颈。Insurance 更支持复杂流程扩展：8B Sub 在 55 节点流程上达到 in-context 的 92-98% 区间，并在 Graceful Handling 和 Naturalness 上显著超过 LangGraph orchestrator。</p>
+
+      <h3>4.2 效率、失败率与成本</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Domain</th><th>Metric</th><th>Sub.</th><th>LG Orch.</th><th>In-Context</th></tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="2">Travel (3B)</td><td>Avg. turns</td><td>22.6</td><td>16.5</td><td>16.4</td></tr>
+            <tr><td>Avg. wall-clock (s)</td><td>69.4</td><td>64.9</td><td>55.5</td></tr>
+            <tr><td rowspan="2">Zoom (8B)</td><td>Avg. turns</td><td>13.6</td><td>14.7</td><td>12.7</td></tr>
+            <tr><td>Avg. wall-clock (s)</td><td class="best">29.5</td><td>52.1</td><td>36.0</td></tr>
+            <tr><td rowspan="2">Insurance (8B)</td><td>Avg. turns</td><td>20.3</td><td>26.4</td><td>19.0</td></tr>
+            <tr><td>Avg. wall-clock (s)</td><td class="best">43.2</td><td>120.8</td><td>52.8</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Failure metric</th><th>Travel 3B Sub.</th><th>Travel 3B Orch.</th><th>Travel LG</th><th>Zoom 8B Sub.</th><th>Zoom LG</th><th>Insurance 8B Sub.</th><th>Insurance LG</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Total failures</td><td>11</td><td>9</td><td>48</td><td>22</td><td>18</td><td>18</td><td>34</td></tr>
+            <tr><td>Failure rate</td><td>5.5%</td><td>4.5%</td><td>24.0%</td><td>11.0%</td><td>9.0%</td><td>9.0%</td><td>17.0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>效率结论有 nuance：Travel 中 3B Sub 因为学到“一次问一个问题”的 interview style，turns 更多，wall-clock 不占优；Zoom 和 Insurance 中 self-hosted inference 变快，尤其 Insurance 的 LangGraph 要在 6 个 decision hubs 上额外调用 API routing，120.8s vs 43.2s。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Domain</th><th>In-Context</th><th>LG Orch.</th><th>Subterranean</th><th>IC/Sub ratio</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Travel (14 nodes)</td><td>&#36;0.133</td><td>&#36;0.077</td><td>&#36;0.0010</td><td class="best">128x</td></tr>
+            <tr><td>Zoom (14 nodes)</td><td>&#36;0.103</td><td>&#36;0.054</td><td>&#36;0.0003</td><td class="best">296x</td></tr>
+            <tr><td>Insurance (55 nodes)</td><td>&#36;0.327</td><td>&#36;0.174</td><td>&#36;0.0007</td><td class="best">462x</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>成本公式不是论文显式给出的闭式公式，而是来自作者的两个因素分解：self-hosted Qwen3-8B on reserved A100 80GB via vLLM 约 &#36;0.05/M input tokens 和 &#36;0.23/M output tokens；Claude Sonnet 4.5 约 &#36;3/M input、&#36;15/M output，即约 65x per-token 差距。再乘上 in-context 每轮塞入流程图造成的 token volume 差距，得到 128-462x。</p>
+
+      <h3>4.3 Judge robustness</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Domain</th><th>Criterion</th><th>Sub.</th><th>LG Orch.</th><th>In-Context</th></tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="5">Travel</td><td>Task Success</td><td>4.34</td><td>4.69</td><td>4.88</td></tr>
+            <tr><td>Info. Accuracy</td><td>4.12</td><td>4.72</td><td>4.96</td></tr>
+            <tr><td>Consistency</td><td>4.28</td><td>4.78</td><td>4.97</td></tr>
+            <tr><td>Graceful Handling</td><td>4.13</td><td>4.36</td><td>4.51</td></tr>
+            <tr><td>Naturalness</td><td>3.92</td><td>3.99</td><td>4.01</td></tr>
+            <tr><td rowspan="5">Zoom</td><td>Task Success</td><td>4.49</td><td>4.60</td><td>4.86</td></tr>
+            <tr><td>Info. Accuracy</td><td>4.21</td><td>4.54</td><td>4.78</td></tr>
+            <tr><td>Consistency</td><td>4.74</td><td>4.66</td><td>5.00</td></tr>
+            <tr><td>Graceful Handling</td><td>3.21</td><td>3.49</td><td>3.42</td></tr>
+            <tr><td>Naturalness</td><td>3.96</td><td>4.01</td><td>4.04</td></tr>
+            <tr><td rowspan="5">Insurance</td><td>Task Success</td><td>4.16</td><td>4.64</td><td>4.79</td></tr>
+            <tr><td>Info. Accuracy</td><td>4.38</td><td>4.36</td><td>4.65</td></tr>
+            <tr><td>Consistency</td><td>4.71</td><td>4.35</td><td>4.92</td></tr>
+            <tr><td>Graceful Handling</td><td>3.84</td><td>4.13</td><td>4.01</td></tr>
+            <tr><td>Naturalness</td><td>3.98</td><td>3.96</td><td>4.03</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>GPT-4.1 judge 下 compiled model 相对 LangGraph 的胜出面变窄，尤其 Travel 和 Insurance 的 task success、graceful handling 更偏向 LangGraph；但作者认为核心 value proposition 仍成立：质量排序大体是 In-Context > LangGraph ≈ Compiled > 3B Orch，成本优势保持 128-462x。</p>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 覆盖图谱</h2>
+      <p class="section-lead">自动图片提取未能从 PDF 中独立抽出 vector/embedded figures；下列图片均为 PDF 页面渲染后的实际裁剪。表格数字已在上文用 HTML 重建，裁剪图作为来源核对。</p>
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/table-1-travel-quality.png" alt="Table 1 Travel quality scores" />
+          <figcaption><strong>Table 1, p.5.</strong> Travel Booking quality scores。已在结果区重建完整数值。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/tables-2-3-quality.png" alt="Tables 2 and 3 quality scores" />
+          <figcaption><strong>Tables 2-3, p.6.</strong> Zoom Support 与 Insurance Claims quality scores。裁剪来自真实 PDF 页面。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/tables-4-5-efficiency-failures.png" alt="Tables 4 and 5 efficiency and failure rates" />
+          <figcaption><strong>Tables 4-5, p.7.</strong> turn count、wall-clock time、failure rate。HTML 表已重建；裁剪需人工核对边界。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-6-cost.png" alt="Table 6 cost per conversation" />
+          <figcaption><strong>Table 6, p.8.</strong> 每对话推理成本与 IC/Sub ratio。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/table-10-gpt4-judge.png" alt="Table 10 GPT-4.1 judge replication" />
+          <figcaption><strong>Table 10, Appendix C, p.16.</strong> GPT-4.1 independent judge replication。</figcaption>
+        </figure>
+        <figure class="figure-card warn">
+          <img src="assets/figures/figure-2-travel-flowchart.png" alt="Figure 2 Travel booking flowchart" />
+          <figcaption><strong>Figure 2, Appendix D, p.17.</strong> Travel booking flowchart。页面裁剪可读，但节点文本细节建议放大人工核对。</figcaption>
+        </figure>
+        <figure class="figure-card warn">
+          <img src="assets/figures/figure-3-zoom-flowchart.png" alt="Figure 3 Zoom support flowchart" />
+          <figcaption><strong>Figure 3, Appendix D, p.18.</strong> Zoom technical support flowchart。页面裁剪可读，需人工核对节点连接细节。</figcaption>
+        </figure>
+        <figure class="figure-card warn">
+          <img src="assets/figures/figure-4-insurance-flowchart.png" alt="Figure 4 Insurance claims flowchart" />
+          <figcaption><strong>Figure 4, Appendix D, p.19.</strong> Insurance claims processing flowchart，55 nodes、6 hubs、5 terminal states。图很密，需人工核对小字和边连接。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <div class="grid-2">
+        <div class="note-box ok">
+          <strong>论文给出的可复现信息</strong>
+          <ul class="compact-list">
+            <li>三个 flowchart 的节点数、decision hubs、terminal states、path 数和 turn 范围。</li>
+            <li>训练数据规模、train/eval split、base model、precision、optimizer、learning rate、batch size、epoch 与硬件。</li>
+            <li>评测场景数、dynamic user simulator、judge model、5 维 rubric、统计检验和 bootstrap 设置。</li>
+            <li>成本假设：A100 80GB &#36;2.50/hr、vLLM、8B throughput 与 Claude Sonnet 4.5 token pricing。</li>
+          </ul>
+        </div>
+        <div class="note-box danger">
+          <strong>缺失或需人工补齐</strong>
+          <ul class="compact-list">
+            <li>未给出明确代码仓库 URL；正文提到 repository 但 PDF/元数据没有链接。</li>
+            <li>未给出完整 flowchart machine-readable 定义、node prompts、scenario variable sampler 和 judge prompt。</li>
+            <li>未给出训练 transcripts 全量数据；appendix 只有节选示例。</li>
+            <li>没有报告 seed-level variance、training loss 曲线或推理 server batching 细节。</li>
+          </ul>
+        </div>
+      </div>
+      <h3>最小复现实验路径</h3>
+      <ol class="flow-list">
+        <li>先复现 Travel 14-node flowchart，用 appendix Figure 2 手工恢复节点和边；这是唯一含 same-model 3B orchestrator 对照的实验。</li>
+        <li>实现 Claude Sonnet 4.5 data generator：输入当前 node prompt、完整 history、scenario variables，输出自然 agent/user turn。</li>
+        <li>生成约 2,125 条 travel conversations，按 1,912/213 切分；全参微调 Qwen 2.5 3B Instruct。</li>
+        <li>实现三个推理条件：compiled minimal prompt、same-model orchestrator、Claude in-context full flowchart prompt。</li>
+        <li>用相同 200 scenarios + dynamic user simulator 收集对话，再用 blind LLM judge 打 5 个维度分。</li>
+        <li>最后扩展到 Zoom 和 Insurance，验证复杂流程上成本优势是否随 prompt overhead 增大。</li>
+      </ol>
+      <p class="source-note">复现等级判断：medium。论文提供核心训练/评测参数，但缺少代码、prompt、数据与 machine-readable workflow，因此无法直接一键复现。</p>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <div class="grid-2">
+        <div class="note-box ok">
+          <strong>优点</strong>
+          <ul class="compact-list">
+            <li>问题定义贴近工程：不仅问质量，还问成本和流程变更周期。</li>
+            <li>Travel 中有 same-model compiled vs same-model orchestrated 对照，能隔离 compilation 的架构效应。</li>
+            <li>同时比较 LangGraph orchestrator 和 in-context baseline，把“运行时编排”和“前沿模型自编排”分开。</li>
+            <li>Appendix C 用 GPT-4.1 judge 复核，承认 Claude judge 下的部分排序可能偏乐观。</li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <strong>主要风险</strong>
+          <ul class="compact-list">
+            <li>所有对话数据由 Claude 生成，主 judge 也是 Claude，存在 generator/judge style coupling；GPT-4.1 复核缓解但不能完全消除。</li>
+            <li>没有公开代码和 workflow definitions，复现性低于论文参数表看起来的程度。</li>
+            <li>业务流程是合成任务，真实 enterprise workflow 的异常输入、长尾政策变更、工具调用失败没有覆盖。</li>
+            <li>LoRA 失败结论依赖另一篇工作；本文没有直接比较 LoRA、adapter、DPO/RLVR 或 continual learning 的替代编译方式。</li>
+          </ul>
+        </div>
+      </div>
+      <h3>我会要求补的实验</h3>
+      <ul>
+        <li><strong>真实用户或历史工单 replay：</strong>验证 synthetic Claude users 是否过于配合 workflow。</li>
+        <li><strong>procedure drift：</strong>给出节点 prompt 或边条件变化后的增量微调、灾难性遗忘和 rollback 成本。</li>
+        <li><strong>工具调用版 workflow：</strong>现在是纯对话 procedural tasks；如果加入外部 API、数据库查询、失败重试，compiled weights 不能替代所有 runtime control。</li>
+        <li><strong>安全与合规：</strong>把政策和流程写进权重后，如何撤销错误政策、审计模型执行了哪条规则、满足监管解释性要求。</li>
+      </ul>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对 Agent / RLVR / 自进化研究的启发</h2>
+      <div class="grid-3">
+        <div class="finding-box">
+          <strong>权重存程序，prompt 存状态</strong>
+          <p>对高频、稳定、可枚举的流程，把程序结构蒸馏到权重可能比每轮显式解释更便宜、更稳；对低频或快速变化流程，仍应保留 runtime orchestration。</p>
+        </div>
+        <div class="finding-box">
+          <strong>用 same-model control 衡量架构收益</strong>
+          <p>如果研究 agent framework，应像本文 Travel 实验一样做“同模型 + 同流程 + 不同架构”对照，否则容易把模型容量误判为 agent 架构收益。</p>
+        </div>
+        <div class="finding-box">
+          <strong>合成轨迹是 workflow replay buffer</strong>
+          <p>flowchart-guided synthetic dialogues 可以看成可控 replay buffer；未来可引入 diversity sampling、failure replay、counterfactual user styles 来改善长尾鲁棒性。</p>
+        </div>
+      </div>
+      <div class="note-box">
+        <strong>与 RLVR 的连接</strong>
+        <p>本文没有做 RLVR，但 reward 维度已经自然存在：task success、state consistency、info accuracy、graceful handling、naturalness。一个可扩展方向是先用 SFT 编译主流程，再用 verifier/judge 产生过程级 reward，对 routing mistakes、重复提问、错误政策引用进行 targeted RL 或 rejection sampling。</p>
+      </div>
+      <p class="source-note">本页基于 arXiv:2605.22502v1 PDF 全文与 appendix 解析生成；自动提取未获得独立嵌入图片，图表使用 PDF 页面裁剪，关键表格另以 HTML 重建。</p>
+    </section>
+  </main>
+</body>
+</html>

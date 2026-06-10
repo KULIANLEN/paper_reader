@@ -1,0 +1,42 @@
+{
+  "id": "2605.22502",
+  "slug": "compiling-agentic-workflows-into-llm-weights",
+  "title": "Compiling Agentic Workflows into LLM Weights: Near-Frontier Quality at Two Orders of Magnitude Less Cost",
+  "titleZh": "将 Agentic Workflow 编译进 LLM 权重：以低两个数量级成本接近前沿质量",
+  "authors": [
+    "Simon Dennis",
+    "Rivaan Patil",
+    "Kevin Shabahang",
+    "Hao Guo"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "post-training",
+    "evaluation",
+    "systems",
+    "workflow"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "论文比较 surface orchestration、in-context self-orchestration 与把流程编译进小模型权重的 subterranean agent。作者在 travel、Zoom support 和 insurance claims 三个流程任务上显示，3B/8B 全参微调模型可接近 Claude in-context 质量，同时每轮成本降低 128-462 倍。",
+  "takeaways": [
+    "持久流程知识适合进入权重，临时会话状态适合留在 prompt。",
+    "同模型对照显示 compilation 本身减少路由错误和局部节点模板带来的状态断裂。",
+    "成本优势随流程复杂度增长，因为 compiled model 的 prompt 尺寸不随节点数扩张。"
+  ],
+  "arxivId": "2605.22502",
+  "paperUrl": "https://arxiv.org/abs/2605.22502",
+  "pdfUrl": "https://arxiv.org/pdf/2605.22502.pdf",
+  "pageUrl": "papers/compiling-agentic-workflows-into-llm-weights/index.html",
+  "codeUrl": "",
+  "repro": {
+    "available": false,
+    "level": "medium",
+    "notes": "给出数据生成规模、模型、优化器、学习率、batch、硬件和 judge 设置；未提供明确代码仓库链接，flowchart 与完整 transcripts 需另行获取。"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "2605.28655",
+  "slug": "autoscientists-self-organizing-agent-teams",
+  "title": "AutoScientists: Self-Organizing Agent Teams for Long-Running Scientific Experimentation",
+  "titleZh": "AutoScientists：用于长周期科学实验的自组织智能体团队",
+  "authors": [
+    "Shanghua Gao",
+    "Ada Fang",
+    "Marinka Zitnik"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "planning",
+    "scientific-discovery",
+    "evaluation",
+    "self-organization"
+  ],
+  "status": "精读",
+  "priority": 5,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "AutoScientists 将长周期科学实验组织为去中心化多智能体搜索：agents 通过 shared state、research forum、team queues 和 dead-end registry 自组织成团队，并用 noise-aware gate 保护 champion 更新。论文在 BioML-Bench、GPT nanochat training optimization 和 ProteinGym 上显示，它在相同实验预算下能比 single-agent Autoresearch 更持续地发现有效改进。",
+  "takeaways": [
+    "长周期 agentic science 的关键状态不是聊天上下文，而是可审计的 champion、实验日志、论坛、队列和 dead-end registry。",
+    "Noise-aware promotion gate 可迁移到 RLVR checkpoint/data admission，避免 noisy reward 污染后续搜索。",
+    "多 agent 的收益依赖 analyst、cross-agent feedback、self-organization 和 shared record 的组合；crew size 并非越大越好。"
+  ],
+  "arxivId": "2605.28655",
+  "paperUrl": "https://arxiv.org/abs/2605.28655",
+  "pdfUrl": "https://arxiv.org/pdf/2605.28655",
+  "pageUrl": "papers/autoscientists-self-organizing-agent-teams/index.html",
+  "codeUrl": "https://github.com/mims-harvard/AutoScientists",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文提供代码仓库、benchmark 依赖、默认团队配置、硬件预算、算法伪代码、noise gate、BioML/ProteinGym/GPT 细节；完整复现仍依赖 Claude Code/Claude Sonnet 4.6、H100 预算、外部 benchmark 环境和代码仓库中的完整 prompts/logging。"
+  }
+}

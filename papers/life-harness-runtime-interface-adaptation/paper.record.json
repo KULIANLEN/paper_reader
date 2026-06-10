@@ -1,0 +1,41 @@
+{
+  "id": "2605.22166",
+  "slug": "life-harness-runtime-interface-adaptation",
+  "title": "Adapting the Interface, Not the Model: Runtime Harness Adaptation for Deterministic LLM Agents",
+  "titleZh": "适配接口而非模型：面向确定性 LLM Agent 的运行时 Harness 适配",
+  "authors": [
+    "Tianshi Xu",
+    "Huifeng Wen",
+    "Meng Li"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "runtime-harness",
+    "evaluation",
+    "self-evolution"
+  ],
+  "status": "精读",
+  "priority": 5,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "LIFE-HARNESS 把确定性 agent 失败定位为模型与环境之间的 runtime interface 错配，而不是只靠 SFT/RL 更新权重。它从训练轨迹中把 contract、skill、action realization 和 trajectory regulation 问题沉淀为固定 harness，在 7 个环境、18 个模型上改善 116/126 个 settings，平均相对提升 88.5%。",
+  "takeaways": [
+    "agent 自进化的产物可以是可审计的 interface delta，而不一定是模型参数 delta。",
+    "评估 agent 时应区分 reasoning failure、tool protocol failure、invalid action 与 trajectory degeneration。",
+    "固定 harness 从 Qwen3-4B-Instruct 迁移到 17 个模型，说明很多收益来自可复用环境侧结构。"
+  ],
+  "arxivId": "2605.22166",
+  "paperUrl": "https://arxiv.org/abs/2605.22166",
+  "pdfUrl": "https://arxiv.org/pdf/2605.22166",
+  "pageUrl": "papers/life-harness-runtime-interface-adaptation/index.html",
+  "codeUrl": "https://github.com/Tianshi-Xu/Life-Harness",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文给出数据划分、评估预算、harness evolution prompt template 和四层 harness inventory，并提供代码链接；但完整训练轨迹、每轮 Codex 修改日志、硬件成本和具体模型/API 版本需要仓库与人工核对。"
+  }
+}

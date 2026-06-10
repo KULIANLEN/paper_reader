@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>SkillOpt: Executive Strategy for Self-Evolving Agent Skills · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --skillopt-ink: #162033;
+      --skillopt-muted: #5c667a;
+      --skillopt-line: rgba(35, 48, 78, 0.14);
+      --skillopt-blue: #2f6fed;
+      --skillopt-teal: #078a83;
+      --skillopt-rose: #b6435b;
+      --skillopt-green: #16724a;
+      --skillopt-card: rgba(255, 255, 255, 0.82);
+      --skillopt-band: #f6f8fb;
+      --skillopt-code: #f0f3f8;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --skillopt-ink: #eef3ff;
+        --skillopt-muted: #aeb8cb;
+        --skillopt-line: rgba(226, 233, 247, 0.18);
+        --skillopt-card: rgba(22, 28, 42, 0.78);
+        --skillopt-band: #111827;
+        --skillopt-code: #172033;
+      }
+    }
+
+    .paper-page {
+      color: var(--skillopt-ink);
+      background:
+        linear-gradient(180deg, rgba(245, 248, 252, 0.96), rgba(255, 255, 255, 0.98) 360px),
+        #fff;
+    }
+
+    .paper-article {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 88px;
+    }
+
+    .paper-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
+      gap: 36px;
+      align-items: center;
+      padding: 22px 0 46px;
+    }
+
+    .eyebrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      color: var(--skillopt-teal);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .paper-hero h1 {
+      margin: 14px 0 16px;
+      max-width: 880px;
+      font-size: clamp(2.28rem, 5.8vw, 5.4rem);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .hero-subtitle {
+      margin: 0;
+      max-width: 760px;
+      color: var(--skillopt-muted);
+      font-size: 1.12rem;
+      line-height: 1.75;
+    }
+
+    .hero-media {
+      margin: 0;
+      border: 1px solid var(--skillopt-line);
+      border-radius: 8px;
+      background: var(--skillopt-card);
+      overflow: hidden;
+      box-shadow: 0 18px 48px rgba(27, 39, 70, 0.12);
+    }
+
+    .hero-media img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+    }
+
+    .hero-media figcaption {
+      padding: 12px 14px 14px;
+      color: var(--skillopt-muted);
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .meta-item,
+    .stat-card,
+    .note-card,
+    .figure-card,
+    .takeaway-card {
+      border: 1px solid var(--skillopt-line);
+      border-radius: 8px;
+      background: var(--skillopt-card);
+      box-shadow: 0 10px 26px rgba(28, 40, 68, 0.07);
+    }
+
+    .meta-item {
+      padding: 12px 14px;
+    }
+
+    .meta-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.76rem;
+      color: var(--skillopt-muted);
+    }
+
+    .meta-item span,
+    .meta-item a {
+      color: var(--skillopt-ink);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .tag-row span {
+      border: 1px solid var(--skillopt-line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(47, 111, 237, 0.08);
+      color: var(--skillopt-blue);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .paper-section {
+      border-top: 1px solid var(--skillopt-line);
+      padding: 48px 0;
+    }
+
+    .paper-section h2 {
+      margin: 0 0 18px;
+      font-size: clamp(1.72rem, 3vw, 2.6rem);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .paper-section h3 {
+      margin: 30px 0 12px;
+      font-size: 1.22rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .paper-section p,
+    .paper-section li {
+      color: var(--skillopt-muted);
+      font-size: 1rem;
+      line-height: 1.76;
+    }
+
+    .section-kicker {
+      margin-bottom: 10px;
+      color: var(--skillopt-teal);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .lead {
+      max-width: 920px;
+      color: var(--skillopt-ink) !important;
+      font-size: 1.12rem !important;
+    }
+
+    .two-col,
+    .three-col,
+    .four-col {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two-col {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .three-col {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .four-col {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .stat-card,
+    .note-card,
+    .takeaway-card {
+      padding: 18px;
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--skillopt-blue);
+      font-size: 1.62rem;
+      line-height: 1;
+    }
+
+    .stat-card span,
+    .note-card span,
+    .takeaway-card span {
+      color: var(--skillopt-muted);
+      line-height: 1.6;
+    }
+
+    .note-card h3,
+    .takeaway-card h3 {
+      margin-top: 0;
+    }
+
+    .flow-list {
+      counter-reset: flow;
+      display: grid;
+      gap: 10px;
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .flow-list li {
+      counter-increment: flow;
+      position: relative;
+      padding: 13px 15px 13px 52px;
+      border: 1px solid var(--skillopt-line);
+      border-radius: 8px;
+      background: var(--skillopt-card);
+    }
+
+    .flow-list li::before {
+      content: counter(flow);
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--skillopt-blue);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .math-block {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 18px;
+      border: 1px solid var(--skillopt-line);
+      border-radius: 8px;
+      background: var(--skillopt-code);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0 26px;
+      border: 1px solid var(--skillopt-line);
+      border-radius: 8px;
+      background: var(--skillopt-card);
+    }
+
+    table.data-table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--skillopt-line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .data-table th {
+      color: var(--skillopt-ink);
+      background: rgba(47, 111, 237, 0.08);
+      font-weight: 800;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .gain {
+      color: var(--skillopt-green);
+      font-weight: 800;
+    }
+
+    .loss {
+      color: var(--skillopt-rose);
+      font-weight: 800;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--skillopt-teal);
+      border-radius: 8px;
+      background: rgba(7, 138, 131, 0.08);
+    }
+
+    .callout strong {
+      color: var(--skillopt-ink);
+    }
+
+    .figure-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .figure-card {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .figure-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+    }
+
+    .figure-card figcaption {
+      padding: 14px 16px 16px;
+      color: var(--skillopt-muted);
+      font-size: 0.9rem;
+      line-height: 1.58;
+    }
+
+    .figure-card figcaption strong {
+      color: var(--skillopt-ink);
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .check-grid ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    .small-note {
+      color: var(--skillopt-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 920px) {
+      .paper-hero,
+      .two-col,
+      .three-col,
+      .four-col,
+      .figure-grid,
+      .check-grid,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .paper-hero h1 {
+        font-size: clamp(2.2rem, 12vw, 3.8rem);
+      }
+    }
+  </style>
+</head>
+<body class="paper-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>arXiv:2605.23904</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+      <a href="#takeaways">启发</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div>
+        <div class="eyebrow">Agent / Tool Use · arXiv v2 · 2026</div>
+        <h1>SkillOpt: Executive Strategy for Self-Evolving Agent Skills</h1>
+        <p class="hero-subtitle">
+          这篇论文把 agent 的 <span class="mono">best_skill.md</span> 当成冻结模型之外的可训练状态：离线收集 rollout，使用 optimizer model 生成受预算约束的文本补丁，再用 held-out selection gate 只接受带来验证提升的 skill 更新。核心卖点是：训练时多花 optimizer 调用，部署时只携带一个紧凑 skill 文档，不增加额外模型调用。
+        </p>
+        <div class="meta-grid">
+          <div class="meta-item"><strong>作者</strong><span>Yifan Yang et al.</span></div>
+          <div class="meta-item"><strong>机构</strong><span>Microsoft, SJTU, Tongji, Fudan</span></div>
+          <div class="meta-item"><strong>论文</strong><a href="https://arxiv.org/abs/2605.23904">arXiv:2605.23904</a></div>
+          <div class="meta-item"><strong>代码</strong><a href="https://github.com/microsoft/SkillOpt">microsoft/SkillOpt</a></div>
+        </div>
+        <div class="tag-row">
+          <span>agent</span>
+          <span>tool-use</span>
+          <span>self-evolution</span>
+          <span>skill-optimization</span>
+          <span>validation-gate</span>
+        </div>
+      </div>
+      <figure class="hero-media">
+        <img src="assets/extracted/figure_1.png" alt="Figure 1: SkillOpt overview" />
+        <figcaption>Figure 1 裁剪自论文 PDF：SkillOpt 用 bounded skill edits 和 held-out selection gate，把技能文本的更新过程类比为 text-space optimization。</figcaption>
+      </figure>
+    </section>
+
+    <section class="paper-section" aria-label="TL;DR">
+      <div class="section-kicker">TL;DR</div>
+      <div class="four-col">
+        <div class="stat-card"><strong>52/52</strong><span>在全部已评估的 model × benchmark × harness 单元上，SkillOpt 最优或并列最优。</span></div>
+        <div class="stat-card"><strong>+23.5</strong><span>GPT-5.5 direct chat 六任务平均相对 no-skill 的绝对提升。</span></div>
+        <div class="stat-card"><strong>1-4</strong><span>每个 benchmark 最终只接受 1 到 4 次 bounded updates，输出仍是可读的文本 skill。</span></div>
+        <div class="stat-card"><strong>0</strong><span>部署阶段新增 optimizer model 调用次数为 0；训练成本在离线优化时支付。</span></div>
+      </div>
+      <p class="lead">
+        SkillOpt 的关键不是“让 LLM 多反思几次”，而是把反思后的文本更新纳入一个有 batch、learning rate、validation、rejected replay 和 slow/meta memory 的优化协议。论文最强的证据来自大规模表格：六个 benchmark、七个 target models、三种 harness；最需要谨慎的地方则是评估依赖自动打分、模型版本和 split 细节的可复现性。
+      </p>
+    </section>
+
+    <section class="paper-section" id="motivation">
+      <div class="section-kicker">Motivation</div>
+      <h2>研究动机：把 skill 从手写提示变成可训练对象</h2>
+      <p>
+        Agent 在实际环境里需要的不只是知识问答能力，还包括如何搜证、调用工具、检查中间结果、遵守领域格式、避免循环和处理失败模式。传统适配路线有三类：手写 skill、一次性 LLM 生成 skill、或者松散的自我修订。论文认为这些都不像 optimizer：没有明确的 rollout evidence、step size、validation gate，也没有对 rejected updates 的记录，因此容易产生大幅语义跳跃、覆盖已有好规则，或者在训练反馈下无法稳定优于起点。
+      </p>
+      <div class="three-col">
+        <div class="note-card">
+          <h3>为什么不是 fine-tuning</h3>
+          <span>论文面向的是 closed frontier models 和工具 harness。权重不可改或成本太高时，一个可审计、可迁移的 markdown skill 更现实。</span>
+        </div>
+        <div class="note-card">
+          <h3>为什么不是 prompt search</h3>
+          <span>SkillOpt 的输出是 persistent skill artifact，而不是单轮 prompt；它在 rollout、验证和部署之间保持同一个技能文本。</span>
+        </div>
+        <div class="note-card">
+          <h3>为什么需要 gate</h3>
+          <span>自然语言诊断即使看起来合理，也可能降低目标模型的真实任务分数；held-out selection gate 把“会说理由”变成“必须提高分数”。</span>
+        </div>
+      </div>
+      <p>
+        因此论文的中心问题是：如果 skill 是 agent 的适配层，能否像训练模型参数一样训练它？SkillOpt 的答案是把 skill document 视为外部状态，用独立 optimizer model 产生 add/delete/replace 补丁，并通过验证集分数严格筛选。
+      </p>
+    </section>
+
+    <section class="paper-section" id="method">
+      <div class="section-kicker">Method</div>
+      <h2>方法：受控的 text-space optimization loop</h2>
+      <p class="lead">
+        SkillOpt 区分两个模型角色：冻结的 target model $M$ 执行任务；optimizer model $O$ 只在离线训练期间阅读轨迹并修改 skill。最终部署的是通过验证 gate 的 $s_{\mathrm{best}}$，不是 optimizer prompt、meta skill 或训练轨迹。
+      </p>
+
+      <h3>问题设定与目标</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>符号</th><th>含义</th><th>实现解释</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>$s$</td><td>skill document</td><td>插入 agent context 的自然语言程序，最终导出为 <span class="mono">best_skill.md</span>。</td></tr>
+            <tr><td>$M$</td><td>frozen target model</td><td>被适配但权重不变的模型，如 GPT-5.5、GPT-5.4-mini、Qwen3.5-4B。</td></tr>
+            <tr><td>$h$</td><td>execution harness</td><td>direct chat、Codex CLI workspace、Claude Code workspace 或任务环境。</td></tr>
+            <tr><td>$x,\tau,r$</td><td>任务、执行轨迹、分数</td><td>轨迹包含消息、工具调用、观察、命令输出、最终答案和 verifier feedback。</td></tr>
+            <tr><td>$D_{\mathrm{tr}},D_{\mathrm{sel}},D_{\mathrm{test}}$</td><td>训练、选择、测试 split</td><td>训练集生成候选 skill；选择集只用于 accept/reject；测试集仅最终报告。</td></tr>
+            <tr><td>$L_t$</td><td>textual learning rate</td><td>第 $t$ 步最多应用的 atomic edits 数量；默认 $L_t=4$，cosine decay floor 为 2。</td></tr>
+            <tr><td>$B,B_m$</td><td>rollout batch 与 reflection minibatch</td><td>默认 rollout batch size 40，reflection minibatch size 8。</td></tr>
+            <tr><td>$\mathcal{B}$</td><td>rejected-edit buffer</td><td>保存失败更新和分数下降，用作后续 optimizer prompt 的负反馈。</td></tr>
+            <tr><td>$m_{\mathrm{meta}}$</td><td>optimizer-side meta skill</td><td>只指导 optimizer 生成更好的编辑，不给 target model，也不部署。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="math-block">
+        \[
+          (\tau(s), r(s)) = h(M,x,s),\quad r(s)\in[0,1].
+        \]
+        \[
+          s^\star_{\mathrm{sel}}=\arg\max_{s\in C(D_{\mathrm{tr}})}\frac{1}{|D_{\mathrm{sel}}|}\sum_{x\in D_{\mathrm{sel}}}r(s)
+        \]
+        \[
+          \mathrm{Test}(s^\star_{\mathrm{sel}})=\frac{1}{|D_{\mathrm{test}}|}\sum_{x\in D_{\mathrm{test}}}r(s^\star_{\mathrm{sel}})
+        \]
+      </div>
+
+      <h3>训练循环</h3>
+      <ol class="flow-list">
+        <li><strong>Forward pass / rollout evidence。</strong> target model 用当前 skill $s_{\mathrm{cur}}$ 在 $D_{\mathrm{tr}}$ 上执行 batch，harness 记录 scored trajectories。</li>
+        <li><strong>Minibatch reflection。</strong> optimizer 分别分析 failure minibatches 和 success minibatches：失败侧提出补缺和纠错规则，成功侧提出应保留的有效模式。</li>
+        <li><strong>Hierarchical merge。</strong> 先合并 failure edits 和 success edits，再做 failure-prioritized final merge，过滤重复、冲突和过于实例化的建议。</li>
+        <li><strong>Bounded text update。</strong> optimizer 按预期 utility 排序 edits，只保留最多 $L_t$ 个，并通过 append、insert_after、replace、delete 形成候选 skill $\tilde{s}$。</li>
+        <li><strong>Strict validation gate。</strong> 候选 skill 在 $D_{\mathrm{sel}}$ 上评估，只有 $score_{\mathrm{cand}}>score_{\mathrm{cur}}$ 才接受；tie 也被拒绝。</li>
+        <li><strong>Rejected-edit buffer。</strong> 拒绝的 edits 与失败模式进入 epoch-local buffer，后续 prompt 可以避免重复无效或有害方向。</li>
+        <li><strong>Epoch-wise slow/meta update。</strong> epoch 末比较同一批样本在 previous/current skill 下的改善、退化、持续失败和稳定成功；写入受保护 slow-update 区域，同时更新 optimizer-only meta skill。</li>
+      </ol>
+
+      <figure class="hero-media" style="margin-top: 22px;">
+        <img src="assets/extracted/figure_2.png" alt="Figure 2: SkillOpt pipeline" />
+        <figcaption>Figure 2：完整 pipeline。训练时更新 skill document；target model、backend、harness 和 evaluator 固定。</figcaption>
+      </figure>
+
+      <div class="callout">
+        <strong>三层理解。</strong> 直觉层：把 skill 当成可训练的外部记忆。算法层：rollout → reflection → bounded patch → validation gate → export。数学层：在 $C(D_{\mathrm{tr}})$ 中搜索能最大化 held-out selection score 的文本状态，并只在验证提升时扩大候选集合。
+      </div>
+    </section>
+
+    <section class="paper-section" id="experiments">
+      <div class="section-kicker">Experiments</div>
+      <h2>实验设计与复现细节</h2>
+      <p>
+        实验覆盖六个 benchmark：SearchQA、SpreadsheetBench、OfficeQA、DocVQA、LiveMathematicianBench 和 ALFWorld。任务类型包括单轮 QA、电子表格代码/工具操作、多轮 Office 文档问答、多模态文档问答、数学 MCQ 与 embodied sequential decision making。评价指标使用各 benchmark 原生 hard score 或 exact-match accuracy。
+      </p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>维度</th><th>论文设置</th><th>复现注意点</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Target models</td><td>GPT-5.5、GPT-5.4、GPT-5.4-mini、GPT-5.4-nano、GPT-5.2、Qwen3.5-4B、Qwen3.6-35B-A3B</td><td>多数组合为 direct chat；Codex/Claude Code harness 只报告 GPT-5.5。</td></tr>
+            <tr><td>Harness</td><td>direct chat、Codex CLI workspace-write sandbox、Claude Code CLI workspace</td><td>Codex/Claude Code 通过同一 <span class="mono">best_skill.md</span> 格式实现 cross-harness transfer。</td></tr>
+            <tr><td>Baselines</td><td>No skill、Human skill、one-shot LLM skill、Trace2Skill、TextGrad、GEPA、EvoSkill</td><td>EvoSkill 只用于 harness-backed comparison；TextGrad/GEPA 用于 direct-chat prompt optimization 对比。</td></tr>
+            <tr><td>Splits</td><td>dataset-backed runs 使用 deterministic train/selection/test split，默认 2:1:7，<span class="mono">split_seed = 42</span></td><td>selection split 只做 gate，不报告为最终结果；test split 锁定到最终报告。</td></tr>
+            <tr><td>默认优化器</td><td>4 epochs，rollout batch 40，reflection minibatch 8，16 analyst workers，merge batch 8，$L_t=4$，cosine decay floor 2</td><td>LiveMath 和 ALFWorld 因训练池受限使用 per-benchmark configs；论文给出规模但未列完整索引，需结合代码核对。</td></tr>
+            <tr><td>Gate 与 memory</td><td>严格大于当前 selection score 才接受；rejected buffer、slow update、optimizer-side meta skill 默认开启</td><td>Appendix C.2 给出 JSON prompt contracts，便于复现 parser 和 patch protocol。</td></tr>
+            <tr><td>Prompt outputs</td><td>failure analysis、success analysis、failure merge、success merge、final merge、ranking、slow update、meta skill 均要求 JSON</td><td>这降低手工干预，但实际复现需确认 JSON schema、patch apply report 和 hash cache 实现。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Optimizer prompt contracts</h3>
+      <p>
+        Appendix C.2 把 optimizer prompt 拆为八类：failure analyst、success analyst、failure merge、success merge、final merge、ranking、slow_update 和 meta_skill。共同约束是输出 valid JSON，edits 只允许 append、insert_after、replace、delete，并且不能修改 <span class="mono">SLOW_UPDATE_START</span> 与 <span class="mono">SLOW_UPDATE_END</span> 之间的 protected section。
+      </p>
+      <div class="callout">
+        <strong>复现信号强的部分：</strong> 论文提供了主要超参数、split seed、算法伪代码和 prompt contracts。<strong>复现仍需人工核对的部分：</strong> 精确数据索引、模型 API 版本、optimizer decoding 参数、每个 benchmark adapter 的具体实现和成本统计口径需要结合代码仓库确认。
+      </div>
+    </section>
+
+    <section class="paper-section" id="results">
+      <div class="section-kicker">Results</div>
+      <h2>实验结果与核心结论</h2>
+      <p class="lead">
+        论文的主结果是一个很强的经验性结论：在所有报告单元中，SkillOpt 都优于或追平最强 baseline；收益尤其集中在程序性、工具性任务，如 SpreadsheetBench、OfficeQA、LiveMath 和 harness-backed execution。
+      </p>
+
+      <h3>Table 1 摘要：GPT-5.5 direct chat 的完整六任务对比</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Benchmark</th><th>No skill</th><th>Best non-SkillOpt baseline</th><th>SkillOpt</th><th>Gain over no skill</th><th>解释</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SearchQA</td><td>77.7</td><td>GEPA 84.8</td><td><strong>87.3</strong></td><td class="gain">+9.6</td><td>接近上限的抽取式 QA 仍有小幅提升。</td></tr>
+            <tr><td>SpreadsheetBench</td><td>41.8</td><td>GEPA 73.6</td><td><strong>80.7</strong></td><td class="gain">+38.9</td><td>最受益于 workbook 结构检查、公式验证和输出格式规则。</td></tr>
+            <tr><td>OfficeQA</td><td>33.1</td><td>Human skill 66.9</td><td><strong>72.1</strong></td><td class="gain">+39.0</td><td>多轮工具调用与文档表格/单位上下文规则带来显著收益。</td></tr>
+            <tr><td>DocVQA</td><td>78.8</td><td>Trace2Skill 90.6</td><td><strong>91.2</strong></td><td class="gain">+12.4</td><td>视觉区域绑定和答案 span 复制规则补足细节。</td></tr>
+            <tr><td>LiveMath</td><td>37.6</td><td>Trace2Skill 52.0</td><td><strong>66.9</strong></td><td class="gain">+29.3</td><td>强陈述 MCQ 的选择策略被编码为可迁移规则。</td></tr>
+            <tr><td>ALFWorld</td><td>83.6</td><td>LLM skill 93.3</td><td><strong>95.5</strong></td><td class="gain">+11.9</td><td>状态记忆、frontier ledger 和循环打断对 embodied search 有效。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Harness-backed execution：Codex 与 Claude Code</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Harness</th><th>SearchQA</th><th>Spreadsheet</th><th>OfficeQA</th><th>DocVQA</th><th>LiveMath</th><th>平均提升</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Codex / GPT-5.5</td><td>81.8 → <strong>87.3</strong></td><td>27.5 → <strong>85.0</strong></td><td>38.3 → <strong>51.1</strong></td><td>87.2 → <strong>92.2</strong></td><td>35.2 → <strong>78.4</strong></td><td class="gain">+24.8</td></tr>
+            <tr><td>Claude Code / GPT-5.5</td><td>81.9 → <strong>85.9</strong></td><td>22.1 → <strong>80.4</strong></td><td>57.6 → <strong>71.5</strong></td><td>86.6 → <strong>90.1</strong></td><td>40.8 → <strong>56.5</strong></td><td class="gain">+19.1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        这组结果说明 skill artifact 不只是 direct-chat prompt：同一个优化接口可以接入代码/文件/工具环境。ALFWorld 在 Codex/Claude Code rows 中缺失，因为它需要 persistent embodied-environment interaction，不适配标准 workspace harness。
+      </p>
+
+      <h3>消融：哪些机制真的重要</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Component</th><th>Setting</th><th>SearchQA</th><th>SpreadsheetBench</th><th>LiveMath</th><th>结论</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Learning-rate form</td><td>lr=4 default</td><td><strong>87.1</strong></td><td><strong>77.5</strong></td><td><strong>61.3</strong></td><td>中等 bounded update 稳定。</td></tr>
+            <tr><td>Learning-rate form</td><td>dynamic lr / without lr</td><td>85.8 / 84.6</td><td>71.8 / 75.7</td><td>54.0 / 57.3</td><td>无显式 edit budget 会损害稳定性。</td></tr>
+            <tr><td>Rejected buffer</td><td>with vs. without</td><td>87.1 vs. 85.5</td><td>77.5 vs. 72.9</td><td>61.3 vs. 58.9</td><td>负反馈 buffer 帮助避免重复坏编辑。</td></tr>
+            <tr><td>Slow/meta update</td><td>full vs. no meta/slow</td><td>87.1 vs. 86.3</td><td>77.5 vs. 55.0</td><td>61.3 vs. 59.7</td><td>SpreadsheetBench 对长程记忆最敏感。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Table 2 的 hyperparameter sweeps 还显示：训练数据更多时 procedural benchmarks 提升明显；reflection minibatch 和 rollout batch 的变化相对不脆弱；不同 scheduler 之间有差异但不改变“bounded updates 比无约束改写更稳”的结论。
+      </p>
+
+      <h3>Transfer：skill 是可复用 artifact，而非单点 prompt</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Transfer type</th><th>Source → Target</th><th>Benchmark</th><th>Baseline</th><th>In-domain SkillOpt</th><th>Transferred</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cross-model</td><td>GPT-5.4 → GPT-5.4-mini</td><td>SpreadsheetBench</td><td>36.1</td><td>47.5</td><td class="gain">45.5 (+9.4)</td></tr>
+            <tr><td>Cross-model</td><td>GPT-5.4 → GPT-5.4-nano</td><td>LiveMath</td><td>23.2</td><td>27.2</td><td class="gain">28.8 (+5.6)</td></tr>
+            <tr><td>Cross-harness</td><td>Codex → Claude Code</td><td>SpreadsheetBench</td><td>22.1</td><td>80.4</td><td class="gain">81.8 (+59.7)</td></tr>
+            <tr><td>Cross-harness</td><td>Claude Code → Codex</td><td>SpreadsheetBench</td><td>27.5</td><td>85.0</td><td class="gain">71.1 (+43.6)</td></tr>
+            <tr><td>Cross-benchmark</td><td>OlympiadBench → Omni-MATH</td><td>GPT-5.4 / mini / nano</td><td>56.6 / 34.8 / 38.8</td><td>未报告</td><td class="gain">60.3 / 36.6 / 40.1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>训练成本与 artifact 经济性</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Benchmark</th><th>Initial tokens</th><th>Final tokens</th><th>Accepted edits</th><th>Train tokens</th><th>Cost / point</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>SearchQA</td><td>16</td><td>857</td><td>4</td><td>213.8M</td><td>37.9M</td></tr>
+            <tr><td>SpreadsheetBench</td><td>224</td><td>1,995</td><td>4</td><td>21.4M</td><td>0.6M</td></tr>
+            <tr><td>OfficeQA</td><td>145</td><td>883</td><td>1</td><td>20.8M</td><td>1.1M</td></tr>
+            <tr><td>DocVQA</td><td>81</td><td>959</td><td>3</td><td>188.2M</td><td>46.4M</td></tr>
+            <tr><td>LiveMath</td><td>154</td><td>379</td><td>1</td><td>23.2M</td><td>3.6M</td></tr>
+            <tr><td>ALFWorld</td><td>516</td><td>1,321</td><td>2</td><td>59.3M</td><td>15.9M</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        最重要的部署含义是：SkillOpt 的训练 token cost 可能很高，但只在离线训练阶段支付。最终 skill 通常 300-2,000 tokens，且只需 1-4 次 accepted edits，这使其可审计、可迁移、也便于人工二次修改。
+      </p>
+    </section>
+
+    <section class="paper-section" id="figures">
+      <div class="section-kicker">Figures & Tables</div>
+      <h2>图表导航与抽取覆盖</h2>
+      <p>
+        论文标注 4 figures、6 tables。PyMuPDF 只直接抽取到 2 个嵌入图片对象，因此本页主要使用 PDF 页面渲染后的裁剪图。裁剪图来自原始 PDF，可读性高于整页截图；少量边界和 Table 1 细小上下标仍标注为需人工核对。
+      </p>
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/extracted/figure_1.png" alt="Figure 1: Overview of SkillOpt" />
+          <figcaption><strong>Figure 1, page 2。</strong>SkillOpt overview：bounded skill edits、held-out gate、rejected updates 与 text-space optimization analogy。裁剪自 PDF，需人工核对边界。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/extracted/figure_2.png" alt="Figure 2: Pipeline of SkillOpt" />
+          <figcaption><strong>Figure 2, page 4。</strong>完整 pipeline：rollout batch、minibatch reflection、batch-level merge、rank/clip、validation gate、slow/meta update。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/extracted/figure_3.png" alt="Figure 3: Performance trends across epoch checkpoints" />
+          <figcaption><strong>Figure 3, page 12。</strong>SpreadsheetBench、SearchQA、LiveMath 的 train rollout、selection best 与 unseen test 曲线，支持 gate 与泛化对齐的论点。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/extracted/figure_4.png" alt="Figure 4: Representative learned rules" />
+          <figcaption><strong>Figure 4, page 15。</strong>六个 benchmark 的最终 skill 代表性规则；规则多为程序性约束而非实例记忆。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/extracted/table_1.png" alt="Table 1: Main results" />
+          <figcaption><strong>Table 1, page 7。</strong>主结果矩阵，覆盖 direct chat、Codex harness、Claude Code harness。HTML 中重建了 GPT-5.5 与 harness 关键数字；完整小字截图需人工核对。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/extracted/table_2_3.png" alt="Table 2 and Table 3: Hyperparameters and ablations" />
+          <figcaption><strong>Table 2-3, page 8。</strong>训练集大小、batch、learning rate、scheduler、slow-update samples 与关键组件消融。HTML 中重建了核心消融数字。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/extracted/table_4.png" alt="Table 4: Transfer" />
+          <figcaption><strong>Table 4, page 9。</strong>Cross-model、cross-harness、cross-benchmark transfer。HTML 中重建了代表性 transfer rows。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/extracted/table_5_6.png" alt="Table 5 and Table 6: Optimizer strength and cost" />
+          <figcaption><strong>Table 5-6, page 14。</strong>optimizer strength 与 cost/edit economy。HTML 中重建了 Table 6 全部数字。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="paper-section" id="reproduction">
+      <div class="section-kicker">Reproduction</div>
+      <h2>复现清单</h2>
+      <div class="check-grid">
+        <div class="note-card">
+          <h3>必须准备</h3>
+          <ul>
+            <li>代码仓库：<a href="https://github.com/microsoft/SkillOpt">https://github.com/microsoft/SkillOpt</a>。</li>
+            <li>六个 benchmark 的数据和原生 evaluator：SearchQA、SpreadsheetBench、OfficeQA、DocVQA、LiveMathematicianBench、ALFWorld。</li>
+            <li>目标模型访问：GPT-5.5、GPT-5.4 系列、GPT-5.2、Qwen3.5-4B、Qwen3.6-35B-A3B，或可替代的本地模型。</li>
+            <li>三类 harness adapters：direct chat、Codex CLI workspace、Claude Code CLI workspace。</li>
+          </ul>
+        </div>
+        <div class="note-card">
+          <h3>默认训练配置</h3>
+          <ul>
+            <li>4 epochs；rollout batch size 40；reflection minibatch size 8。</li>
+            <li>16 analyst workers；merge batch size 8；teacher reflection 最多 3 refinement rounds。</li>
+            <li>$L_t=4$，cosine decay，floor $L_t=2$；patch edit mode。</li>
+            <li>strict gate：selection score 必须严格提升；ties rejected。</li>
+            <li>slow update 每 epoch 采样 20 个任务；optimizer-side meta skill 开启。</li>
+          </ul>
+        </div>
+        <div class="note-card">
+          <h3>复现步骤</h3>
+          <ul>
+            <li>用固定 seed 构造 train/selection/test split，默认 2:1:7，论文提到 <span class="mono">split_seed = 42</span>。</li>
+            <li>从初始 skill $s_0$ 开始，在 train split 收集 scored trajectories。</li>
+            <li>按 Appendix C.2 的 prompt contracts 生成 JSON edits，合并、排序并应用补丁。</li>
+            <li>每个候选 skill 在 selection split 上评估，只有提升才进入 $s_{\mathrm{cur}}$ 或 $s_{\mathrm{best}}$。</li>
+            <li>训练结束后只在 test split 上评估 $s_{\mathrm{best}}$，同时保存 skill hash、edit_apply_report 和 rejected buffer 记录。</li>
+          </ul>
+        </div>
+        <div class="note-card">
+          <h3>缺口与人工核对</h3>
+          <ul>
+            <li>论文没有在正文列出所有数据索引、具体 API snapshot、decoding temperature 和完整 adapter 参数。</li>
+            <li>Appendix C 的 benchmark 列表提到 SealQA，但主表六任务没有报告 SealQA；复现时需检查代码配置。</li>
+            <li>Figure/Table 裁剪来自 PDF 页面渲染，Table 1 小号上下标和裁剪边界需人工核对。</li>
+            <li>训练成本以 token 计，真实成本取决于模型价格、并行 worker 和失败重试策略。</li>
+          </ul>
+        </div>
+      </div>
+      <p class="small-note">
+        复现等级判断：medium。论文给出算法、prompt contracts、主要超参数和代码入口，但闭源模型版本、数据 split 细节与 harness adapter 的端到端可运行性仍需代码仓库和凭证验证。
+      </p>
+    </section>
+
+    <section class="paper-section" id="critique">
+      <div class="section-kicker">Reviewer Critique</div>
+      <h2>审稿式评价</h2>
+      <div class="two-col">
+        <div class="note-card">
+          <h3>优点</h3>
+          <p>论文把 skill optimization 从“提示工程技巧”明确提升为训练协议：有状态、有 batch、有文本 learning rate、有验证集 gate、有 rejected replay、有 slow/meta two-timescale memory。实验覆盖面也大，尤其把 direct chat 与 Codex/Claude Code harness 统一到同一 artifact 格式，应用价值很强。</p>
+        </div>
+        <div class="note-card">
+          <h3>证据强度</h3>
+          <p>主结果 52/52 单元最优或并列最优很显眼；关键增益在 procedural benchmarks 上幅度大，且 Table 4 的 cross-harness transfer 强化了“学到的是程序而非 prompt 表面形式”的解释。</p>
+        </div>
+        <div class="note-card">
+          <h3>主要弱点</h3>
+          <p>方法高度依赖可靠自动评分和 selection split。开放式、多目标或主观任务需要新的 evaluator，否则 validation gate 可能只是把噪声评估放大成训练信号。模型版本多为前沿闭源模型，独立复现实验成本高。</p>
+        </div>
+        <div class="note-card">
+          <h3>缺失实验</h3>
+          <p>缺少多随机种子、置信区间、失败案例 taxonomy、对 selection split 规模的系统压力测试，以及 skill 被转移到远域任务时的 negative transfer 分析。Table 1 很强，但如果没有方差和 exact split，统计稳健性仍需外部复核。</p>
+        </div>
+        <div class="note-card">
+          <h3>潜在混杂</h3>
+          <p>强 optimizer model 既是编辑器又是知识源；虽然 Table 5 显示 target-matched optimizer 仍有效，但更强 optimizer 可能把隐含 benchmark 知识写入 skill。需要更严格的 temporal holdout 或 adversarial split 来排除泄漏式程序学习。</p>
+        </div>
+        <div class="note-card">
+          <h3>改进方向</h3>
+          <p>可以扩展到 reward-free 或 preference-driven gates，加入 uncertainty-aware validation、diversity replay、skill library routing，以及把 validated skill distill 回模型权重。对安全和规范任务，还需要 policy-level constraints 来防止优化器写出高分但不可接受的程序规则。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="paper-section" id="takeaways">
+      <div class="section-kicker">Takeaways</div>
+      <h2>对 agent / RLVR / 自进化研究的启发</h2>
+      <div class="three-col">
+        <div class="takeaway-card">
+          <h3>把“可读文本”纳入训练栈</h3>
+          <span>SkillOpt 表明，可训练对象不一定是权重或 prompt embedding；一个可审计 skill 文档也可以承担 domain adaptation。对 agent 系统而言，这比黑箱 fine-tuning 更容易 debug 和迁移。</span>
+        </div>
+        <div class="takeaway-card">
+          <h3>Validation gate 是最小可行 RL</h3>
+          <span>它没有做 token-level policy gradient，却保留了 RLVR 最关键的 verifier feedback：候选策略必须在 held-out split 上提升。对于工具 agent，先构造可靠 verifier 可能比先训练模型更重要。</span>
+        </div>
+        <div class="takeaway-card">
+          <h3>Rejected edits 可以当 replay</h3>
+          <span>失败编辑不是丢弃，而是变成负样本记忆。这和 replay buffer / preference data 的思想相通，可用于避免 agent 自进化中反复走同一条坏路。</span>
+        </div>
+        <div class="takeaway-card">
+          <h3>Two-timescale memory 很关键</h3>
+          <span>step-level patch 负责局部纠错，epoch-level slow/meta update 负责稳定方向。这个结构可迁移到 questioner-solver、自我提问、工具策略和长程任务 curriculum。</span>
+        </div>
+        <div class="takeaway-card">
+          <h3>技能质量要看转移</h3>
+          <span>真正有用的 skill 不是在训练 split 上涨分，而是能跨模型、跨 harness 或邻近 benchmark 保持收益。未来 benchmark 应该默认报告 transfer，而不是只报告 in-domain gain。</span>
+        </div>
+        <div class="takeaway-card">
+          <h3>部署成本与训练成本分离</h3>
+          <span>用强 optimizer 离线训练弱 target 的 skill，部署时不调用 optimizer。这适合高频生产任务：一次性训练成本可以被大量推理请求摊销。</span>
+        </div>
+      </div>
+      <p>
+        最值得借鉴的工程原则是：把 agent 的可变部分做成可版本化 artifact，给每次变更记录 evidence、patch、score、accept/reject reason，再让验证 gate 控制进入生产的版本。这样的自进化系统比“让模型自由反思并覆盖提示”更容易审计、回滚和复现。
+      </p>
+    </section>
+  </main>
+</body>
+</html>

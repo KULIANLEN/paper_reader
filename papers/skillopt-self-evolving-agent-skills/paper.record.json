@@ -1,0 +1,53 @@
+{
+  "id": "2605.23904",
+  "slug": "skillopt-self-evolving-agent-skills",
+  "title": "SkillOpt: Executive Strategy for Self-Evolving Agent Skills",
+  "titleZh": "SkillOpt：面向自进化 Agent 技能的执行式优化策略",
+  "authors": [
+    "Yifan Yang",
+    "Ziyang Gong",
+    "Weiquan Huang",
+    "Qihao Yang",
+    "Ziwei Zhou",
+    "Zisu Huang",
+    "Yan Li",
+    "Xuemei Gao",
+    "Qi Dai",
+    "Bei Liu",
+    "Kai Qiu",
+    "Yuqing Yang",
+    "Dongdong Chen",
+    "Xue Yang",
+    "Chong Luo"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "self-evolution",
+    "skill-optimization",
+    "validation-gate"
+  ],
+  "status": "精读",
+  "priority": 5,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "SkillOpt 将 agent 的 markdown skill 当作冻结模型之外的可训练状态，用 rollout evidence、bounded add/delete/replace edits、held-out validation gate、rejected-edit buffer 和 slow/meta update 组成离线优化循环。论文在六个 benchmark、七个 target models、三类 execution harness 上报告 52/52 单元最优或并列最优，部署阶段只需携带紧凑 best_skill.md，不增加 optimizer model 调用。",
+  "takeaways": [
+    "skill document 可以像外部参数一样训练：核心不是生成更长 prompt，而是给文本更新加入 batch、learning rate、validation 和 rejected replay。",
+    "held-out selection gate 是 agent 自进化的关键安全阀；没有可靠 verifier 的开放式任务需要先解决评价问题。",
+    "跨模型、跨 harness、跨邻近 benchmark 的 transfer 结果说明优化后的 skill 更像可复用程序知识，而不是单一 benchmark prompt。"
+  ],
+  "arxivId": "2605.23904",
+  "paperUrl": "https://arxiv.org/abs/2605.23904",
+  "pdfUrl": "https://arxiv.org/pdf/2605.23904",
+  "pageUrl": "papers/skillopt-self-evolving-agent-skills/index.html",
+  "codeUrl": "https://github.com/microsoft/SkillOpt",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文给出算法、默认超参数、split_seed=42、JSON prompt contracts 和代码入口；但精确数据索引、闭源模型 API snapshot、decoding 参数与 harness adapter 细节仍需结合代码仓库和模型权限核对。"
+  }
+}

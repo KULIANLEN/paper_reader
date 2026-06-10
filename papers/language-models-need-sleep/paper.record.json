@@ -1,0 +1,43 @@
+{
+  "id": "2605.26099",
+  "slug": "language-models-need-sleep",
+  "title": "Do Language Models Need Sleep? Offline Recurrence for Improved Online Inference",
+  "titleZh": "语言模型需要睡眠吗？用于改进在线推理的离线递归",
+  "authors": [
+    "Sangyun Lee",
+    "Sean McLeish",
+    "Tom Goldstein",
+    "Giulia Fanti"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Long Context / Memory",
+  "tags": [
+    "long-context",
+    "memory",
+    "ssm",
+    "recurrence",
+    "reasoning",
+    "inference"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "论文提出一种 sleep-like offline recurrence：在 attention cache 被 eviction 前，对当前 context 做多次 recurrent passes，把信息写入 SSM fast weights。额外计算发生在 consolidation phase，prediction phase 仍保持 single forward pass；在 Rule 110、Depo 和 GSM-Infinite 上，增加 sleep duration 对更深推理任务提升最明显。",
+  "takeaways": [
+    "长上下文瓶颈不只是记忆容量，还包括 eviction 前把 context 组织成可用 fast weights 的计算量。",
+    "把额外 compute 放在 sleep/consolidation 阶段，可以在不增加 wake-time prediction latency 的前提下改善已 eviction context 上的推理。",
+    "可控 benchmark 应固定 information load、单独改变 reasoning depth，否则难以区分模型是记不住还是算不动。"
+  ],
+  "arxivId": "2605.26099",
+  "paperUrl": "https://arxiv.org/abs/2605.26099",
+  "pdfUrl": "https://arxiv.org/pdf/2605.26099",
+  "pageUrl": "papers/language-models-need-sleep/index.html",
+  "codeUrl": "",
+  "repro": {
+    "available": false,
+    "level": "medium",
+    "notes": "论文给出算法、主要模型配置、学习率、batch size、窗口大小和 compute 估计，但未发现公开代码链接；严格复现仍需数据生成脚本、GDN/Jet/Ouro 具体实现、完整 Muon 配置和随机种子。"
+  }
+}

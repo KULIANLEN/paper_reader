@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>AutoScientists: Self-Organizing Agent Teams for Long-Running Scientific Experimentation · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .autoscientists-page * { letter-spacing: 0 !important; }
+    .autoscientists-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .autoscientists-page .paper-hero { padding: 3.4rem 0 2.35rem; border-bottom: 1px solid var(--line); }
+    .autoscientists-page .paper-hero h1 { max-width: 1120px; font-size: clamp(2.05rem, 4.6vw, 4.1rem); line-height: 1.05; }
+    .autoscientists-page .hero-subtitle { max-width: 980px; margin: 1.05rem 0 0; font-size: clamp(1.02rem, 2vw, 1.22rem); line-height: 1.78; }
+    .autoscientists-page .content-card { margin: 0; padding: clamp(2.1rem, 5vw, 4.15rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .autoscientists-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.58rem, 3.2vw, 2.48rem); line-height: 1.16; }
+    .autoscientists-page .content-card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; line-height: 1.35; }
+    .autoscientists-page .section-lead { max-width: 980px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.03rem; line-height: 1.86; }
+    .autoscientists-page .meta-row,
+    .autoscientists-page .link-row,
+    .autoscientists-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .autoscientists-page .meta-row { margin-top: 1.2rem; color: var(--muted); font-size: 0.93rem; }
+    .autoscientists-page .paper-tags,
+    .autoscientists-page .link-row { margin-top: 1rem; }
+    .autoscientists-page .tag-pill,
+    .autoscientists-page .link-row a,
+    .autoscientists-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .autoscientists-page .grid-2,
+    .autoscientists-page .grid-3,
+    .autoscientists-page .metric-grid,
+    .autoscientists-page .figure-grid,
+    .autoscientists-page .flow-grid { display: grid; gap: 1rem; }
+    .autoscientists-page .grid-2,
+    .autoscientists-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .autoscientists-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .autoscientists-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .autoscientists-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .autoscientists-page .note-box,
+    .autoscientists-page .metric,
+    .autoscientists-page .table-wrap,
+    .autoscientists-page .figure-card,
+    .autoscientists-page .formula-box,
+    .autoscientists-page .flow-step,
+    .autoscientists-page .critique-box,
+    .autoscientists-page .algo-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .autoscientists-page .note-box,
+    .autoscientists-page .formula-box,
+    .autoscientists-page .flow-step,
+    .autoscientists-page .critique-box,
+    .autoscientists-page .algo-box { padding: 1rem; }
+    .autoscientists-page .note-box p,
+    .autoscientists-page .formula-box p,
+    .autoscientists-page .flow-step p,
+    .autoscientists-page .critique-box p,
+    .autoscientists-page .algo-box p { margin: 0.45rem 0 0; }
+    .autoscientists-page .metric { padding: 1rem; }
+    .autoscientists-page .metric strong { display: block; font-size: 1.5rem; line-height: 1.15; }
+    .autoscientists-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .autoscientists-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .autoscientists-page .flow-step:nth-child(2) b { background: #2563eb; }
+    .autoscientists-page .flow-step:nth-child(3) b { background: #b45309; }
+    .autoscientists-page .flow-step:nth-child(4) b { background: #7c3aed; }
+    .autoscientists-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .autoscientists-page .formula-box .MathJax,
+    .autoscientists-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .autoscientists-page .algo-box ol { margin: 0.5rem 0 0; padding-left: 1.3rem; }
+    .autoscientists-page .algo-box li { margin: 0.28rem 0; color: var(--text-soft); line-height: 1.65; }
+    .autoscientists-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .autoscientists-page table { width: 100%; min-width: 820px; border-collapse: collapse; font-size: 0.88rem; }
+    .autoscientists-page th,
+    .autoscientists-page td { padding: 0.68rem 0.72rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .autoscientists-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .autoscientists-page td { color: var(--text-soft); }
+    .autoscientists-page .tight-table { min-width: 680px; }
+    .autoscientists-page .wide-table { min-width: 1080px; }
+    .autoscientists-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .autoscientists-page .figure-card { margin: 0; overflow: hidden; }
+    .autoscientists-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .autoscientists-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .autoscientists-page .figure-card figcaption strong { color: var(--text); }
+    .autoscientists-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .autoscientists-page .compact-list li { margin: 0.28rem 0; }
+    .autoscientists-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .autoscientists-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .autoscientists-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .autoscientists-page .small { color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .autoscientists-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .autoscientists-page .grid-2,
+      .autoscientists-page .grid-3,
+      .autoscientists-page .metric-grid,
+      .autoscientists-page .figure-grid,
+      .autoscientists-page .flow-grid { grid-template-columns: 1fr; }
+      .autoscientists-page .paper-hero { padding-top: 2.4rem; }
+      .autoscientists-page table { min-width: 720px; }
+      .autoscientists-page .wide-table { min-width: 980px; }
+    }
+  </style>
+</head>
+<body class="paper-page autoscientists-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2605.28655v1</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Agent / Tool Use · arXiv 2026</div>
+      <h1>AutoScientists: Self-Organizing Agent Teams for Long-Running Scientific Experimentation</h1>
+      <p class="hero-subtitle">AutoScientists 把长周期 computational science 建模为多条研究假设并行推进的实验搜索：多个 Claude Code agents 通过 shared state、research forum、team queues、dead-end registry 与 noise-aware champion gate 自组织成团队，持续提出、批评、执行和复用实验结果。论文在 BioML-Bench、GPT nanochat training optimization 和 ProteinGym 上报告相同实验预算下优于 single-agent Autoresearch 或强基线的结果。</p>
+      <div class="meta-row">
+        <span>Shanghua Gao, Ada Fang, Marinka Zitnik</span>
+        <span>Harvard University</span>
+        <span>Published: 2026-05-27</span>
+        <span>arXiv: 2605.28655v1</span>
+        <span>39-page PDF with appendix</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">tool-use</span>
+        <span class="tag-pill">planning</span>
+        <span class="tag-pill">scientific-discovery</span>
+        <span class="tag-pill">evaluation</span>
+        <span class="tag-pill">self-organization</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2605.28655">arXiv</a>
+        <a href="https://arxiv.org/pdf/2605.28655">PDF</a>
+        <a href="https://github.com/mims-harvard/AutoScientists">Code</a>
+        <a href="https://autoscientists.openscientist.ai">Project</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>74.40%</strong><span>BioML-Bench 24 tasks mean leaderboard percentile，Autoresearch 为 66.07%。</span></div>
+        <div class="metric"><strong>1.9x</strong><span>GPT nanochat 达到约 0.978 val_bpb 所需实验数：34 vs. 65。</span></div>
+        <div class="metric"><strong>0.700</strong><span>ProteinGym 217 assays 平均 Spearman's rho，Kermut 为 0.657。</span></div>
+        <div class="metric"><strong>9 agents</strong><span>默认团队为 6 个 experiment agents + 3 个 analyst agents。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机：长周期科研不是单线程 prompt loop</h2>
+      <p class="section-lead">论文针对的是 AI agents for science 的 long-running setting。现有 single-agent 系统可以迭代改代码，但往往沿着一条 search trajectory 前进；很多 multi-agent 系统虽然分工，却依赖 central planner、固定 decomposition、投票或收敛式讨论。真实科研搜索更像多个竞争假设同时存在：早期方向可能后期失效，失败经验要被保存，新的方向常常来自此前实验的反证。</p>
+
+      <div class="grid-3">
+        <div class="note-box danger">
+          <h3>单 agent 的瓶颈</h3>
+          <p>AIDE、Autoresearch 一类系统能连续试验，但每次主要推进一个方向；当局部最优附近反复微调时，难以系统性并行探索 competing hypotheses。</p>
+        </div>
+        <div class="note-box danger">
+          <h3>固定 multi-agent 的瓶颈</h3>
+          <p>Planner 或预设角色可以分解工作，但默认 search space 一开始就能被稳定切分；长周期实验中，productive axes 会随 evidence 改变。</p>
+        </div>
+        <div class="note-box good">
+          <h3>本文主张</h3>
+          <p>让 agents 读同一个 experimental state，自主形成团队、互相批评 proposal、记录 dead ends，并在 stagnation 后重新组队。</p>
+        </div>
+      </div>
+
+      <figure class="figure-card" style="margin-top:1rem;">
+        <img src="assets/pages/page_002.png" alt="Figure 1 page screenshot showing AutoScientists self-organizing teams" />
+        <figcaption><strong>Figure 1 page context.</strong> AutoScientists 输入任务、metric、dataset，输出 champion model、model card 与 research insights。自动 figure 抽取没有可靠裁出完整 Figure 1，因此这里使用整页截图，需人工核对精确裁图。</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 数学表示、系统状态与算法流程</h2>
+      <p class="section-lead">方法的关键不是让一个 master agent 调度所有人，而是把协调写进共享状态 $S$ 和 heartbeat protocol。每个 agent 被重复唤醒，读取 roster、forum、champion、queue 和知识文件，然后根据自己是 analyst 还是 experiment agent 执行一个小循环。</p>
+
+      <div class="formula-box">
+        <h3>2.1 长周期科研搜索形式化</h3>
+        <p>给定任务描述、可选初始程序 $p_0$、数据集 $D$ 与评价指标 $\ell$。数据集包含训练集 $D_{\mathrm{train}}$ 和 validation 或 cross-validation protocol。系统中有 $n$ 个 long-running agents：</p>
+        $$A=\{a_1,\ldots,a_n\}.$$
+        <p>每个候选程序 $p$ 在 $D_{\mathrm{train}}$ 上训练，并用 $\ell_{\mathrm{eval}}(p;D)$ 评估。目标是找到：</p>
+        $$p^*=\arg\max_{p\in P}\ell_{\mathrm{eval}}(p;D),$$
+        <p>其中 $P$ 是 agents 在搜索过程中实际探索的 program space。若指标本来是 loss，则通过取负或等价变换使“越大越好”。最终有 held-out test 时报告 $\ell_{\mathrm{test}}$，否则报告 $\ell_{\mathrm{eval}}$。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>Shared state $S$ 的四层</h3>
+          <ul class="compact-list">
+            <li><strong>Champion $p^*$</strong>：当前最佳模型、完整超参数和复现说明。</li>
+            <li><strong>Experiment log $L$</strong>：每个实验的 outcome、metric delta、training diagnostics。</li>
+            <li><strong>Research forum $F$</strong>：proposal、结果公告、mechanistic analysis 与讨论。</li>
+            <li><strong>Team-local state</strong>：每队 queue $Q_k$、dead-end registry $D_k$、hypothesis documents，并允许跨队读取。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>两个角色</h3>
+          <ul class="compact-list">
+            <li><strong>Analyst agents</strong>：维护团队知识、审计未测试参数、计算 empirical priors、向 queue 追加 proposal，并在停滞时触发讨论。</li>
+            <li><strong>Experiment agents</strong>：claim queue item、修改 $p^*$、训练候选 $p'$、执行 noise-aware promotion gate，并把结果写回 $L$ 与 $F$。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Discussion</h3><p>所有 agents 读取任务、forum 与当前 champion，提出方向、批评、投票是否结束讨论。</p></div>
+        <div class="flow-step"><b>2</b><h3>Roster</h3><p>参与讨论的 alphabetically-last analyst 汇总 roster $R=\{(T_k,\mathrm{axis}_k,\mathrm{members}_k)\}_{k=1}^{K}$。</p></div>
+        <div class="flow-step"><b>3</b><h3>Execution</h3><p>每个团队并行执行 propose-execute loop，experiment agents 用 optimistic locking claim queue。</p></div>
+        <div class="flow-step"><b>4</b><h3>Reorganize</h3><p>若近期实验没有改进或 proposals 过窄，analyst 发布 discussion trigger，团队可 merge、split、retire 或 rebalance。</p></div>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.2 Noise-aware champion validation</h3>
+        <p>为了避免 stochastic metric 把噪声提升误当成真实进步，论文定义 candidate improvement：</p>
+        $$\Delta=\ell(p')-\ell(p^*).$$
+        <p>令 $\sigma$ 是固定代码跨 seed 的 per-run standard deviation，$M=2$。Promotion gate 为：</p>
+        $$\mathrm{promote}(p')=\begin{cases}\mathrm{true},&\Delta>M\sigma,\\\mathrm{confirm}(p',\mathrm{seed2}),&0<\Delta\le M\sigma,\\\mathrm{false},&\Delta\le0.\end{cases}$$
+        <p>如果增益落在 noise band 中，需要第二个 seed 严格优于当前 $p^*$ 才能提升。$\sigma$ 通过 duplicate-seed pairs 懒校准；当至少 $n\ge3$ 对时：</p>
+        $$\sigma=\sqrt{\frac{1}{2n}\sum_{i=1}^{n}(\ell_{1,i}-\ell_{2,i})^2}.$$
+        <p>论文说 $\sigma$ 在记录五对以后锁定，防止后续噪声估计倒推改变早期决策。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.3 Analyst proposal protocol</h3>
+        <p>Analyst 先扫描当前 champion 中所有 numeric parameters，并从实验日志中估计每个 axis-direction pair 的平均效果：</p>
+        $$\mu_{a,d}=\frac{1}{|E_{a,d}|}\sum_{e\in E_{a,d}}|\Delta_e|.$$
+        <p>研究方向若 $|E_{a,d}|<3$ 则被视为 cold 并获得 exploration bonus；若 $\mu_{a,d}<\sigma$ 则被降权。每轮 analyst 生成两个 proposals，至少一个需满足 bold-move criterion：参数量变化超过 10%、修复 confirmed bug、测试反复被讨论但未测试的 axis，或能明确证伪当前 hypothesis 的 probe。</p>
+      </div>
+
+      <div class="algo-box">
+        <h3>Heartbeat dispatch 的可执行语义</h3>
+        <ol>
+          <li>读取 roster $R$ 和近期 forum $F$。</li>
+          <li>如果存在 unresolved discussion trigger 或 roster 为空，进入 self-organized team formation。</li>
+          <li>如果 agent 没被分配到任何 team，则本次 heartbeat 退出。</li>
+          <li>如果 experiment agent 有尚未发布的 pending result，先发布结果。</li>
+          <li>否则读取 $T_k$、$p^*$、$Q_k$ 和 knowledge files。</li>
+          <li>Analyst 执行 proposal cycle；experiment agent 执行 claim-train-gate-record cycle。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">论文强调控制变量：AutoScientists 与 Autoresearch 使用相同 coding-agent backend 和模型 backend。主实验后端是 Claude Code coding agent，base LLM 为 Claude Sonnet 4.6；默认 3 analyst agents + 6 experiment agents。所有 agents 由 deterministic monitor process 以 heartbeat loop 重复调用。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>BioML-Bench</h3>
+          <ul class="compact-list">
+            <li>24 个 end-to-end biomedical ML tasks。</li>
+            <li>四类任务：biomedical imaging 4、drug discovery 9、protein engineering 6、single-cell omics 5。</li>
+            <li>报告 leaderboard percentile、above median、any medal、completion rate。</li>
+            <li>统一实验预算：多数任务 4h on 1 H100 + 16 CPUs + 48 GB memory；imaging 16h。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>GPT nanochat</h3>
+          <ul class="compact-list">
+            <li>每个实验是 1 次 5-minute GPT training run on one H100 GPU。</li>
+            <li>指标为 validation bits-per-byte，越低越好。</li>
+            <li>两种设置：从 Autoresearch baseline 出发；从 AutoScientists champion 出发。</li>
+            <li>第二种设置给两者相同 dead-end registry <code>EXPLORED.md</code>。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>ProteinGym / Kermut</h3>
+          <ul class="compact-list">
+            <li>从 Kermut Gaussian-process 方法出发。</li>
+            <li>开发任务是 ACE2-Spike binding DMS。</li>
+            <li>优化目标为三种 CV split 的平均 Spearman's rho。</li>
+            <li>开发后 recipe 冻结，直接应用到 217 个 supervised substitution assays。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>3.1 GPT 与 ProteinGym 的指标</h3>
+        <p>GPT nanochat 使用 byte-length weighted validation bits-per-byte：</p>
+        $$\mathrm{val\_bpb}=\frac{\mathrm{total\_nats}}{\log 2\cdot\mathrm{total\_bytes}}.$$
+        <p>ProteinGym 开发目标为：</p>
+        $$\ell_{\mathrm{eval}}=\frac{1}{3}\sum_{s\in\{\mathrm{random},\mathrm{modulo},\mathrm{contiguous}\}}\rho_s,$$
+        <p>其中 $\rho_s$ 是 split scheme $s$ 下的 out-of-fold Spearman correlation。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>维度</th><th>论文给出的细节</th><th>复现风险</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Code</td><td>AutoScientists: <code>github.com/mims-harvard/AutoScientists</code>；同时依赖 BioML-Bench、ProteinGym、Autoresearch、Biomni、Kermut。</td><td>代码可用性较好，但依赖多个 benchmark repo 和 proprietary coding agent backend。</td></tr>
+            <tr><td>Model backend</td><td>Claude Code coding agent，base LLM Claude Sonnet 4.6。</td><td>需要同等模型/产品版本；版本漂移会影响复现。</td></tr>
+            <tr><td>Compute</td><td>BioML 多数任务 4h on 1 H100；GPT 每实验 5 min on 1 H100；ProteinGym 开发用 1 H100。</td><td>GPU 预算清楚，但并行 heartbeat 与 wall-clock 投影部分需按实际资源重跑。</td></tr>
+            <tr><td>Data</td><td>公开数据：BioML-Bench、Kaggle、TDC、Polaris、Open Problems、ProteinGym。</td><td>数据版本、leaderboard split 和外部平台访问需固定。</td></tr>
+            <tr><td>Agent prompts</td><td>论文给出 launch prompt 概述：“Read the program file and start the experimental loop, do not stop until the specified wall clock time is up”。</td><td>完整 prompts/templates 主要依赖代码仓库；论文正文不足以单独复现所有 agent 行为。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">复现细节来自 Reproducibility Statement、Appendix A、F、G。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">结果的主线不是“多 agent 一定更强”，而是四个机制在不同任务上解决互补 failure modes：analyst 提升 proposal quality，cross-agent feedback 避免局部观测，self-organization 应对方向漂移，shared experimental record 避免重复死胡同。</p>
+
+      <h3>4.1 BioML-Bench domain-level result</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Domain</th><th>Biomni leaderboard / rank</th><th>Autoresearch leaderboard / rank</th><th>AutoScientists leaderboard / rank</th><th>解读</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Biomedical Imaging (n=4)</td><td>19.04 (10.83) / 3.00</td><td>39.60 (21.75) / 1.75</td><td><strong>45.75 (22.18) / 1.25</strong></td><td>绝对分仍低且 SE 大；imaging 需要更重训练。</td></tr>
+            <tr><td>Drug Discovery (n=9)</td><td>47.91 (10.77) / 2.22</td><td>46.16 (10.59) / 2.00</td><td><strong>64.52 (8.37) / 1.78</strong></td><td>最大增益域，说明多方向模型/特征搜索有价值。</td></tr>
+            <tr><td>Protein Engineering (n=6)</td><td>93.94 (3.83) / 2.50</td><td>96.97 (3.03) / 2.00</td><td><strong>96.97 (3.03) / 1.50</strong></td><td>leaderboard percentile 已接近饱和，排名略优。</td></tr>
+            <tr><td>Single Cell Omics (n=5)</td><td>78.00 (10.20) / 2.60</td><td>86.00 (9.80) / 1.80</td><td><strong>88.00 (9.70) / 1.60</strong></td><td>有小幅提升，但与 Autoresearch 差距有限。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Recreated from Table 1. Full aggregate BioML-Bench result: AutoScientists 74.40 (6.20)% mean leaderboard percentile vs. Autoresearch 66.07 (7.38)%，+8.33 points。</p>
+      </div>
+
+      <figure class="figure-card">
+        <img src="assets/figures/page_006_img_01.png" alt="Figure 3 aggregate BioML-Bench bars" />
+        <figcaption><strong>Figure 3.</strong> AutoScientists 在 leaderboard percentile、above median、any medal 三个聚合指标上均高于 MLAgentBench、AIDE、STELLA、Biomni、Autoresearch。该嵌入图由 PDF 直接抽取。</figcaption>
+      </figure>
+
+      <h3>4.2 GPT nanochat: long-running search advantage</h3>
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>Setting</th><th>Start val_bpb</th><th># Experiments</th><th>Autoresearch</th><th>AutoScientists</th><th>要点</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>From Autoresearch baseline</td><td>0.998</td><td>50</td><td>0.9790</td><td><strong>0.9777</strong></td><td>主文还报告 AutoScientists 34 个实验达到约 0.978，Autoresearch 需 65 个。</td></tr>
+            <tr><td>From AutoScientists champion</td><td>0.9777</td><td>100</td><td>0.9777 (0 KEEPs)</td><td><strong>0.9730 (7 KEEPs)</strong></td><td>相同 dead-end registry 下 single-agent 无改进，多团队仍发现 7 个 accepted improvements。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Recreated from Table S2 and Figure 4 caption. 注意主文 Figure 4a 与 Appendix Table S2 的 experiment window 描述略有不同：前者强调达到同一 loss 的实验数，后者报告固定 50 experiments 的 best value。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>#</th><th>Team</th><th>Axis / change</th><th>val_bpb</th><th>Delta</th><th>Mechanism</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>throughput</td><td><code>TOTAL_BATCH_SIZE</code> 219 to 218</td><td>0.98573</td><td>-0.00903</td><td>近似 2 倍 optimizer steps，token 数基本不变。</td></tr>
+            <tr><td>2</td><td>hidden</td><td><code>ASPECT_RATIO</code> 64 to 96，$d_{\mathrm{model}}$ 512 to 768</td><td>0.98214</td><td>-0.00359</td><td>50M to 94M params，并修正 dmodel LR scale。</td></tr>
+            <tr><td>3</td><td>hidden</td><td><code>ns_steps</code> 5 to 4</td><td>0.98106</td><td>-0.00108</td><td>4 次 Newton-Schulz 已足够。</td></tr>
+            <tr><td>4</td><td>hidden</td><td><code>short_window_ratio</code> 1/2 to 1/4</td><td>0.98054</td><td>-0.00052</td><td>短窗口减少带来更多 steps。</td></tr>
+            <tr><td>5</td><td>hidden</td><td><code>short_window_ratio</code> 1/4 to 1/8</td><td>0.98013</td><td>-0.00042</td><td>沿同一 axis bracket 继续，第二 seed 确认。</td></tr>
+            <tr><td>6</td><td>throughput</td><td><code>polar_express_norm</code> 1.02 to 1.0</td><td>0.97956</td><td>-0.00056</td><td>移除 Polar-Express Muon numerical safety margin。</td></tr>
+            <tr><td>7</td><td>schedule</td><td><code>DEPTH</code> 8 to 7 at aspect ratio 96</td><td>0.97769</td><td>-0.00188</td><td>减少 8% params 换取 14.4% optimizer steps。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Condensed from Table S4. Row 0 baseline lock omitted. 这些 KEEPs 分布在 architecture/hidden、throughput、schedule 等方向，支持“非单一 axis 微调”的论点。</p>
+      </div>
+
+      <h3>4.3 ProteinGym: AutoScientists-Kermut</h3>
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>Model</th><th>Spearman contig.</th><th>Spearman mod.</th><th>Spearman rand.</th><th>Spearman avg.</th><th>MSE avg.</th><th>解读</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>ESM-1v Embeddings</td><td>0.479</td><td>0.514</td><td>0.614</td><td>0.535</td><td>0.789</td><td>Embedding baseline。</td></tr>
+            <tr><td>MSA Transformer Embeddings</td><td>0.513</td><td>0.562</td><td>0.670</td><td>0.581</td><td>0.724</td><td>第二个 embedding baseline。</td></tr>
+            <tr><td>Tranception Embeddings</td><td>0.439</td><td>0.525</td><td>0.681</td><td>0.548</td><td>0.802</td><td>Random split 强，平均一般。</td></tr>
+            <tr><td>ProteinNPT</td><td>0.529</td><td>0.588</td><td>0.741</td><td>0.619</td><td>0.687</td><td>NPT baseline。</td></tr>
+            <tr><td>Kermut</td><td>0.593</td><td>0.633</td><td>0.746</td><td>0.657</td><td><strong>0.605</strong></td><td>强 seed method。</td></tr>
+            <tr><td><strong>AutoScientists-Kermut</strong></td><td><strong>0.635</strong></td><td><strong>0.681</strong></td><td><strong>0.783</strong></td><td><strong>0.700</strong></td><td>0.611</td><td>Spearman +0.043；MSE 略差 0.006。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Recreated from Table 2. 论文强调 recipe 在 ACE2-Spike 上开发后冻结，直接迁移到 217 assays。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>4.4 AutoScientists-Kermut 结构</h3>
+        <p>Appendix G 给出方法细节：三 GP ensemble 共享 Kermut-style structure kernel，但 sequence-side feature sets 和 kernel families 不同。结构核为：</p>
+        $$k_{\mathrm{struct}}(i,j)=\exp(-\ell_h h_{ij}-\ell_p p_{ij}-\ell_d d_{ij}),$$
+        <p>其中 $h_{ij}$ 是 ProteinMPNN conditional-probability distribution 的 Hellinger distance，$p_{ij}$ 是 mutant amino acid log-probability 的 L1 distance，$d_{ij}$ 是 $C_{\alpha}$ 坐标距离。每个 ensemble member 混合结构核与序列核：</p>
+        $$k=\pi k_{\mathrm{struct}}+(1-\pi)k_{\mathrm{seq}},\qquad \pi=\sigma(\mathrm{raw}_{\pi}).$$
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Variant on ACE2-Spike</th><th>Avg. Spearman</th><th>Avg. MSE</th><th>结论</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Kermut</td><td>0.7473</td><td>0.4373</td><td>原始强基线。</td></tr>
+            <tr><td>AutoScientists-Kermut</td><td><strong>0.8407</strong></td><td>0.4527</td><td>平均 rho +12.5% relative。</td></tr>
+            <tr><td>No ensemble</td><td>0.8231</td><td>0.5026</td><td>ensemble 是最大 Spearman driver。</td></tr>
+            <tr><td>No quantile-norm</td><td>0.8070</td><td><strong>0.3501</strong></td><td>排名变差但 MSE 更好，显示目标存在 trade-off。</td></tr>
+            <tr><td>No extra ZS</td><td>0.8174</td><td>0.5037</td><td>15 个 auxiliary zero-shot predictors 提供稳定增益。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Condensed from Table S9. 论文的 main win 以 Spearman ranking 为目标，MSE 不是主优化目标。</p>
+      </div>
+
+      <h3>4.5 消融：四个机制互补</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Task</th><th>Metric</th><th>No analyst</th><th>No cross-agent</th><th>No self-org.</th><th>Independent agents</th><th>AutoScientists</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>TDC-hERG</td><td>AUROC up</td><td>0.738</td><td>0.819</td><td>0.807</td><td>0.853</td><td><strong>0.867</strong></td></tr>
+            <tr><td>Cell-Cell Communication</td><td>Odds Ratio up</td><td>0.858</td><td>0.908</td><td>0.628</td><td>0.435</td><td><strong>0.924</strong></td></tr>
+            <tr><td>Human Plasma-Protein Binding</td><td>Pearson up</td><td>0.813</td><td>0.714</td><td>0.811</td><td>0.784</td><td><strong>0.873</strong></td></tr>
+            <tr><td>GPT Training Optimisation</td><td>Best val_bpb down</td><td>0.9817</td><td>0.9814</td><td>0.9833</td><td>0.9833</td><td><strong>0.9777</strong></td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Recreated from Table 3. 删除 analyst 对 hERG 最伤；删除 cross-agent feedback 对 HPPB 最伤；删除 self-organization 对 GPT 最伤；independent agents 对 Cell-Cell Communication 最伤。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>Crew size</th><th>TDC-hERG AUROC</th><th>ProteinGym SPIKE-SARS2 rho</th><th>GPT val_bpb</th><th>解释</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>n=2</td><td>0.780</td><td><strong>0.874</strong></td><td><strong>0.9777</strong></td><td>小团队在 ProteinGym development assay 最好。</td></tr>
+            <tr><td>n=4</td><td>0.803</td><td>0.835</td><td>0.9778</td><td>中等团队质量接近。</td></tr>
+            <tr><td>n=9 default</td><td><strong>0.867</strong></td><td>0.670</td><td><strong>0.9777</strong></td><td>默认团队在 hERG 最强。</td></tr>
+            <tr><td>n=14</td><td>0.843</td><td>0.506</td><td>0.9821</td><td>过大团队在三个任务上都相对最佳退化。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Condensed from Table S3. 这不是“agents 越多越好”的证据；最佳 crew size 明显 task-dependent。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航与提取覆盖</h2>
+      <p class="section-lead">本页使用了论文真实 PDF 中抽取的嵌入图片和页面截图。PyMuPDF 成功抽取 6 个嵌入图像，另外渲染了 39 页整页 PNG。Figure 1 和 Figure 4 的自动嵌入裁图不可靠，使用整页截图作为上下文并标注需人工核对。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/page_005_img_01.png" alt="Figure 2 AutoScientists model card for hERG" />
+          <figcaption><strong>Figure 2.</strong> AutoScientists 生成的 TDC hERG model card。该图展示模型细节、leaderboard、validation trajectory、seed sensitivity、ablation、数据和 caveats，抽取质量可靠。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/pages/page_008.png" alt="Page 8 containing Figure 4 and Table 2" />
+          <figcaption><strong>Figure 4 + Table 2 page context.</strong> GPT nanochat trajectory 与 ProteinGym 217 assays 表格在同一页。自动裁图没有分离 Figure 4，因此引用整页截图，需人工核对精确裁剪。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_009_img_01.png" alt="Figure 5 emergent coordination examples" />
+          <figcaption><strong>Figure 5.</strong> Emergent coordination examples：discussion/self-organization、shared-state analysis、cross-team feedback、stagnation 后 team merge。嵌入图抽取质量可靠。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_035_img_01.png" alt="Figure S8 protein engineering trajectories" />
+          <figcaption><strong>Figure S8.</strong> BioML-Bench Protein Engineering 六个任务的 champion mean Spearman rho over wall-clock time。图例中蓝线标为 SciPex，但 caption 说是 AutoScientists，需人工核对命名。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/page_036_img_01.png" alt="Figure S9 method category usage heatmap" />
+          <figcaption><strong>Figure S9.</strong> BioML-Bench 各 task family 使用方法类别的比例：GBM、frozen/fine-tuned foundation model、NN-scratch、kernel、linear/ridge、heuristic。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/pages/page_019.png" alt="Page 19 containing Algorithm 1 to 3" />
+          <figcaption><strong>Algorithms 1-3 page context.</strong> Heartbeat dispatch、self-organized team formation、experiment-agent cycle。算法为文本排版，未被作为独立图片抽取，使用页级截图。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>对象</th><th>本页覆盖方式</th><th>关键作用</th><th>提取限制</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Figure 1</td><td>整页截图 <code>assets/pages/page_002.png</code></td><td>系统总览：self-organize、parallel experiments、shared state、outputs。</td><td>需人工核对精确裁图。</td></tr>
+            <tr><td>Figure 2</td><td>嵌入图 <code>assets/figures/page_005_img_01.png</code></td><td>hERG model card 示例。</td><td>可靠。</td></tr>
+            <tr><td>Figure 3</td><td>嵌入图 <code>assets/figures/page_006_img_01.png</code></td><td>BioML-Bench aggregate bars。</td><td>可靠。</td></tr>
+            <tr><td>Figure 4</td><td>整页截图 <code>assets/pages/page_008.png</code></td><td>GPT nanochat trajectory。</td><td>需人工核对精确裁图。</td></tr>
+            <tr><td>Figure 5</td><td>嵌入图 <code>assets/figures/page_009_img_01.png</code></td><td>agent coordination examples。</td><td>可靠。</td></tr>
+            <tr><td>Figure S8/S9</td><td>嵌入图 <code>page_035_img_01</code> / <code>page_036_img_01</code></td><td>Protein engineering trajectories 与 method category usage。</td><td>S8 图例命名需人工核对。</td></tr>
+            <tr><td>Table 1/2/3/S2/S3/S4/S9</td><td>HTML 表格重建</td><td>主实验、消融、团队规模、GPT accepted improvements、Kermut ablation。</td><td>Table S4 做了压缩，未逐字复刻全部备注。</td></tr>
+            <tr><td>Table S6/S7/S8</td><td>正文摘要引用</td><td>BioML domain full metrics、per-task details、LLM token/cost。</td><td>S7/S8 全表过长，页面只引用总量和关键结论。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">论文的复现性强于一般 agent paper，因为它给出 code repo、benchmark repo、硬件预算、默认团队规模、算法伪代码、noise gate、BioML task metrics、GPT champion model card 和 ProteinGym-Kermut 细节。但完全复现仍依赖 Claude Code/Claude Sonnet 4.6、外部 benchmark 环境和长时间 agent execution logs。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>必须准备</h3>
+          <ul class="compact-list">
+            <li>AutoScientists repository 与 launch scripts。</li>
+            <li>BioML-Bench、ProteinGym、Autoresearch、Biomni、Kermut 指定版本或 commit。</li>
+            <li>Claude Code coding agent + Claude Sonnet 4.6 或可替代但需重新标注的 agent backend。</li>
+            <li>H100 GPU：BioML per task、GPT per experiment、ProteinGym development。</li>
+            <li>Shared state implementation：champion record、experiment log、forum、team queues、dead-end registries。</li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <h3>需要额外核对</h3>
+          <ul class="compact-list">
+            <li>完整 prompts、agent memory file 格式和 monitor process 细节是否都在代码仓库。</li>
+            <li>BioML-Bench validation split 与 hidden test evaluator 版本。</li>
+            <li>Claude Sonnet 4.6 版本、工具权限和 token cache pricing 是否与 May 2026 一致。</li>
+            <li>Figure S8 图例中的 SciPex / AutoScientists 命名不一致。</li>
+            <li>GPT accepted improvements 的小幅增益需多 seed 重跑确认。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>复现阶段</th><th>操作</th><th>验收标准</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Bootstrap</td><td>初始化 shared state $S$、agent roster、空 team roster、discussion trigger。</td><td>所有 agents 可读写 forum，最后一个 analyst 能写 roster。</td></tr>
+            <tr><td>Queue protocol</td><td>实现 optimistic locking，queue item 包含 id、priority、diff、proposer、proposal link。</td><td>没有两个 experiment agents claim 同一实验。</td></tr>
+            <tr><td>Promotion gate</td><td>实现 $\Delta$、$\sigma$、$M=2$ 与二 seed confirmation。</td><td>noise band 内 candidate 只有双 seed 都改进才 promotion。</td></tr>
+            <tr><td>BioML</td><td>按 Appendix F 为各 task 设 validation split、metric、hardware budget。</td><td>24 tasks completion rate 100%，并可输出 leaderboard percentile。</td></tr>
+            <tr><td>GPT</td><td>从 nanochat baseline 运行每次 300 s / H100 的 training experiments。</td><td>报告 per-experiment best val_bpb trajectory 与 KEEPs。</td></tr>
+            <tr><td>ProteinGym</td><td>复现三 GP ensemble、quantile-normalization、zero-shot features 和 1000-step AdamW。</td><td>ACE2-Spike development assay 接近 0.8407 avg rho，再冻结迁移 217 assays。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note-box warn">
+        <h3>成本与效率</h3>
+        <p>论文明确说 AutoScientists 不是为了降低 LLM-call 成本。Appendix Table S8 的 BioML-Bench 总估算显示 Autoresearch 约 910.1 USD，AutoScientists 约 3984.7 USD，不含 GPU compute。作者的公平性主张建立在 matched experimental-compute budget，而非 matched token budget。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">作为审稿人，我会把这篇论文看作“长周期科研 agent orchestration”的强实证 paper，而不是单纯的 agent framework demo。它的优势在于跨三类任务给出可验证结果和多项消融；主要风险在于 LLM backend、实验成本和 benchmark feedback 依赖。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>优点</h3>
+          <ul class="compact-list">
+            <li>问题定义准确：长周期科研确实需要 competing hypotheses、negative knowledge 和团队重组。</li>
+            <li>机制不是黑箱：shared state、forum、queues、noise gate、analyst protocol 都有伪代码或公式。</li>
+            <li>证据面较宽：BioML、GPT training optimization、ProteinGym 分属不同科学/工程问题。</li>
+            <li>消融能解释机制：不同 ablation 在不同任务上最伤，支持机制互补而非单一 trick。</li>
+            <li>Appendix 提供 GPT champion model card、accepted KEEPs、dead ends 和 Kermut 细节。</li>
+          </ul>
+        </div>
+        <div class="critique-box danger">
+          <h3>不足与风险</h3>
+          <ul class="compact-list">
+            <li>LLM backend 是 Claude Code + Claude Sonnet 4.6，闭源模型和产品版本会影响复现。</li>
+            <li>AutoScientists token/cost 明显高于 Autoresearch；适用场景应是实验计算昂贵、LLM token 相对可接受的任务。</li>
+            <li>BioML-Bench 部分结果只做单次 run，作者也承认完整 repeat 成本过高；统计稳健性有限。</li>
+            <li>Agent logs inspection 支持“协调改变实验选择”，但缺少统一可量化的 coordination metric。</li>
+            <li>ProteinGym 开发只在 ACE2-Spike 上搜索后冻结迁移，虽然 217 assays 结果强，但仍可能偏向 ranking metric。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>缺失实验</h3>
+          <ul class="compact-list">
+            <li>同一框架换开源 coding agent / open-weight LLM 后的性能和稳定性。</li>
+            <li>matched token budget 或 matched dollar budget 下的 Pareto frontier。</li>
+            <li>动态 crew size controller，而不是预设 $n\in\{2,4,9,14\}$。</li>
+            <li>更严格的 replay audit：dead-end registry 是否会过早屏蔽后续有条件成立的方向。</li>
+            <li>跨任务迁移：一个任务学到的 analyst proposal policy 是否能迁移到新 task。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>可能 failure modes</h3>
+          <ul class="compact-list">
+            <li>共享状态污染：错误 champion promotion 或错误 mechanistic explanation 会影响所有团队。</li>
+            <li>论坛从多样性变成 herd behavior：强势早期方向可能抑制 minority hypothesis。</li>
+            <li>Dead-end registry 过强：在不同 context 下本可成功的方向被永久禁用。</li>
+            <li>Benchmark overfitting：validation feedback 太频繁时，系统可能学到 leaderboard-specific heuristics。</li>
+            <li>Oversubscription：n=14 结果说明更多 agents 会带来 coordination cost 和重复探索。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对 agent / RLVR / self-evolution 研究的启发</h2>
+      <p class="section-lead">这篇论文最值得迁移的不是“多开几个 agent”，而是把长周期自进化过程中的 memory、negative evidence、promotion gate 和 team reallocation 明确化。它给 RLVR、自进化、questioner-solver、replay、diversity 与 evaluation 都提供了可操作设计。</p>
+
+      <div class="grid-3">
+        <div class="note-box good">
+          <h3>1. Negative knowledge 要一等公民化</h3>
+          <p>Dead-end registry 不只是 log，而是影响 proposal ranking 的状态。对 self-play / RLVR，也应记录 failed skills、near-miss、regression-causing data，不让 generator 反复采样同类失败。</p>
+        </div>
+        <div class="note-box good">
+          <h3>2. Promotion gate 应该 noise-aware</h3>
+          <p>自进化系统常被 noisy reward 污染。AutoScientists 的 $\Delta$ vs. $\sigma$ gate 可以迁移到 RLVR checkpoint promotion、data curriculum admission 和 tool-policy update。</p>
+        </div>
+        <div class="note-box good">
+          <h3>3. 多样性需要组织结构</h3>
+          <p>不是简单增加 samples，而是让不同 teams 维护不同 axes，并在 stagnation 后重组。对 questioner-solver，可把 questioner 分成 skills、failure modes、data regimes 三类团队。</p>
+        </div>
+        <div class="note-box">
+          <h3>4. Analyst / executor 分离有价值</h3>
+          <p>Analyst 不跑实验，而维护 coverage、priors、hypothesis documents。这个角色类似 evaluation scientist，可以减少 executor 的局部贪婪。</p>
+        </div>
+        <div class="note-box">
+          <h3>5. Shared state 要可审计</h3>
+          <p>Forum、queue、champion record、experiment log 的 schema 比 agent prompts 更重要。没有结构化 shared state，长期协作会退化成上下文堆叠。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>6. 成本是核心变量</h3>
+          <p>AutoScientists 用更多 LLM tokens 换更好 experiment selection。用于真实系统时，应显式画出 experimental compute、LLM tokens、wall-clock 和 quality 的 Pareto frontier。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
