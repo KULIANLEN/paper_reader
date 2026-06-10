@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>R-Diverse: Mitigating Diversity Illusion in Self-Play LLM Training · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .rdiverse-page * { letter-spacing: 0 !important; }
+    .rdiverse-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .rdiverse-page .paper-hero { padding: 3.4rem 0 2.35rem; border-bottom: 1px solid var(--line); }
+    .rdiverse-page .paper-hero h1 { max-width: 1100px; font-size: clamp(2.05rem, 4.6vw, 4.15rem); line-height: 1.05; }
+    .rdiverse-page .hero-subtitle { max-width: 980px; margin: 1.05rem 0 0; font-size: clamp(1.02rem, 2vw, 1.22rem); line-height: 1.78; }
+    .rdiverse-page .content-card { margin: 0; padding: clamp(2.1rem, 5vw, 4.2rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .rdiverse-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.58rem, 3.2vw, 2.48rem); line-height: 1.16; }
+    .rdiverse-page .content-card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; line-height: 1.35; }
+    .rdiverse-page .section-lead { max-width: 960px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.03rem; line-height: 1.86; }
+    .rdiverse-page .meta-row, .rdiverse-page .link-row, .rdiverse-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .rdiverse-page .meta-row { margin-top: 1.2rem; color: var(--muted); font-size: 0.93rem; }
+    .rdiverse-page .paper-tags, .rdiverse-page .link-row { margin-top: 1rem; }
+    .rdiverse-page .tag-pill, .rdiverse-page .link-row a, .rdiverse-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .rdiverse-page .grid-2, .rdiverse-page .grid-3, .rdiverse-page .metric-grid, .rdiverse-page .figure-grid, .rdiverse-page .flow-grid { display: grid; gap: 1rem; }
+    .rdiverse-page .grid-2, .rdiverse-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .rdiverse-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .rdiverse-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .rdiverse-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .rdiverse-page .note-box, .rdiverse-page .metric, .rdiverse-page .table-wrap, .rdiverse-page .figure-card, .rdiverse-page .formula-box, .rdiverse-page .flow-step, .rdiverse-page .critique-box, .rdiverse-page .quote-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .rdiverse-page .note-box, .rdiverse-page .formula-box, .rdiverse-page .flow-step, .rdiverse-page .critique-box, .rdiverse-page .quote-box { padding: 1rem; }
+    .rdiverse-page .note-box p, .rdiverse-page .formula-box p, .rdiverse-page .flow-step p, .rdiverse-page .critique-box p, .rdiverse-page .quote-box p { margin: 0.45rem 0 0; }
+    .rdiverse-page .metric { padding: 1rem; }
+    .rdiverse-page .metric strong { display: block; font-size: 1.5rem; line-height: 1.15; }
+    .rdiverse-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .rdiverse-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .rdiverse-page .flow-step:nth-child(2) b { background: #6d5dfc; }
+    .rdiverse-page .flow-step:nth-child(3) b { background: #c2410c; }
+    .rdiverse-page .flow-step:nth-child(4) b { background: #2563eb; }
+    .rdiverse-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .rdiverse-page .formula-box .MathJax, .rdiverse-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .rdiverse-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .rdiverse-page table { width: 100%; min-width: 820px; border-collapse: collapse; font-size: 0.88rem; }
+    .rdiverse-page th, .rdiverse-page td { padding: 0.68rem 0.72rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .rdiverse-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .rdiverse-page td { color: var(--text-soft); }
+    .rdiverse-page .tight-table { min-width: 680px; }
+    .rdiverse-page .wide-table { min-width: 1080px; }
+    .rdiverse-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .rdiverse-page .figure-card { margin: 0; overflow: hidden; }
+    .rdiverse-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .rdiverse-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .rdiverse-page .figure-card figcaption strong { color: var(--text); }
+    .rdiverse-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .rdiverse-page .compact-list li { margin: 0.28rem 0; }
+    .rdiverse-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .rdiverse-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .rdiverse-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .rdiverse-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .rdiverse-page .grid-2, .rdiverse-page .grid-3, .rdiverse-page .metric-grid, .rdiverse-page .figure-grid, .rdiverse-page .flow-grid { grid-template-columns: 1fr; }
+      .rdiverse-page .paper-hero { padding-top: 2.4rem; }
+      .rdiverse-page table { min-width: 720px; }
+      .rdiverse-page .wide-table { min-width: 980px; }
+    }
+  </style>
+</head>
+<body class="paper-page rdiverse-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2602.13103v2</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> RLVR / Self-Evolution · arXiv 2026</div>
+      <h1>R-Diverse: Mitigating Diversity Illusion in Self-Play LLM Training</h1>
+      <p class="hero-subtitle">R-Diverse 指出 self-play LLM training 的核心脆弱点不是“没有生成足够多题”，而是训练信号出现 Diversity Illusion：表面看起来不同，跨迭代或技能层面却反复训练同一类模式。论文用 Memory-Augmented Penalty (MAP) 约束历史重复，用 Skill-Aware Measurement (SAM) 把自然语言题目映射成 solver-level Python program 后再比较技能相似度，从而让 Qwen3-4B/8B 在 5 轮 Challenger-Solver 自博弈中保持持续提升。</p>
+      <div class="meta-row">
+        <span>Gengsheng Li, Jinghan He, Shijie Wang, Dan Zhang, Ruiqi Liu, Renrui Zhang, Zijun Yao, Junfeng Fang, Haiyun Guo, Jinqiao Wang</span>
+        <span>CASIA / UCAS / NUS / Tsinghua University / Wuhan AI Research</span>
+        <span>Published: 2026-02-13</span>
+        <span>Updated: 2026-02-16</span>
+        <span>21-page PDF extraction</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">self-play</span>
+        <span class="tag-pill">rlvr</span>
+        <span class="tag-pill">reasoning</span>
+        <span class="tag-pill">diversity</span>
+        <span class="tag-pill">replay</span>
+        <span class="tag-pill">evaluation</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2602.13103">arXiv</a>
+        <a href="https://arxiv.org/pdf/2602.13103">PDF</a>
+        <a href="https://github.com/Gengsheng-Li/R-Diverse">GitHub</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>52.59</strong><span>Qwen3-4B-Base 的 Math AVG，从 base 42.58 提升到 52.59。</span></div>
+        <div class="metric"><strong>56.46</strong><span>Qwen3-8B-Base 的 Math AVG，从 base 49.18 提升到 56.46。</span></div>
+        <div class="metric"><strong>10</strong><span>7 个 mathematical reasoning benchmarks + 3 个 general reasoning benchmarks。</span></div>
+        <div class="metric"><strong>6h</strong><span>Appendix 报告 Qwen3-4B 每个 evolution iteration 约 6 小时，低于 R-Zero 的 7.5 小时。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机：self-play 为什么早期涨、后期塌</h2>
+      <p class="section-lead">R-Zero 一类框架把 reasoning LLM 训练成 Challenger-Solver loop：Challenger 生成接近 Solver 能力边界的问题，Solver 用这些自生成问题继续训练。问题是，这种循环经常前几轮有效，随后 plateau 或 degradation。本文的诊断是：现有 diversity constraint 管错了对象，只在局部 batch 和表面文本上惩罚重复，没有保证 Solver 真正看到新的 reasoning skills。</p>
+
+      <div class="grid-3">
+        <div class="note-box danger">
+          <h3>Local Diversity Illusion</h3>
+          <p>如果重复惩罚只看当前 batch，Challenger 可以在不同 iteration 之间循环回到历史高 reward 题型；batch 内不重复，历史上却重复。</p>
+        </div>
+        <div class="note-box danger">
+          <h3>Surface Diversity Illusion</h3>
+          <p>BLEU 等 token-level metric 认为题面不同，但 Solver 需要的解题程序几乎一致，例如不同叙事包装下的同构方程组或 CRT 问题。</p>
+        </div>
+        <div class="note-box good">
+          <h3>论文主张</h3>
+          <p>self-play 的 diversity 应该定义在训练信号和 skill space 上：历史是否重复、题目需要的 reasoning procedure 是否重复。</p>
+        </div>
+      </div>
+
+      <figure class="figure-card" style="margin-top:1rem;">
+        <img src="assets/figures/figure-01-diversity-illusion.png" alt="Figure 1 overview of Diversity Illusion and R-Diverse" />
+        <figcaption><strong>Figure 1.</strong> 论文用三条曲线展示 mismatch：R-Zero 的 repetition penalty 下降，但 cross-iteration repetition 与 intra-iteration repetition 上升；R-Diverse 通过 MAP 和 SAM 把惩罚对象从“当前 batch 的题面”扩展到“历史记忆中的技能相似度”。</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 数学表示、建模与算法流程</h2>
+      <p class="section-lead">R-Diverse 没有推翻 R-Zero 的 Challenger-Solver 框架，而是在 Challenger reward 中加入跨迭代 memory penalty，并把 within-batch repetition penalty 的相似度函数从 BLEU 替换成 SAM embedding。Solver 训练仍用 self-generated curriculum 和 pseudo-label，但加入 memory replay 来缓解分布持续漂移。</p>
+
+      <div class="formula-box">
+        <h3>2.1 R-Zero 式 self-play 基础</h3>
+        <p>Challenger $C_\theta$ 生成问题 $q$，冻结的 Solver $S_{\phi_{t-1}}$ 对每个问题采样 $K$ 个答案。将答案按等价性分成 $G=\{G_1,\ldots,G_k\}$，一致性分数为：</p>
+        $$s(q)=\frac{\max_{G\in\mathcal{G}} |G|}{K},\qquad s(q)\in[0,1].$$
+        <p>uncertainty reward 在 $s(q)=0.5$ 附近最大，因为这表示问题既不是太容易也不是完全不可解：</p>
+        $$R_{\mathrm{uncertainty}}(q)=\min(s(q),1-s(q)).$$
+        <p>原始 Challenger reward 是：</p>
+        $$R_C(q)=R_{\mathrm{uncertainty}}(q)-\lambda\cdot P_{\mathrm{rep}}(q).$$
+        <p>R-Zero 的 $P_{\mathrm{rep}}$ 基于当前 batch $B$ 内的 BLEU distance 聚类。若 $q_i$ 属于 cluster $C_i$，则：</p>
+        $$P_{\mathrm{rep}}(q_i,B)=\frac{|C_i|}{|B|}.$$
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Challenger 生成</h3><p>在当前 Solver 上采样候选问题，目标是接近 uncertainty sweet spot。</p></div>
+        <div class="flow-step"><b>2</b><h3>SAM 抽象</h3><p>把题目转成 canonical Python solver code，再用 code encoder 得到 skill embedding。</p></div>
+        <div class="flow-step"><b>3</b><h3>MAP 惩罚</h3><p>新题和 memory bank 中历史题的 max/mean cosine similarity 超阈值时扣分。</p></div>
+        <div class="flow-step"><b>4</b><h3>Solver 训练</h3><p>用当前题 + 历史 replay 样本训练，维持旧技能并学习扩展 curriculum。</p></div>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.2 MAP：Memory-Augmented Penalty</h3>
+        <p>维护 memory bank $\mathcal{M}$，其中存放历史有效问题的 embedding。第 $t$ 轮问题集为 $Q_t$，embedding 函数为 $\phi(q)$，有效题目满足论文实现中的 uncertainty filter，例如 $0.3\le s(q)\le0.8$：</p>
+        $$\mathcal{M}_{t+1}\leftarrow \mathcal{M}_t\cup\{\phi(q)\mid q\in Q_t,\mathrm{valid}(q)\}.$$
+        <p>MAP 由两个项组成。$P_{\max}$ 防止和某个历史样本直接撞车：</p>
+        $$P_{\max}(q,\mathcal{M})=\max_{e\in\mathcal{M}}\cos(\phi(q),e).$$
+        <p>$P_{\mathrm{mean}}$ 防止进入历史分布的密集区域：</p>
+        $$P_{\mathrm{mean}}(q,\mathcal{M})=\frac{1}{|\mathcal{M}|}\sum_{e\in\mathcal{M}}\cos(\phi(q),e).$$
+        <p>最终 penalty 只在超过容忍阈值时激活：</p>
+        $$P_{\mathrm{MAP}}(q,\mathcal{M})=\gamma\cdot[P_{\max}(q,\mathcal{M})-\tau_{\max}]_+ +(1-\gamma)\cdot[P_{\mathrm{mean}}(q,\mathcal{M})-\tau_{\mathrm{mean}}]_+.$$
+        <p>论文设置 $\gamma=0.5$，同时使用 memory replay：每轮 Solver 训练集混入比例 $\rho=0.3$ 的历史高质量 question-answer pairs。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.3 SAM：Skill-Aware Measurement</h3>
+        <p>SAM 用两步把题面映射到 skill space。第一步是 representation abstraction：用 Qwen2.5-Coder-7B 在 temperature 0 下将自然语言题 $q$ 转成 canonical solver-level Python function $\mathrm{Code}(q)$，要求抽取数学关系并匿名化变量。第二步是 embedding-based similarity：</p>
+        $$\phi_{\mathrm{SAM}}(q)=\mathrm{Encoder}(\mathrm{Code}(q)),$$
+        <p>其中 Encoder 是 Jina-Code-Embeddings-1.5B。相似度用 cosine similarity。这个设计让“鸡兔同笼”和“车辆/车轮”类题目虽然 BLEU distance 高，但 code structure 和 embedding 相近，从而被判为重复技能。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.4 R-Diverse objective</h3>
+        <p>最终 Challenger reward 同时平衡难度、iteration 内技能多样性、跨历史技能多样性：</p>
+        $$R_{\mathrm{total}}(q)=R_{\mathrm{uncertainty}}(q)-\alpha P_{\mathrm{rep}}(q,B;\phi_{\mathrm{SAM}})-\beta P_{\mathrm{MAP}}(q,\mathcal{M};\phi_{\mathrm{SAM}}).$$
+        <p>Solver 仍优化二值 reward $R_S(a,y)=\mathbb{I}(\mathrm{answer}(a)=\hat y)$，$\hat y$ 来自 majority voting pseudo-label。两个 agent 均用 GRPO，不需要 critic。</p>
+      </div>
+
+      <figure class="figure-card">
+        <img src="assets/figures/figure-02-r-diverse-framework.png" alt="Figure 2 R-Diverse framework" />
+        <figcaption><strong>Figure 2.</strong> 上半部分是 Challenger training：Solver 多次回答后 majority voting 产生 pseudo-label，同时 SAM 生成 code 与 embedding，用于 $P_{\mathrm{rep}}$ 和 $P_{\mathrm{MAP}}$。中间 memory bank 存储 $(q_i,e_i,\hat y_i)$。下半部分是 Solver training：当前问题与 memory replay 样本一起训练。</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">实验基于 EasyR1，base models 是 Qwen3-4B-Base 和 Qwen3-8B-Base。每个 evolution iteration 中 Challenger 训练 5 steps，Solver 训练 15 steps。评估覆盖 7 个数学推理 benchmark 和 3 个通用推理 benchmark；AMC/AIME 按 prior work 用 mean@32，其余报告 greedy pass@1。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>训练实现</h3>
+          <ul class="compact-list">
+            <li>Framework: EasyR1</li>
+            <li>Optimization: GRPO for Challenger and Solver</li>
+            <li>Precision / acceleration: BF16 + FlashAttention 2</li>
+            <li>Hardware: 8 x NVIDIA H20 GPUs</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>评估基准</h3>
+          <ul class="compact-list">
+            <li>Math: AMC, Minerva, MATH, GSM8K, Olympiad-Bench, AIME25, AIME24</li>
+            <li>General: SuperGPQA, MMLU-Pro, BBEH</li>
+            <li>Baselines: Base Model, R-Zero, Absolute Zero, SPIRAL, Socratic-Zero</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>模块</th><th>设置</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Solver training</td><td>global batch size 128, learning rate $1\times10^{-6}$, weight decay $1\times10^{-2}$, KL coefficient $\lambda_{\mathrm{KL}}=1\times10^{-2}$, max steps 15, rollouts 5, temperature 1.0, top-p 0.99</td></tr>
+            <tr><td>Challenger training</td><td>global batch size 128, learning rate $1\times10^{-6}$, weight decay $1\times10^{-2}$, KL coefficient $\lambda_{\mathrm{KL}}=1\times10^{-2}$, max steps 5, rollouts 4, temperature 1.0, top-p 0.99</td></tr>
+            <tr><td>MAP / SAM</td><td>$\alpha=1.0$, $\beta=1.0$, $\gamma=0.5$, $\tau_{\max}=0.5$, $\tau_{\mathrm{mean}}=0.25$, memory replay ratio $\rho=0.3$</td></tr>
+            <tr><td>SAM models</td><td>Code generation: Qwen2.5-Coder-7B at temperature 0; code embedding: Jina-Code-Embeddings-1.5B</td></tr>
+            <tr><td>Prompts</td><td>Solver prompt 要求 step-by-step 并把最终答案放入 <code>\\boxed{}</code>；Challenger prompt 要求生成非平凡竞赛数学题并输出 <code>&lt;question&gt;</code> 与 boxed final answer；SAM prompt 要求输出无注释的 <code>solver</code> Python function。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Appendix A 给出了完整 hyperparameters 和 prompt templates。这里保留复现实验必须先固定的配置；prompt 原文很长，页面只提炼约束，详见论文 Appendix A.2。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>多样性分析指标</h3>
+        <p>Cross-Iteration Repetition 同时结合历史 top collision 和历史分布平均 overlap：</p>
+        $$\mathrm{Cross\mbox{-}Iter\mbox{-}Rep}(Q_t,\mathcal{M})=\frac{1}{|Q_t|}\sum_{q\in Q_t}\left(\frac{1}{2}\max_{e\in\mathcal{M}}\cos(\phi(q),e)+\frac{1}{2}\cdot\frac{1}{|\mathcal{M}|}\sum_{e\in\mathcal{M}}\cos(\phi(q),e)\right).$$
+        <p>Intra-Iteration Repetition 是同一轮问题的平均 pairwise cosine similarity：</p>
+        $$\mathrm{Intra\mbox{-}Iter\mbox{-}Rep}(Q_t)=\frac{1}{|Q_t|}\sum_{q_i\in Q_t}\frac{1}{|Q_t|-1}\sum_{q_j\in Q_t,j\ne i}\cos(\phi(q_i),\phi(q_j)).$$
+        <p>Distribution Spread 度量 embedding 到 centroid 的平均距离：</p>
+        $$\mathrm{Spread\mbox{-}Degree}(Q_t)=\frac{1}{|Q_t|}\sum_{q\in Q_t}\|\phi(q)-\bar\phi\|_2,\qquad \bar\phi=\frac{1}{|Q_t|}\sum_{q\in Q_t}\phi(q).$$
+        <p>Challenger Entropy 对 $N$ 个 rollout 的 token-level next-token entropy 取平均：</p>
+        $$\mathrm{Entropy}=\frac{1}{N}\sum_{n=1}^{N}\frac{1}{L_n}\sum_{l=1}^{L_n}H(p(\cdot|t_{<l})),$$
+        $$H(p(\cdot|t_{<l}))=-\sum_{v\in V}p(v|t_{<l})\log p(v|t_{<l}).$$
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">R-Diverse 的结果分三层：第一，主表显示它在 4B/8B 两个尺度都超过 prior self-play baselines；第二，五轮曲线显示它没有像 R-Zero 那样后期 collapse；第三，diversity analysis 直接验证 MAP/SAM 降低历史重复、降低同轮重复、恢复 Challenger entropy。</p>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr>
+              <th>Model / Method</th><th>Math AVG</th><th>Overall AVG</th><th>AMC</th><th>Minerva</th><th>MATH</th><th>GSM8K</th><th>Olympiad</th><th>AIME25</th><th>AIME24</th><th>SuperGPQA</th><th>MMLU-Pro</th><th>BBEH</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3-4B Base</td><td>42.58</td><td>27.10</td><td>45.70</td><td>38.24</td><td>68.20</td><td>87.79</td><td>41.04</td><td>6.15</td><td>10.94</td><td>20.88</td><td>37.38</td><td>7.57</td></tr>
+            <tr><td>Absolute Zero</td><td>46.42</td><td>33.61</td><td>52.45</td><td>41.96</td><td>76.20</td><td>89.34</td><td>42.56</td><td>10.20</td><td>12.20</td><td>27.10</td><td>52.60</td><td>8.30</td></tr>
+            <tr><td>SPIRAL</td><td>47.00</td><td>34.22</td><td>57.50</td><td>42.40</td><td>76.40</td><td>91.00</td><td>38.40</td><td>10.00</td><td>13.30</td><td>27.10</td><td>53.20</td><td>9.57</td></tr>
+            <tr><td>R-Zero</td><td>49.07</td><td>34.64</td><td>57.27</td><td>52.94</td><td>79.60</td><td>92.12</td><td>44.59</td><td>4.27</td><td>12.71</td><td>27.55</td><td>51.53</td><td>10.42</td></tr>
+            <tr><td>R-Diverse* (3 iters)</td><td>50.68</td><td>36.30</td><td>59.06</td><td>56.62</td><td>79.00</td><td>92.27</td><td>45.19</td><td>6.25</td><td>16.35</td><td>28.84</td><td>54.91</td><td>10.77</td></tr>
+            <tr><td><strong>R-Diverse (5 iters)</strong></td><td><strong>52.59</strong></td><td><strong>36.68</strong></td><td><strong>60.23</strong></td><td><strong>59.56</strong></td><td>78.80</td><td><strong>92.34</strong></td><td><strong>46.96</strong></td><td>11.04</td><td><strong>19.17</strong></td><td>28.54</td><td><strong>55.24</strong></td><td>10.35</td></tr>
+            <tr><td>Qwen3-8B Base</td><td>49.18</td><td>34.49</td><td>51.95</td><td>50.00</td><td>78.00</td><td>89.08</td><td>44.74</td><td>16.67</td><td>13.85</td><td>28.33</td><td>51.80</td><td>8.63</td></tr>
+            <tr><td>Absolute Zero</td><td>52.68</td><td>38.97</td><td>57.89</td><td>57.90</td><td>76.60</td><td>92.00</td><td>47.80</td><td>18.20</td><td>18.40</td><td>31.89</td><td>60.50</td><td>10.80</td></tr>
+            <tr><td>R-Zero</td><td>54.69</td><td>38.73</td><td>61.67</td><td>60.66</td><td>82.00</td><td>94.09</td><td>48.89</td><td>19.17</td><td>16.35</td><td>31.38</td><td>58.23</td><td>10.60</td></tr>
+            <tr><td>Socratic-Zero</td><td>56.10</td><td>39.15</td><td>63.70</td><td>52.40</td><td>81.20</td><td>87.30</td><td>55.10</td><td>24.60</td><td>28.40</td><td>30.10</td><td>60.90</td><td>9.50</td></tr>
+            <tr><td>R-Diverse* (3 iters)</td><td>55.40</td><td>40.34</td><td>59.30</td><td>63.24</td><td>80.60</td><td>94.31</td><td>49.19</td><td>17.71</td><td>23.44</td><td>32.56</td><td>61.49</td><td>11.92</td></tr>
+            <tr><td><strong>R-Diverse (5 iters)</strong></td><td><strong>56.46</strong></td><td><strong>40.75</strong></td><td><strong>66.02</strong></td><td><strong>66.18</strong></td><td><strong>82.20</strong></td><td><strong>94.39</strong></td><td>49.78</td><td>12.19</td><td>24.48</td><td><strong>32.52</strong></td><td><strong>61.79</strong></td><td><strong>12.23</strong></td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 1 重建。R-Diverse* 是 3 轮训练，用来和 baseline 的训练轮数对齐；完整 R-Diverse 跑 5 轮。论文标注 best / second best，这里保留主要数值。</p>
+      </div>
+
+      <div class="grid-2">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-03-iteration-performance.png" alt="Figure 3 performance curves over iterations" />
+          <figcaption><strong>Figure 3.</strong> R-Diverse 在 Qwen3-4B/8B 的 Math AVG 与 Overall AVG 上 5 轮单调提升；R-Zero 约在第 3-4 轮后回落。4B Math AVG 中 R-Zero 从 49.1 降到 42.9，接近 base。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-04-diversity-analysis.png" alt="Figure 4 diversity analysis curves" />
+          <figcaption><strong>Figure 4.</strong> R-Diverse 降低 cross-iteration repetition、降低 LLM-judge duplicate ratio、降低 intra-iteration repetition、提升 distribution spread，并让 Challenger entropy 从低谷恢复到 0.94。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>Method</th><th>Math AVG</th><th>Delta vs full</th><th>解释</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>R-Diverse (Full)</td><td>52.59</td><td>-</td><td>完整 MAP + SAM + memory replay。</td></tr>
+            <tr><td>w/o MAP</td><td>49.62</td><td>-2.97</td><td>最大跌幅，说明跨历史记忆约束是关键。</td></tr>
+            <tr><td>w/o Max- &amp; Mean-Similarity Penalty</td><td>49.88</td><td>-2.71</td><td>基本移除 MAP 的排斥作用。</td></tr>
+            <tr><td>w/o Max-Similarity Penalty</td><td>50.60</td><td>-1.99</td><td>直接历史样本碰撞控制缺失。</td></tr>
+            <tr><td>w/o Mean-Similarity Penalty</td><td>50.64</td><td>-1.95</td><td>历史密集区域回流控制缺失。</td></tr>
+            <tr><td>w/o Memory Replay</td><td>51.18</td><td>-1.41</td><td>分布持续移动时 Solver 更容易遗忘旧技能。</td></tr>
+            <tr><td>w/o SAM</td><td>50.50</td><td>-2.09</td><td>Surface Diversity Illusion 没被解决。</td></tr>
+            <tr><td>w/o Representation Abstraction</td><td>50.79</td><td>-1.80</td><td>不转 solver-level code，题面噪声仍然干扰相似度。</td></tr>
+            <tr><td>w/o Embedding-based Similarity Computation</td><td>51.05</td><td>-1.54</td><td>只看代码字符串或表面结构不够稳健。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 2 重建。所有 ablation 都在 Qwen3-4B-Base 上做。</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>Dataset</th><th>Base Solver</th><th>Iter 1</th><th>Iter 2</th><th>Iter 3</th><th>Iter 4</th><th>Iter 5</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>$D_{\mathrm{Iter}\ 1}$</td><td>47.5</td><td>55.0</td><td>57.5</td><td>58.5</td><td>58.0</td><td>60.5</td></tr>
+            <tr><td>$D_{\mathrm{Iter}\ 2}$</td><td>44.0</td><td>50.5</td><td>54.0</td><td>52.5</td><td>56.5</td><td>55.0</td></tr>
+            <tr><td>$D_{\mathrm{Iter}\ 3}$</td><td>46.5</td><td>47.5</td><td>49.5</td><td>51.5</td><td>53.0</td><td>56.5</td></tr>
+            <tr><td>$D_{\mathrm{Iter}\ 4}$</td><td>40.0</td><td>43.5</td><td>44.0</td><td>48.0</td><td>51.5</td><td>51.0</td></tr>
+            <tr><td>$D_{\mathrm{Iter}\ 5}$</td><td>39.0</td><td>41.0</td><td>39.5</td><td>43.0</td><td>47.0</td><td>50.5</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 3 重建。每个 $D_{\mathrm{Iter}\ k}$ 是第 $k$ 轮 Challenger 抽样 200 个问题，用 GPT-4o 得到 ground-truth labels。固定 Solver 面对更晚 iteration 的问题通常 pass rate 更低，说明 curriculum 变难；目标 Solver 的 diagonal 大致维持在 50% 附近，说明 MAP/SAM 没破坏 uncertainty targeting。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="note-box good">
+          <h3>数学推理增益最大</h3>
+          <p>4B Math AVG 提升 +10.01，8B 提升 +7.28。Overall AVG 也提升，但论文指出 gains smaller，原因可能是 self-play curriculum 主要在数学域生成。</p>
+        </div>
+        <div class="note-box warn">
+          <h3>AIME25 不总是单调</h3>
+          <p>4B AIME25 第 4 轮达到 16.04 后第 5 轮为 11.04；8B AIME25 从 base 16.67 到第 5 轮 12.19。这提醒我们 Math AVG 单调不代表每个高难、低样本 benchmark 都单调。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">PDF 中 Figure 1/2 作为内嵌图片抽取成功；Figure 3/4 是页面级裁剪。关键结果表已在上文重建。Appendix G 的案例表主要用于解释 Surface Diversity Illusion，这里保留导航和代表性结论。</p>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>编号</th><th>位置</th><th>内容</th><th>页面处理</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Figure 1</td><td>Page 2</td><td>Diversity Illusion 概览、Local/Surface failure modes、R-Diverse 改进与性能曲线。</td><td>已抽取原图并嵌入。</td></tr>
+            <tr><td>Figure 2</td><td>Page 4</td><td>R-Diverse framework：Challenger training、SAM、memory bank、Solver training。</td><td>已抽取原图并嵌入。</td></tr>
+            <tr><td>Figure 3</td><td>Page 7</td><td>不同模型尺度和指标下的 5 轮 performance trajectory。</td><td>使用页面裁剪图。</td></tr>
+            <tr><td>Figure 4</td><td>Page 7</td><td>Cross-iteration / intra-iteration / policy dynamics 的 diversity analysis。</td><td>使用页面裁剪图。</td></tr>
+            <tr><td>Table 1</td><td>Page 6</td><td>10 个 benchmark 上的主结果。</td><td>已重建为 HTML 表格。</td></tr>
+            <tr><td>Table 2</td><td>Page 6</td><td>MAP/SAM component ablation。</td><td>已重建为 HTML 表格。</td></tr>
+            <tr><td>Table 3</td><td>Page 8</td><td>Cross-iteration curriculum evaluation。</td><td>已重建为 HTML 表格。</td></tr>
+            <tr><td>Table 4/5</td><td>Page 17/18</td><td>Qwen3-4B/8B 每轮数学 benchmark 详细结果。</td><td>在结果段落中总结关键趋势。</td></tr>
+            <tr><td>Table 6-8</td><td>Page 18-20</td><td>Number theory、sequence、combinatorial counting 题目随 iteration 演化。</td><td>作为 qualitative case analysis 使用。</td></tr>
+            <tr><td>Table 9-11</td><td>Page 20-21</td><td>Surface Diversity Illusion 的重复题示例：改写、参数变化、叙事包装。</td><td>在 critique 和 takeaways 中引用结论。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">这篇论文比许多 self-play 论文更可复现：给出了代码地址、训练框架、base models、GPU、BF16/FlashAttention、hyperparameters、prompts、diversity metrics 和 baseline details。不过严格复现实验仍然依赖大算力、多轮 GRPO、SAM code generation/embedding 管线以及 GPT-4o judge。</p>
+
+      <div class="grid-3">
+        <div class="critique-box good">
+          <h3>必须准备</h3>
+          <ul class="compact-list">
+            <li>Qwen3-4B-Base 或 Qwen3-8B-Base</li>
+            <li>EasyR1 / GRPO training stack</li>
+            <li>8 x NVIDIA H20 级别资源</li>
+            <li>Qwen2.5-Coder-7B for SAM code abstraction</li>
+            <li>Jina-Code-Embeddings-1.5B for code embeddings</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>容易偏离</h3>
+          <ul class="compact-list">
+            <li>answer equivalence / majority voting 的实现细节</li>
+            <li>uncertainty filter 里 valid questions 的边界</li>
+            <li>memory bank 的采样、去重、容量和 replay 实现</li>
+            <li>LLM-as-judge 重复判断的模型版本和 prompt 漂移</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>验证顺序</h3>
+          <ul class="compact-list">
+            <li>先复现 R-Zero baseline 的 3 轮曲线</li>
+            <li>单独接入 SAM 观察 intra-iteration repetition</li>
+            <li>再接入 MAP 观察 cross-iteration repetition</li>
+            <li>最后加 memory replay 比较 forgetting</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>复现实验</th><th>最低目标</th><th>成功判据</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>MAP-only ablation</td><td>在相同 $\phi_{\mathrm{SAM}}$ 下比较 $P_{\max}$、$P_{\mathrm{mean}}$、二者组合。</td><td>能观察到 w/o MAP 接近 Table 2 的约 2-3 point 下降。</td></tr>
+            <tr><td>SAM vs BLEU</td><td>构造 Table 9-11 类同构题库，比较 BLEU 与 code embedding similarity。</td><td>SAM 能把改写、参数替换、叙事包装问题聚到相近区域。</td></tr>
+            <tr><td>Memory replay</td><td>固定 MAP，开关 replay ratio $\rho=0.3$。</td><td>w/o replay 性能下降且旧 iteration 题集 pass rate 更差。</td></tr>
+            <tr><td>5-iteration sustainability</td><td>跑 5 轮 Challenger-Solver，并记录 Math AVG / Overall AVG。</td><td>R-Diverse 曲线比 R-Zero 更少后期回落，Challenger entropy 不长期低迷。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">这篇论文的贡献不是一个更复杂的 RL objective，而是抓住 self-play training 的 measurement mismatch：优化目标认为 diverse，Solver 接收到的技能训练却重复。作为 reviewer，我会给较高的方向分，但要求作者补更多跨域和系统细节。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>Failure mode 定义清楚：Local Diversity Illusion 和 Surface Diversity Illusion 分别对应 scope mismatch 与 metric mismatch。</li>
+            <li>MAP 和 SAM 都是直接针对 diagnosis 的 intervention，不是堆叠无关技巧。</li>
+            <li>实验覆盖两种模型尺度、10 个 benchmarks、component ablation、diversity metrics、curriculum preservation。</li>
+            <li>Appendix 给出 hyperparameters、prompt templates、metric formulas 和 qualitative cases，有助于复核。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>SAM 强依赖 Python code 作为 semantic bottleneck，适合数学和程序化推理，不一定适合开放问答、偏好对齐、多模态或工具使用。</li>
+            <li>代码生成模型和 code embedding model 的误差没有系统校准；如果 Code(q) 错抽象，penalty 会误伤真正新题或漏掉重复题。</li>
+            <li>General benchmarks 的 gains 较小，且训练 curriculum 主要数学化，跨域 transfer 证据有限。</li>
+            <li>GPT-4o judge 用于 repetition ratio 和 cross-iteration label 获取，带来闭源依赖和版本漂移。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="critique-box danger">
+          <h3>Missing Ablations</h3>
+          <ul class="compact-list">
+            <li>不同 code generator：Qwen2.5-Coder-7B vs larger/smaller coders。</li>
+            <li>不同 embedding model：Jina-Code-Embeddings-1.5B vs text embedding / AST features。</li>
+            <li>memory bank capacity、sampling strategy、time decay、nearest-neighbor retrieval 的影响。</li>
+            <li>$\tau_{\max}$、$\tau_{\mathrm{mean}}$、$\rho$ 的 sensitivity sweep。</li>
+            <li>把 SAM 用在 non-math self-play domains 的失败边界。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>Failure Modes</h3>
+          <ul class="compact-list">
+            <li>Challenger 可能学会生成能让 SAM code abstraction 失真的题面，从而绕过 penalty。</li>
+            <li>过强 MAP 会推着模型探索稀疏但低质量的题型，需要和 uncertainty reward 保持平衡。</li>
+            <li>Replay ratio 固定为 0.3 未必适配所有任务；旧题 replay 太多可能抑制新技能学习。</li>
+            <li>skill diversity 不等于 answer correctness diversity，仍可能训练出新颖但不可验证或伪难题。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究方向的启发</h2>
+      <p class="section-lead">如果关注 RLVR、agent、自进化、questioner-solver、replay、diversity、evaluation，这篇论文最值得迁移的是“把 diversity 从样本表面搬到能力空间”的评估与优化闭环。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Questioner-Solver</h3>
+          <p>Questioner 的 reward 不应只看 solver uncertainty，还应加入历史 skill coverage。否则 questioner 很容易挖同一类“刚好 50% 正确”的坑。</p>
+        </div>
+        <div class="note-box">
+          <h3>Replay 不是补丁</h3>
+          <p>当探索机制有效时，数据分布一定会漂移；replay 应该是 self-evolution 系统的第一等组件，而不是训练后期才加的稳定技巧。</p>
+        </div>
+        <div class="note-box">
+          <h3>评估要看动态</h3>
+          <p>只报告最终 pass@1 不够。需要同时看 cross-iteration repetition、intra-iteration repetition、policy entropy 和旧 curriculum retention。</p>
+        </div>
+        <div class="note-box">
+          <h3>Skill Space 可替换</h3>
+          <p>数学题可以用 Python program；agent 任务可以用 tool-call graph、state transition trace、execution plan 或 verifier trace 作为 skill representation。</p>
+        </div>
+        <div class="note-box">
+          <h3>防止表面多样</h3>
+          <p>生成任务里最常见的假多样是换数字、换叙事、换变量名。评估和 reward 必须能识别 isomorphic task。</p>
+        </div>
+        <div class="note-box">
+          <h3>改进方向</h3>
+          <p>可以把 MAP 做成 coverage-aware curriculum：不仅远离历史密集区，也主动填补 skill taxonomy 的低覆盖区域。</p>
+        </div>
+      </div>
+
+      <div class="quote-box" style="margin-top:1rem;">
+        <h3>一句话总结</h3>
+        <p>R-Diverse 的核心 lesson 是：self-play 的瓶颈不只是“有没有奖励”，而是奖励是否真正作用在 Solver 需要学习的能力维度上；如果 diversity metric 错了，越训练越像在重复刷题。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

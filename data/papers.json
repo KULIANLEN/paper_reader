@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-08",
+  "updatedAt": "2026-06-10",
   "papers": [
     {
       "id": "2305.17126",
@@ -417,6 +417,54 @@
         "available": true,
         "level": "low",
         "notes": "作为综述论文，没有单一训练流水线；可复核 arXiv v5、OpenReview 页面、MDP/POMDP 形式化、taxonomy、环境/框架清单和图表抽取。缺少系统综述式检索协议、纳入/排除标准和结构化 bibliography dataset。"
+      }
+    },
+    {
+      "id": "2602.13103",
+      "slug": "r-diverse",
+      "title": "R-Diverse: Mitigating Diversity Illusion in Self-Play LLM Training",
+      "titleZh": "R-Diverse：缓解自博弈大模型训练中的多样性幻觉",
+      "authors": [
+        "Gengsheng Li",
+        "Jinghan He",
+        "Shijie Wang",
+        "Dan Zhang",
+        "Ruiqi Liu",
+        "Renrui Zhang",
+        "Zijun Yao",
+        "Junfeng Fang",
+        "Haiyun Guo",
+        "Jinqiao Wang"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "RLVR / Self-Evolution",
+      "tags": [
+        "self-play",
+        "rlvr",
+        "reasoning",
+        "diversity",
+        "replay",
+        "evaluation"
+      ],
+      "status": "精读",
+      "priority": 5,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "R-Diverse 诊断 self-play reasoning 训练中的 Diversity Illusion：题目表面多样，但跨迭代或技能层面反复训练同一类模式。论文提出 MAP 用 memory bank 惩罚历史重复，并用 SAM 将题目抽象为 solver-level Python program 后比较技能相似度，使 Qwen3-4B/8B 在五轮自博弈中保持持续提升。",
+      "takeaways": [
+        "self-play 的 diversity 应定义在 Solver 需要学习的 skill space，而不是题面 token overlap。",
+        "有效探索会带来分布漂移，因此 memory replay 应和 MAP/SAM 这类多样性机制一起设计。"
+      ],
+      "arxivId": "2602.13103",
+      "paperUrl": "https://arxiv.org/abs/2602.13103",
+      "pdfUrl": "https://arxiv.org/pdf/2602.13103",
+      "pageUrl": "papers/r-diverse/index.html",
+      "codeUrl": "https://github.com/Gengsheng-Li/R-Diverse",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文给出代码地址、EasyR1 实现、base models、GPU、超参数、prompts、metric definitions 和 ablations；严格复现仍需要多轮 GRPO 训练资源、Qwen2.5-Coder-7B/Jina-Code-Embeddings-1.5B 管线以及 GPT-4o judge 设置。"
       }
     }
   ]
