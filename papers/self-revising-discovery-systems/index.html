@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Self-Revising Discovery Systems for Science · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .srd-page * { letter-spacing: 0 !important; }
+    .srd-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .srd-page .paper-hero { padding: 3.35rem 0 2.35rem; border-bottom: 1px solid var(--line); }
+    .srd-page .paper-hero h1 { max-width: 1120px; font-size: clamp(2rem, 4.5vw, 4rem); line-height: 1.06; }
+    .srd-page .hero-subtitle { max-width: 1010px; margin: 1.05rem 0 0; color: var(--text-soft); font-size: clamp(1.02rem, 2vw, 1.22rem); line-height: 1.78; }
+    .srd-page .content-card { margin: 0; padding: clamp(2.1rem, 5vw, 4.2rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .srd-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.55rem, 3.2vw, 2.45rem); line-height: 1.16; }
+    .srd-page .content-card h3 { margin: 0 0 0.5rem; font-size: 1.06rem; line-height: 1.35; }
+    .srd-page .section-lead { max-width: 980px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.03rem; line-height: 1.86; }
+    .srd-page .meta-row, .srd-page .paper-tags, .srd-page .link-row { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .srd-page .meta-row { margin-top: 1.25rem; color: var(--muted); font-size: 0.94rem; }
+    .srd-page .paper-tags, .srd-page .link-row { margin-top: 1rem; }
+    .srd-page .tag-pill, .srd-page .link-row a, .srd-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .srd-page .grid-2, .srd-page .grid-3, .srd-page .metric-grid, .srd-page .figure-grid, .srd-page .flow-grid { display: grid; gap: 1rem; }
+    .srd-page .grid-2, .srd-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .srd-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .srd-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .srd-page .flow-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1rem; }
+    .srd-page .note-box, .srd-page .metric, .srd-page .table-wrap, .srd-page .figure-card, .srd-page .formula-box, .srd-page .flow-step, .srd-page .critique-box, .srd-page .quote-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .srd-page .note-box, .srd-page .formula-box, .srd-page .flow-step, .srd-page .critique-box, .srd-page .quote-box { padding: 1rem; }
+    .srd-page .note-box p, .srd-page .formula-box p, .srd-page .flow-step p, .srd-page .critique-box p, .srd-page .quote-box p { margin: 0.45rem 0 0; }
+    .srd-page .metric { padding: 1rem; }
+    .srd-page .metric strong { display: block; font-size: 1.38rem; line-height: 1.15; }
+    .srd-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .srd-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .srd-page .flow-step:nth-child(2n) b { background: #6d5dfc; }
+    .srd-page .flow-step:nth-child(3n) b { background: #c2410c; }
+    .srd-page .flow-step:nth-child(4n) b { background: #2563eb; }
+    .srd-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .srd-page .formula-box .MathJax, .srd-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .srd-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .srd-page table { width: 100%; min-width: 820px; border-collapse: collapse; font-size: 0.88rem; }
+    .srd-page th, .srd-page td { padding: 0.68rem 0.74rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .srd-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .srd-page td { color: var(--text-soft); }
+    .srd-page .wide-table { min-width: 980px; }
+    .srd-page .tight-table { min-width: 720px; }
+    .srd-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .srd-page .figure-card { margin: 0; overflow: hidden; }
+    .srd-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .srd-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .srd-page .figure-card figcaption strong { color: var(--text); }
+    .srd-page .figure-card.wide { grid-column: 1 / -1; }
+    .srd-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .srd-page .compact-list li { margin: 0.28rem 0; line-height: 1.68; }
+    .srd-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .srd-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .srd-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .srd-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .srd-page .grid-2, .srd-page .grid-3, .srd-page .metric-grid, .srd-page .figure-grid, .srd-page .flow-grid { grid-template-columns: 1fr; }
+      .srd-page .paper-hero { padding-top: 2.4rem; }
+      .srd-page table { min-width: 720px; }
+      .srd-page .wide-table { min-width: 940px; }
+    }
+  </style>
+</head>
+<body class="paper-page srd-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2606.01444v1</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">案例</a>
+      <a href="#results">结果</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Agent / Tool Use · arXiv 2026</div>
+      <h1>Self-Revising Discovery Systems for Science: A Categorical Framework for Agentic Artificial Intelligence</h1>
+      <p class="hero-subtitle">这篇论文把“AI 科学发现”从生成答案或固定空间搜索中拆出来：真正的 discovery 是对证据、artifact、operation、tool、verifier 所属的 representational regime 做经验证的修订。作者用 category theory 给出一套工程可审计语言：固定 regime 内是 copresheaf state 的更新；发现则是 schema functor $u:S_b\to S_{b'}$、left Kan extension $\operatorname{Lan}_u I_t$、preservation map $\rho$ 和 residual content 的组合。</p>
+      <div class="meta-row">
+        <span>Fiona Y. Wang, Markus J. Buehler</span>
+        <span>MIT LAMM · Biological Engineering · CEE/Mechanical Engineering · Schwarzman College of Computing</span>
+        <span>Published: 2026-05-31</span>
+        <span>36-page PDF with SI</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">ai-for-science</span>
+        <span class="tag-pill">category-theory</span>
+        <span class="tag-pill">self-evolution</span>
+        <span class="tag-pill">evaluation</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2606.01444">arXiv</a>
+        <a href="https://arxiv.org/pdf/2606.01444.pdf">PDF</a>
+        <a href="https://github.com/lamm-mit/BreakingTheWorld">Builder/Breaker code</a>
+        <a href="https://github.com/lamm-mit/scienceclaw">ScienceClaw</a>
+        <a href="https://github.com/lamm-mit/infinite">Infinite</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>核心命题</strong><span>检索增加已有类型的 artifact；搜索在固定 schema 内找新路径；发现改变 schema、grammar、verifier、tool 或可组合关系。</span></div>
+        <div class="metric"><strong>$\operatorname{Lan}_u I_t$</strong><span>left Kan extension 是把旧证据运到新 regime 的最小系统方式；它不能凭空填充孤立新类型。</span></div>
+        <div class="metric"><strong>54.3 bits</strong><span>Builder/Breaker 最终 S2→S3 转换接受 mode-conditioned compliance，paired MDL gain 为 54.3 bits。</span></div>
+        <div class="metric"><strong>$\Delta$AIC 123.87</strong><span>CategoryScienceClaw fiber-network 案例接受 orientation-tensor anisotropic stiffness surrogate，拒绝 isotropic fiber-count descriptor。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机：为什么“发现”不是“搜索得更久”</h2>
+      <p class="section-lead">作者针对的不是普通 LLM summarization 或 benchmark optimization，而是 agentic science system 里更难审计的一步：当新证据迫使系统发明新变量、新 artifact type、新 verifier、新 tool class 或新的复合操作时，如何记录这一步不是胡乱改 prompt，而是经 gate 认证的 regime revision。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Retrieval</h3>
+          <p>从已有 corpus 里取回一个已经能在当前 schema 中表达的 typed artifact。它可能很有用，但没有改变 admissible vocabulary。</p>
+        </div>
+        <div class="note-box">
+          <h3>Search</h3>
+          <p>在固定 schema $S_b$ 内组合已有对象和 morphisms，找到新的路径、模型或参数。搜索可以很复杂，但仍在同一 regime 内。</p>
+        </div>
+        <div class="note-box good">
+          <h3>Discovery</h3>
+          <p>把 regime $b$ 扩展或重构为 $b'$：新类型、新 morphism、新 verifier、新 grammar production 或新 tool class 进入可接受科学状态。</p>
+        </div>
+      </div>
+
+      <figure class="figure-card" style="margin-top:1rem;">
+        <img src="assets/figures/figure-01-retrieval-search-discovery.png" alt="Retrieval, search, and discovery distinction" loading="lazy" />
+        <figcaption><strong>Figure 1.</strong> 论文的概念入口：retrieval 是增加已可表示 artifact；search 是同一 schema 内的新路径；discovery 是 regime 扩张或重构，改变未来 evidence、artifact、operation 与 verifier 的 typing 方式。</figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>科学系统里的工程对象</th><th>范畴论对象</th><th>为什么重要</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>artifact type，例如 PDBChain、ContactGraph、SymbolicDAG、Report</td><td>schema category $S_b$ 的 object</td><td>声明系统允许产生和承诺的科学对象类型。</td></tr>
+            <tr><td>tool / skill signature，例如 build contact graph、fit symbolic DAG</td><td>$S_b$ 的 morphism</td><td>声明从一种 artifact 到另一种 artifact 的可审计转换。</td></tr>
+            <tr><td>当前 artifacts 总账</td><td>copresheaf $I_t:S_b\to\mathbf{Set}$</td><td>每个 type 上有一组实际 artifacts；operation 对应集合之间的映射。</td></tr>
+            <tr><td>artifact DAG / hypergraph</td><td>category of elements $\int_{S_b} I_t$，或 multicategorical provenance analogue</td><td>把“这个结论怎么来的”变成 typed provenance graph，而不是聊天记录。</td></tr>
+            <tr><td>accepted update</td><td>natural/refinement morphism</td><td>旧证据必须被保留、可查询、可解释，不能被 silently overwritten。</td></tr>
+            <tr><td>gate / verifier</td><td>predicate、scoring functional 或 commitment rule</td><td>决定 artifact 是 accepted、rejected、superseded 还是 held for review。</td></tr>
+            <tr><td>new schema/tool/verifier</td><td>regime extension $u:S_b\to S_{b'}$</td><td>这是 discovery 的形式化边界：系统不只在旧 vocabulary 里优化。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 1 的中文重构：论文把 agentic science 的工程总账映射到 category-theoretic formalism。这个字典是后面 Kan audit 的基础。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 方法：从 typed artifacts 到 verified regime transition</h2>
+      <p class="section-lead">论文的数学贡献是把 discovery 定义为“旧证据可保存地运到新 schema，同时新状态包含超出 transport 的 accepted residual”。关键对象是 discovery regime、artifact-state copresheaf、fixed-regime update、verified regime transition 和 Kan obstruction。</p>
+
+      <div class="formula-box">
+        <h3>2.1 Discovery regime</h3>
+        <p>一个 discovery regime 是四元组：</p>
+        $$b=(S_b,\Gamma_b,V_b,L_b).$$
+        <p>$S_b$ 是 artifact types 与 allowed operations 的 small schema category；$\Gamma_b$ 是可组合 artifacts 或 model structures 的 grammar；$V_b$ 是 verifier/gate；$L_b$ 是 optional description-length functional。这里的 regime 不只是 ontology，也包含能否接受、如何评分、如何组合的承诺。</p>
+      </div>
+
+      <div class="grid-2">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-02-fixed-regime-copresheaf.png" alt="Fixed regime schema and copresheaf values" loading="lazy" />
+          <figcaption><strong>Figure 2.</strong> 固定 regime 中，schema $S_b$ 给出 type 和 operation，copresheaf $I_t$ 在每个 type 上挂载实际 artifacts，category of elements $\int_{S_b}I_t$ 才是实现过的 typed provenance graph。</figcaption>
+        </figure>
+        <div class="formula-box">
+          <h3>Artifact-state copresheaf</h3>
+          <p>固定 regime $b$ 下，时间 $t$ 的科学状态是 covariant Set-valued functor：</p>
+          $$I_t:S_b\to\mathbf{Set}.$$
+          <p>每个 type $A$ 上的 $I_t(A)$ 是当前 artifacts 集合；每个 operation $f:A\to B$ 上的 $I_t(f):I_t(A)\to I_t(B)$ 记录一个 artifact 如何生成另一个 artifact。category of elements 的对象是 $(A,x)$，morphism 是满足 $I_t(f)(x)=y$ 的 $f:(A,x)\to(B,y)$。</p>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.2 Fixed-regime update：搜索不是发现</h3>
+        <p>设 $K_b$ 是 $S_b$ 上 artifact-state copresheaves 与 provenance-preserving refinements 组成的 category。固定 regime 内的 agentic update 是：</p>
+        $$\Phi_b:\operatorname{Obj}(K_b)\to\operatorname{Obj}(K_b).$$
+        <p>只有当它把 refinement morphisms 映到 refinement morphisms，并保持 identity 与 composition 时，才能称为 endofunctor $\Phi_b:K_b\to K_b$。因此 search 是反复应用 $\Phi_b$；它不能产生 $S_b$ 外的新 type、new verifier、new grammar production 或 new tool class。</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="formula-box">
+          <h3>2.3 Verified regime transition</h3>
+          <p>发现需要从旧 schema 到新 schema 的 functor：</p>
+          $$u:S_b\to S_{b'}.$$
+          <p>旧 artifact state 通过 left Kan extension 被 transport 到新 schema：</p>
+          $$\operatorname{Lan}_u I_t:S_{b'}\to\mathbf{Set}.$$
+          <p>同时必须显式给出 preservation natural transformation：</p>
+          $$\rho:I_t\to u^\ast I'_{t+1}.$$
+          <p>由 adjunction $\operatorname{Lan}_u\dashv u^\ast$，$\rho$ 唯一对应 comparison map：</p>
+          $$\bar{\rho}:\operatorname{Lan}_u I_t\to I'_{t+1}.$$
+        </div>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-03-fixed-regime-kan-comparison.png" alt="Fixed-regime update and Kan comparison diagram" loading="lazy" />
+          <figcaption><strong>Figure 3.</strong> 固定 regime 的 refinement $\delta_t:I_t\to I_{t+1}$ 可被 $\operatorname{Lan}_u$ functorially transport；discovery 的新增内容不在左边方块，而在 $\bar{\rho}$ 与 $I'_{t+1}$ 的 residual 中。</figcaption>
+        </figure>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.4 Kan obstruction：transport-only 不能填充孤立新类型</h3>
+        <p>对新 schema 中的对象 $A'$，left Kan extension 的 pointwise 形式是：</p>
+        $$(\operatorname{Lan}_u I_t)(A')\cong \operatorname*{colim}_{(uA\to A')\in(u\downarrow A')} I_t(A).$$
+        <p>如果 comma category $(u\downarrow A')$ 为空，则：</p>
+        $$(\operatorname{Lan}_u I_t)(A')=\varnothing.$$
+        <p>若新状态 $I'_{t+1}(A')$ 非空，则这些 artifacts 不可能来自旧 regime 的 functorial transport。论文把 objectwise diagnostic 写成：</p>
+        $$R(A')=I'_{t+1}(A')\setminus\operatorname{im}(\bar{\rho}_{A'}).$$
+        <p>有 relative description-length functional 时，discovery cost 是：</p>
+        $$L_{b'}\left(I'_{t+1}\mid\operatorname{im}(\bar{\rho})\right).$$
+      </div>
+
+      <figure class="figure-card">
+        <img src="assets/figures/figure-04-kan-transport-audit.png" alt="Kan transport audit of Builder Breaker final transition" loading="lazy" />
+        <figcaption><strong>Figure 4.</strong> Builder/Breaker 最终 S2→S3 转换把旧 evidence transport 到新 state，同时通过 $\bar{\rho}$ 识别 residual content。LogNormCompliance 与 ReLUModeAmpl 是 generator-reachable transforms；ModeConditionedCompliance 需要新 product operation，属于 composite-reachable interaction。</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 两个实例系统：Builder/Breaker 与 CategoryScienceClaw</h2>
+      <p class="section-lead">论文不是只给纯理论定义，而是用两个系统说明如何在工程记录里落实“旧证据保存 + 新 regime 残差”。Builder/Breaker 是蛋白力学 symbolic DAG discovery，gate 是 paired MDL；CategoryScienceClaw 是 ScienceClaw 的 categorical/proof-carrying layer，主例是 fiber-network mechanics，gate 是 AIC 与 diagnostics。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>Builder/Breaker protein mechanics</h3>
+          <ul class="compact-list">
+            <li>Breaker 选择新的蛋白证据来暴露当前 symbolic world model 的失败模式。</li>
+            <li>Builder 提出 symbolic DAG edits，例如添加/移除 factors、交换 terms、调整 threshold。</li>
+            <li>gate 是 Minimum Description Length：候选必须在同一 accumulated evidence 上经 paired refitting 后降低总描述长度。</li>
+            <li>底层物理 features 来自 PDB chains、Cα coordinates、contact graphs、Kirchhoff matrices、GNM spectra、compliance、slow-mode observables 与 B-factor targets。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>CategoryScienceClaw</h3>
+          <ul class="compact-list">
+            <li>ScienceClaw 提供 typed skill registry、immutable artifacts、open needs、pressure/overlap coordination、active graph mutation。</li>
+            <li>Infinite 把 computational artifacts 发布成 public discourse objects，带 links、votes、comments、reputation 与 moderation signals。</li>
+            <li>CategoryScienceClaw 把 skills 当作 morphism signatures，把 artifacts 当作 typed objects，把 open needs 当作 typed holes，把 gates/stress tests/certificates 变成 proof-carrying audit records。</li>
+            <li>主文使用 fiber-network mechanics；SI 还给出 7T10、mechanobiology、membrane mechanics cases。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        <h3>3.1 Builder/Breaker 的 MDL gate</h3>
+        <p>候选 symbolic DAG $M'$ 只有在同一 accumulated evidence $D$ 上比 incumbent $M$ 更短时才被接受：</p>
+        $$L(M,D)=L_{\mathrm{model}}(M)+L_{\mathrm{data}}(D\mid M).$$
+        $$V_b(M',M;D)=1\Longleftrightarrow L_{\mathrm{model}}(M')+L_{\mathrm{data}}(D\mid M')\lt L_{\mathrm{model}}(M)+L_{\mathrm{data}}(D\mid M).$$
+        <p>如果 Breaker 添加 stress-test evidence $E$，比较仍是 paired：$M$ 与 $M'$ 都在 $D\cup E$ 上 refit 和评分。这就是为什么非单调 $R^2$ 不能直接被读作失败；每一轮 evidence set 已经变了。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>3.2 GNM features 与最终 B-factor law</h3>
+        <p>对 protein chain $p$ 的 residue coordinates $r_{pi}\in\mathbb{R}^3$，接触图与 Kirchhoff matrix 为：</p>
+        $$A^{(p)}_{ij}=\mathbf{1}\{i\ne j,\|r_{pi}-r_{pj}\|\lt r_c\},\qquad r_c=10.0\,\text{\AA}.$$
+        $$
+        \Gamma^{(p)}_{ij}=
+        \begin{cases}
+        -A^{(p)}_{ij}, & i\ne j,\\
+        \sum_{k\ne i}A^{(p)}_{ik}, & i=j.
+        \end{cases}
+        $$
+        <p>对 $\Gamma_p u_{pk}=\lambda_{pk}u_{pk}$，residue $i$ 的 all-mode compliance 是：</p>
+        $$C_{pi}=(\Gamma_p^+)_{ii}=\sum_{\lambda_{pk}\gt0}\frac{u_{pik}^2}{\lambda_{pk}}.$$
+        <p>目标是 chain-normalized crystallographic Cα B-factor：</p>
+        $$B^{(z)}_{pi}=\frac{B_{pi}-\bar{B}_p}{s_{B,p}}.$$
+        <p>令 $z_p(\cdot)$ 为 per-chain z-score，最终被 MDL 接受的 features 和 law 是：</p>
+        $$\phi_{pi}=z_p(\log(C_{pi}+\epsilon)),\qquad \psi_{pi}=[z_p(|u_{pi2}|)+\theta]_+.$$
+        $$\hat{B}^{(z)}_{pi}=\alpha+\beta\phi_{pi}\psi_{pi},\qquad \alpha=-0.1332,\ \beta=0.2239,\ \theta=2.2678.$$
+        <p>机械解释是：within-chain B-factor pattern 更像 all-mode elastic compliance 被 slow collective-mode participation 条件化，而不是 compliance 与 normal-mode effect 的简单 additive stack。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>3.3 CategoryScienceClaw fiber-network mechanics</h3>
+        <p>fiber orientation $\theta_i$ 给出单位方向 $n_i=(\cos\theta_i,\sin\theta_i)$，orientation tensor 为：</p>
+        $$A=\frac{\sum_i w_i n_i n_i^T}{\sum_i w_i}.$$
+        <p>scalar nematic order parameter、anisotropy ratio 与 stress-strain surrogate 为：</p>
+        $$S=\sqrt{\langle\cos2\theta\rangle^2+\langle\sin2\theta\rangle^2},\qquad \chi=\frac{\lambda_{\max}(A)}{\lambda_{\min}(A)}.$$
+        $$\sigma=E\epsilon+\sigma_0.$$
+        <p>该案例报告 $S=0.673115$、principal orientation $47.877581^\circ$、stiffness $E=119.4\,\mathrm{kPa}$、linear stress-strain fit $R^2=0.999989$。candidate gate 比较 isotropic fiber-count descriptor $M_0$ 与 orientation-tensor anisotropic stiffness surrogate $M_1$：</p>
+        $$\text{accept }M_1\text{ over }M_0\Longleftrightarrow \mathrm{AIC}(M_0)-\mathrm{AIC}(M_1)\gt0\text{ and diagnostics pass}.$$
+        <p>最终 $M_1$ accepted、$M_0$ rejected，$\Delta\mathrm{AIC}=123.873782$。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 结果：发现表现为压缩、撤回和新复合类型</h2>
+      <p class="section-lead">最重要的结果不是“模型分数单调上升”，而是 accepted world model 在证据扩张后仍能用更紧凑的 symbolic vocabulary 解释数据。论文特别强调 retraction：旧 model commitments 可以被 superseded，但旧证据与 provenance 不能消失。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-05a-world-model-dags.png" alt="Evolution of world-model DAG across discovery iterations" loading="lazy" />
+          <figcaption><strong>Figure 5A.</strong> 世界模型 DAG 从 iteration 0 到 3 的演化。复杂度在 iteration 1 到达峰值，后续在更宽 evidence set 下被 MDL gate 剪枝。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-05bc-scaling-r2.png" alt="Scaling of data volume model length and R squared" loading="lazy" />
+          <figcaption><strong>Figure 5B/C.</strong> 数据量从 122 到 1171，约 9.6×；model length 从 44 到 59 bits，约 1.3×。$R^2$ 轨迹 $0.48\to0.68\to0.54\to0.41$ 是阶段性 accumulated evidence 描述，不是固定 benchmark 上的单调曲线。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>Transition</th><th>Break type</th><th>Generator-reachable new types</th><th>Composite-reachable new types</th><th>Retracted types</th><th>$\Delta L_{\mathrm{model}}$</th><th>MDL gain</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0 → 1</td><td>regime split</td><td>ReLU compliance; terminal exposure</td><td>boundary product</td><td>old linear parameters</td><td>+39.1 bits</td><td>+9.0 bits</td></tr>
+            <tr><td>1 → 2</td><td>ontology break</td><td>none beyond shared GNM base</td><td>none beyond shared GNM base</td><td>terminal and boundary feature family; old parameters</td><td>-14.4 bits</td><td>+37.3 bits</td></tr>
+            <tr><td>2 → 3</td><td>regime split</td><td>log-compliance; ReLU mode amplitude</td><td>mode-conditioned compliance</td><td>additive-model parameters</td><td>-10.3 bits</td><td>+54.3 bits</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 2 重构：最终发现不是 normal mode 或 compliance 本身，而是允许 $\mathrm{LogNormCompliance}\times\mathrm{ReLUModeAmpl}\to\mathrm{ModeConditionedCompliance}$ 的新复合类型与 product operation。</p>
+      </div>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-06a-mdl-frontier.png" alt="MDL hill climb frontier" loading="lazy" />
+          <figcaption><strong>Figure 6A.</strong> 一次 discovery iteration 的 hill-climb frontier：rejected proposals 是灰点，accepted moves 构成阶梯式 description-length 改善。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-06b-accepted-moves-ledger.png" alt="Accepted moves ledger" loading="lazy" />
+          <figcaption><strong>Figure 6B.</strong> Accepted moves ledger：16 个 accepted moves 把 total description length 从 2354.1 降到 2016.5，累计减少 337.6 bits。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-07-mdl-gate.png" alt="Anatomy of MDL gate" loading="lazy" />
+          <figcaption><strong>Figure 7.</strong> 所有四轮里 388 个 proposals 仅 25 个 accepted，接受率 6.4%。seed 与 swap 更容易生存，bare add 仅约 3%；removal 不是清理步骤，而是高收益 operator。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-08-feature-lifecycle.png" alt="Feature lifecycle across discovery run" loading="lazy" />
+          <figcaption><strong>Figure 8.</strong> feature lifecycle 显示 iteration 3 探索四个 slots 并撤回三个，最后收敛到一个 mode-conditioned law。发现包含 compression 和 retraction，而不是单调累加 terms。</figcaption>
+        </figure>
+      </div>
+
+      <div class="figure-grid" style="margin-top:1rem;">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-09-scienceclaw-infinite.png" alt="ScienceClaw Infinite artifact system" loading="lazy" />
+          <figcaption><strong>Figure 9.</strong> ScienceClaw × Infinite：typed skill registry 生成 immutable artifacts，ArtifactReactor 用 pressure + overlap 协调 open needs，Infinite 把 artifact 变成带反馈的 public discourse。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-10-fiber-network-mechanics.png" alt="Fiber-network mechanics discovery" loading="lazy" />
+          <figcaption><strong>Figure 10.</strong> Fiber-network mechanics：orientation tensor 找到 load-bearing axis，stress-strain surrogate 给出 stiffness scale；AIC gate 以 $\Delta\mathrm{AIC}=123.873782$ 接受 anisotropic surrogate，并保留 rejected isotropic descriptor。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>系统/案例</th><th>Artifact regime</th><th>Gate 或 verifier</th><th>Discovery-relevant mechanism</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>ProtAgents</td><td>protein sequences, structures, force/dynamics artifacts</td><td>agent critique plus physics and ML tool outputs</td><td>physics simulators expose failure modes of generated designs</td></tr>
+            <tr><td>MARS / graph agents</td><td>layered material knowledge graphs and substitution candidates</td><td>feasibility, manufacturability, cross-source consistency</td><td>heterogeneous evidence 的 cross-layer composition</td></tr>
+            <tr><td>Sparks / SciAgents</td><td>research goals, hypotheses, code, results, reports</td><td>novelty, interestingness, executable results</td><td>ideation-to-experiment loop over research-artifact schema</td></tr>
+            <tr><td>Builder/Breaker</td><td>protein-mechanics evidence and symbolic DAG world models</td><td>paired MDL compression</td><td>adversarial evidence forces retractions and regime enlargement</td></tr>
+            <tr><td>ScienceClaw × Infinite + CategoryScienceClaw</td><td>execution artifacts, open needs, discourse posts, categorical objects, morphisms, lineage, gates, figures, reports</td><td>pressure scoring, schema overlap, mutation status, discourse feedback, reputation, proof certificates</td><td>plannerless artifact exchange plus public claim verification, lifted into typed categorical provenance</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 3 重构：论文把若干 AI-for-science/agentic systems 都读成 typed artifact systems，而不是按 leaderboard 排名。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">本页已纳入论文主文 Figure 1-10 的关键图像或裁图，并重构 Table 1-3。Supplementary figures 由于 PDF 图片抽取不稳定，主要以 Table S1 的数值和文本形式整合。</p>
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>编号</th><th>本页位置</th><th>读图重点</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Figure 1</td><td>动机</td><td>retrieval / search / discovery 的结构差异。</td></tr>
+            <tr><td>Figure 2-4</td><td>方法</td><td>copresheaf provenance、fixed-regime transport、Kan audit 与 residual content。</td></tr>
+            <tr><td>Figure 5-8</td><td>结果</td><td>Builder/Breaker 的 DAG scaling、inner MDL search、gate anatomy、feature lifecycle。</td></tr>
+            <tr><td>Figure 9-10</td><td>结果</td><td>ScienceClaw × Infinite 的 typed artifact loop，以及 fiber-network mechanics 的 AIC-gated discovery graph。</td></tr>
+            <tr><td>Table 1</td><td>动机</td><td>implementation terms 到 category formalism 的字典。</td></tr>
+            <tr><td>Table 2</td><td>结果</td><td>Builder/Breaker transitions 的 generator/composite reachability、retractions、MDL gain。</td></tr>
+            <tr><td>Table 3</td><td>结果</td><td>多个 agentic systems 的 artifact regime、gate 与 discovery mechanism 对照。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单与限制</h2>
+      <p class="section-lead">论文提供了多个代码仓库和 generated artifacts/logs，但严格复现仍依赖具体 LLM 后端、artifact export tree、PDB/力学数据处理、MDL/AIC gate 实现与论文中的后处理审计脚本。本页只基于论文和 PDF 提取，不假定仓库在 2026-06-10 的状态已被外部验证。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>可用资源</h3>
+          <ul class="compact-list">
+            <li>Builder/Breaker protein-mechanics code, generated artifacts, logs, figures: <code>https://github.com/lamm-mit/BreakingTheWorld</code></li>
+            <li>ScienceClaw framework: <code>https://github.com/lamm-mit/scienceclaw</code></li>
+            <li>CategoryScienceClaw mechanics branch: <code>https://github.com/lamm-mit/scienceclaw/tree/categoryscienceclaw-mechanics</code></li>
+            <li>Infinite discourse platform: <code>https://github.com/lamm-mit/infinite</code></li>
+          </ul>
+        </div>
+        <div class="note-box warn">
+          <h3>关键不确定性</h3>
+          <ul class="compact-list">
+            <li>Builder/Breaker 论文说明使用 GPT-5.5 (OpenAI)，extended reasoning enabled，<code>reasoning_effort=high</code>。</li>
+            <li>CategoryScienceClaw studies 使用 GPT-5.2 (OpenAI) 作为 backbone LLM。</li>
+            <li>这些后端、版本、推理设置、随机性和 prompt traces 是复现实验行为的核心外部依赖。</li>
+            <li>MDL gains 是 paired acceptance gains，不等同于完整的 relative discovery cost $L_{b'}(I'_{t+1}\mid\operatorname{im}(\bar{\rho}))$。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>复现目标</th><th>需要准备</th><th>验收点</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Builder/Breaker final law</td><td>PDB chain evidence、Cα coordinates、contact graph cutoff $r_c=10.0\,\text{\AA}$、GNM eigenvectors/eigenvalues、B-factor target、symbolic DAG search logs</td><td>重建 $\hat{B}^{(z)}_{pi}=\alpha+\beta\phi_{pi}\psi_{pi}$，并验证 $\alpha=-0.1332$、$\beta=0.2239$、$\theta=2.2678$ 与 MDL acceptance。</td></tr>
+            <tr><td>Kan audit Table 2</td><td>每轮 accepted world-model records、finite schema $S_t$、shared/new objects、unary generators、multi-input product morphisms、residue counts 122/263/691/1171</td><td>复现 generator-reachable、composite-reachable、retracted types、$\Delta L_{\mathrm{model}}$ 与 MDL gains。</td></tr>
+            <tr><td>Inner MDL search</td><td>388 proposals、operator labels、accepted/rejected status、每次 accepted state 的 model/data code length</td><td>得到 25/388 accepted，iteration 内 16/144 accepted，total description length 2354.1→2016.5。</td></tr>
+            <tr><td>CategoryScienceClaw fiber network</td><td>fiber orientations/weights、stress-strain table、candidate model records、AIC gate、diagnostics、perturbation stress test</td><td>复现 $S=0.673115$、orientation $47.877581^\circ$、$E=119.4\,\mathrm{kPa}$、$R^2=0.999989$、$\Delta\mathrm{AIC}=123.873782$。</td></tr>
+            <tr><td>ScienceClaw provenance layer</td><td>artifact ledger、type metadata、skill labels、parent lists、content hashes、open needs、mutation status、public discourse objects</td><td>验证 artifacts 形成 typed acyclic hypergraph；accepted/rejected/gate/stress-test/report 都可追溯到 input artifacts 与 morphisms。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>SI case</th><th>Accepted model</th><th>Rejected model</th><th>Gate/result</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>7T10 structure-contact mechanics</td><td>linear force-extension model</td><td>mean-force null model</td><td>AIC improvement 69.50；stiffness 253.068938 pN nm^-1；peak force 766.98959 pN at 2.4 nm；$R^2=0.942723$。</td></tr>
+            <tr><td>Mechanobiology force paths</td><td>full force-path regression</td><td>adhesion-only traction model</td><td>mean load-path score 4.421814 Pa µm^-1；max traction 72.886 Pa；adhesion-only $R^2=0.398862$；full model $R^2=1.000$。</td></tr>
+            <tr><td>Membrane biophysics</td><td>Helfrich-style curvature-energy proxy</td><td>curvature-only shape descriptor</td><td>RMS curvature 0.15471241 µm^-1；mean energy proxy 0.23935931 kBT µm^-2；total grid energy proxy 11.72860601 kBT。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Supplementary Table S1 的压缩版：这些案例主要用于说明 provenance 与 gate 的保留方式，不应被过度解读为独立 empirical validation。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">这篇论文的价值在于给 agentic AI for science 提供一套可审计语言，但它的证据形态仍偏 case study 与系统哲学，离通用 benchmark 或独立复现实验还有距离。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>清楚区分 retrieval、fixed-schema search 和 regime-changing discovery，避免把所有 agent improvement 都叫“发现”。</li>
+            <li>用 copresheaf、category of elements、Kan extension 和 comparison map 给 provenance 与 novelty 提供了非主观定义。</li>
+            <li>Builder/Breaker 案例把 retraction、compression、accepted/rejected moves 和 MDL gate 具体化，不只展示最终公式。</li>
+            <li>CategoryScienceClaw 把 skill registry、artifact ledger、open needs、public discourse 和 gate 都纳入 typed artifact graph，工程启发强。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>范畴论形式化门槛高，且部分读者会质疑是否比更朴素的 typed provenance / schema migration language 多带来可操作收益。</li>
+            <li>两个核心案例都来自同一研究生态，缺少独立系统、不同科学领域和第三方 reproducer 的压力测试。</li>
+            <li>Builder/Breaker 与 CategoryScienceClaw 分别依赖论文所述 GPT-5.5 / GPT-5.2 后端，严格复现实验行为的外部依赖很强。</li>
+            <li>CategoryScienceClaw 的机制案例更像 deterministic computational provenance demonstration，不等价于真实 wet-lab 或 large-scale scientific validation。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="critique-box danger">
+          <h3>Missing Ablations</h3>
+          <ul class="compact-list">
+            <li>没有系统比较“范畴论 Kan audit”与普通 versioned schema/provenance audit 在发现识别上的差异。</li>
+            <li>缺少 MDL gate 与 AIC/BIC、cross-validation、Bayesian model selection、human review gate 的对照。</li>
+            <li>缺少固定 schema symbolic search 与 regime transition search 的直接实验对比。</li>
+            <li>GNM cutoff $r_c=10.0\,\text{\AA}$、feature grammar、threshold parameterization、protein evidence selection 的敏感性分析仍不足。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>Failure Modes</h3>
+          <ul class="compact-list">
+            <li>false regime transition：系统把局部过拟合包装成新类型或新 verifier。</li>
+            <li>gate overfitting：MDL/AIC gate 与 artifact grammar 共同偏向某类“看起来可压缩”的表达。</li>
+            <li>artifact explosion：typed ledger 变大后，Kan audit 与 provenance 查询可能成为系统瓶颈。</li>
+            <li>schema brittleness：一开始的 type system 设计会决定哪些 residual 能被看见，哪些 failure 会被错误归类。</li>
+            <li>transport preserves bad evidence：旧证据被 faithfully transport 不代表旧 evidence quality 是可靠的。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对 agent / RLVR / 自进化研究的启发</h2>
+      <p class="section-lead">如果把这篇论文转成 agent 工程语言，它的核心建议是：不要只优化 policy 或 prompt；要把 memory、tools、verifiers、artifacts、失败证据和 rejected alternatives 都放在 typed schema 里，并让“自我改进”成为可验证的 schema transition。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>把 replay 变成 preservation map</h3>
+          <p>自进化 agent 每次升级后，应显式给出旧 trajectories、tools、memories、test cases 在新系统中的对应关系 $\rho:I_t\to u^\ast I'_{t+1}$，而不是只报告新分数。</p>
+        </div>
+        <div class="note-box">
+          <h3>把 novelty 变成 residual</h3>
+          <p>新能力不应只由 benchmark delta 定义，而应看它是否产生了旧 schema transport 无法解释的 accepted artifacts、operations 或 verifiers。</p>
+        </div>
+        <div class="note-box">
+          <h3>保留 rejected alternatives</h3>
+          <p>RLVR / tool-use agent 的失败 proposals、被拒绝工具、无效 verifier 和 superseded prompts 应作为 typed artifacts 保留，供后续 gate 与 audit 查询。</p>
+        </div>
+        <div class="note-box">
+          <h3>gate 不等于 reward</h3>
+          <p>reward 可以驱动探索，gate 决定 commitment。科学发现系统需要区分 candidate generation、evidence stress test、commit/reject/supersede 这几种状态。</p>
+        </div>
+        <div class="note-box">
+          <h3>工具库是 schema，不是插件列表</h3>
+          <p>tool signature、输入输出类型、side effects、verifier、provenance metadata 共同定义 agent 能搜索的空间。新增工具应该被视为 regime extension。</p>
+        </div>
+        <div class="note-box">
+          <h3>压缩与撤回同样是进步</h3>
+          <p>自进化系统不应奖励单调增加 rules/memories/tools。更好的系统会在更宽 evidence set 下删掉不再付费的 commitments。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

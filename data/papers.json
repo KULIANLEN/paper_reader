@@ -511,6 +511,45 @@
         "level": "medium",
         "notes": "论文给出 Terminal-Bench-2.0/Harbor 环境、模型后端、64-case subset 过滤原则、评估硬件、并发和接受规则；但未提供代码仓库，严格复现自动 failure signature builder、proposal context、具体 split 和完整 harness lineage 仍需要作者实现细节。"
       }
+    },
+    {
+      "id": "2606.01444",
+      "slug": "self-revising-discovery-systems",
+      "title": "Self-Revising Discovery Systems for Science: A Categorical Framework for Agentic Artificial Intelligence",
+      "titleZh": "面向科学的自修订发现系统：Agentic AI 的范畴论框架",
+      "authors": [
+        "Fiona Y. Wang",
+        "Markus J. Buehler"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "ai-for-science",
+        "category-theory",
+        "self-evolution",
+        "evaluation"
+      ],
+      "status": "精读",
+      "priority": 5,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "论文把科学发现定义为 representational regime 的经验证修订，而不只是检索或固定 schema 内搜索。它用 copresheaf、category of elements、left Kan extension 和 residual content 描述旧证据如何被保存并运到新 schema，同时用 Builder/Breaker 的 MDL 蛋白力学案例和 CategoryScienceClaw 的 AIC fiber-network 案例展示 typed provenance、gate、retraction 与 rejected alternatives 如何进入审计链。",
+      "takeaways": [
+        "自进化 agent 的升级应显式记录旧 artifacts 到新 schema 的 preservation map，并把新能力定义为 transport 无法解释的 accepted residual。",
+        "科学发现系统里的 gate 应区别于 reward：candidate 可以大量探索，但 accepted state 必须保存 provenance、拒绝项和撤回项。"
+      ],
+      "arxivId": "2606.01444",
+      "paperUrl": "https://arxiv.org/abs/2606.01444",
+      "pdfUrl": "https://arxiv.org/pdf/2606.01444.pdf",
+      "pageUrl": "papers/self-revising-discovery-systems/index.html",
+      "codeUrl": "https://github.com/lamm-mit/BreakingTheWorld",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文给出 Builder/Breaker、ScienceClaw、CategoryScienceClaw mechanics branch 与 Infinite 仓库链接，并报告 generated artifacts/logs/figures；但严格复现依赖论文所述 GPT-5.5/GPT-5.2 后端、artifact export tree、MDL/AIC gate 实现、PDB/GNM 数据处理和 Kan audit 后处理脚本。"
+      }
     }
   ]
 }
