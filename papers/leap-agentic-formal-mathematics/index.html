@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>LEAP: Supercharging LLMs for Formal Mathematics with Agentic Frameworks · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    .paper-page {
+      background:
+        linear-gradient(135deg, rgba(10, 132, 255, 0.10), transparent 32%),
+        linear-gradient(225deg, rgba(0, 168, 134, 0.10), transparent 34%),
+        var(--bg);
+    }
+
+    .paper-article {
+      width: min(calc(100% - 34px), 1120px);
+    }
+
+    .topbar,
+    .paper-hero h1,
+    .content-card h2,
+    .paper-title {
+      letter-spacing: 0;
+    }
+
+    .paper-hero {
+      padding: 3.5rem 0 1.4rem;
+    }
+
+    .paper-hero h1 {
+      max-width: 1040px;
+      font-size: 3.25rem;
+      line-height: 1.08;
+    }
+
+    .paper-hero p {
+      max-width: 860px;
+      font-size: 1.08rem;
+    }
+
+    .hero-meta,
+    .paper-actions,
+    .contribution-strip,
+    .metric-row,
+    .figure-grid,
+    .check-grid,
+    .two-col {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .hero-meta {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 1.4rem 0;
+    }
+
+    .hero-meta div,
+    .contribution-strip article,
+    .figure-card,
+    .mini-panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--surface-strong) 86%, transparent);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero-meta div {
+      padding: 0.9rem 1rem;
+    }
+
+    .hero-meta strong,
+    .mini-panel strong {
+      display: block;
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .hero-meta span,
+    .mini-panel span {
+      display: block;
+      margin-top: 0.28rem;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .paper-actions {
+      grid-template-columns: repeat(3, max-content);
+      justify-content: start;
+      margin-top: 1.35rem;
+    }
+
+    .contribution-strip {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 1rem 0 1.6rem;
+    }
+
+    .contribution-strip article {
+      padding: 1rem;
+    }
+
+    .contribution-strip h2 {
+      margin: 0 0 0.45rem;
+      font-size: 1.1rem;
+    }
+
+    .contribution-strip p,
+    .mini-panel p,
+    .figure-card p {
+      margin: 0;
+      color: var(--text-soft);
+      line-height: 1.78;
+    }
+
+    .content-card {
+      border-radius: 22px;
+    }
+
+    .content-card h2 {
+      font-size: 1.8rem;
+    }
+
+    .content-card h3 {
+      margin: 1.45rem 0 0.65rem;
+      font-size: 1.18rem;
+      line-height: 1.45;
+    }
+
+    .lead {
+      color: var(--text);
+      font-size: 1.05rem;
+      line-height: 1.85;
+    }
+
+    .metric-row {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 1rem 0;
+    }
+
+    .metric {
+      padding: 0.9rem 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1.7rem;
+      line-height: 1.2;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+    }
+
+    .two-col {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .mini-panel {
+      padding: 1rem;
+      box-shadow: none;
+    }
+
+    .table-wrap {
+      width: 100%;
+      margin: 1rem 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--surface-strong) 78%, transparent);
+    }
+
+    table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th,
+    td {
+      padding: 0.72rem 0.78rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--text);
+      font-weight: 760;
+      background: rgba(127, 127, 140, 0.08);
+    }
+
+    td {
+      color: var(--text-soft);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .best {
+      color: var(--success);
+      font-weight: 760;
+    }
+
+    .fail {
+      color: var(--danger);
+      font-weight: 760;
+    }
+
+    .ok {
+      color: var(--success);
+      font-weight: 760;
+    }
+
+    .figure-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .figure-card {
+      overflow: hidden;
+    }
+
+    .figure-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: white;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .figure-card figcaption {
+      padding: 0.95rem 1rem 1rem;
+      color: var(--text-soft);
+      line-height: 1.75;
+    }
+
+    .code-block,
+    pre {
+      overflow-x: auto;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(127, 127, 140, 0.10);
+    }
+
+    pre code {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      white-space: pre;
+    }
+
+    .check-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .check-list {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .anchor-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0 0;
+    }
+
+    .anchor-list a,
+    .paper-tags span {
+      border: 1px solid var(--line);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.75;
+    }
+
+    @media (max-width: 860px) {
+      .paper-hero h1 {
+        font-size: 2.15rem;
+      }
+
+      .hero-meta,
+      .contribution-strip,
+      .metric-row,
+      .two-col,
+      .check-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .paper-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body class="paper-page">
+  <header class="topbar">
+    <a class="brand" href="../../">
+      <span class="brand-mark">∫</span>
+      <span><strong>Paper Atlas</strong><small>arXiv:2606.03303</small></span>
+    </a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+      <a href="#takeaways">启发</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero">
+      <div class="eyebrow"><span></span> Agent / Tool Use · Formal Mathematics · 2026</div>
+      <h1>LEAP: Supercharging LLMs for Formal Mathematics with Agentic Frameworks</h1>
+      <p>
+        这篇论文的核心判断是：通用 LLM 的形式化数学瓶颈不只是“不懂 Lean”，而是很难一次性生成长而正确的证明。
+        LEAP 用 Lean compiler、informal blueprint、AND-OR DAG memory 和 LLM reviewer 组成 agentic proving loop，
+        让 Gemini-3.1-pro 在 Putnam 2025 上完成 12/12，并在 Lean-IMO-Bench 上显著超过 one-shot formalization。
+      </p>
+
+      <div class="hero-meta" aria-label="论文元信息">
+        <div><strong>作者</strong><span>Po-Nien Kung, Linfeng Song, Dawsen Hwang, Jinsung Yoon, Chun-Liang Li, Simone Severini, Mirek Olšák, Edward Lockhart, Quoc V Le, Burak Gokturk, Thang Luong, Tomas Pfister, Nanyun Peng</span></div>
+        <div><strong>版本</strong><span>arXiv:2606.03303v2，2026-06-03 更新</span></div>
+        <div><strong>机构</strong><span>Google Cloud AI Research, Google Cloud, Google DeepMind</span></div>
+        <div><strong>资源</strong><span>Lean-IMO-Bench 与 LEAP Lean solutions 均给出公开链接</span></div>
+      </div>
+
+      <div class="paper-tags">
+        <span>agent</span>
+        <span>formal-math</span>
+        <span>Lean</span>
+        <span>tool-use</span>
+        <span>planning</span>
+        <span>benchmark</span>
+      </div>
+
+      <div class="paper-actions">
+        <a class="secondary-button" href="https://arxiv.org/abs/2606.03303">arXiv</a>
+        <a class="secondary-button" href="https://arxiv.org/pdf/2606.03303.pdf">PDF</a>
+        <a class="secondary-button" href="https://github.com/google-deepmind/superhuman/tree/main/leap">Code / Proofs</a>
+      </div>
+    </section>
+
+    <div class="contribution-strip" aria-label="核心贡献">
+      <article>
+        <h2>Agentic proof workflow</h2>
+        <p>把人类 formalization 的 blueprint 习惯转成可搜索的 DAG：先 direct proving，失败后分解成 verified sketch 与 subgoals。</p>
+      </article>
+      <article>
+        <h2>Lean-IMO-Bench</h2>
+        <p>将 IMO-Bench 的 60 道题转成 Lean statements，覆盖 Basic / Advanced 与代数、组合、数论、几何四类。</p>
+      </article>
+      <article>
+        <h2>强结果但高 compute</h2>
+        <p>Putnam 2025 达到 100% solve rate；Lean-IMO-Bench Basic / Advanced 分别为 83.3% / 56.7%，但 A5 需约 3.0k LLM calls。</p>
+      </article>
+    </div>
+
+    <section class="content-card" id="overview">
+      <h2>1. 论文速览 / TL;DR</h2>
+      <p class="lead">
+        LEAP 是一个面向 Lean 4 的 agentic theorem proving framework。它不训练专用 prover，而是利用通用 foundation model 的
+        informal reasoning、instruction following、tool use 和 iterative self-refinement，把证明构造拆成“自然语言计划 → Lean sketch →
+        compiler verification → DAG memory → reviewer-guided backtracking”的循环。
+      </p>
+
+      <div class="metric-row" aria-label="核心结果">
+        <div class="metric"><strong>12/12</strong><span>Putnam 2025，LEAP rollout=2</span></div>
+        <div class="metric"><strong>83.3%</strong><span>Lean-IMO-Bench Basic solve rate</span></div>
+        <div class="metric"><strong>56.7%</strong><span>Lean-IMO-Bench Advanced solve rate</span></div>
+        <div class="metric"><strong>70%</strong><span>作者摘要中的整体提升描述：one-shot general LLM below 10% → LEAP 70%</span></div>
+      </div>
+
+      <h3>一句话 thesis</h3>
+      <p>
+        对形式化数学来说，关键不是让模型一次性写出完整 Lean proof，而是让模型在一个带 verifier、memory、reviewer 的环境中持续构造和修正
+        proof DAG；当 accepted sketch 满足 $l_1 \land l_2 \land \cdots \land l_k \Rightarrow g$，并且每个 child lemma 最终被 Lean 证明后，parent goal $g$ 才被关闭。
+      </p>
+
+      <div class="anchor-list">
+        <a class="tag-pill" href="#method">方法拆解</a>
+        <a class="tag-pill" href="#results">结果表格</a>
+        <a class="tag-pill" href="#figures">Figure 导航</a>
+        <a class="tag-pill" href="#reproduction">复现清单</a>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>2. 研究动机</h2>
+      <p>
+        现代 LLM 在 informal math reasoning 上已经很强，但自然语言证明有两个硬问题：逻辑漏洞很难自动发现，长证明的人工 peer review 成本很高。
+        论文用 Kepler conjecture 的审稿与后续 formal verification 作为例子，说明“能写出看似合理的证明”和“能被机器核验”之间仍有巨大距离。
+      </p>
+      <p>
+        Formal mathematics 把正确性判定交给 Lean / Isabelle / Coq / HOL Light 这样的 proof assistant，理论上能给出 kernel-level 的严格验证。
+        但现实瓶颈是：LLM 生成的 Lean proof 常常在 syntax、type、library lemma、proof state 管理上失败，尤其是长、多步、非 routine 的 olympiad-level proof。
+      </p>
+
+      <h3>论文挑战的默认假设</h3>
+      <p>
+        许多前沿系统依赖 specialized prover model 或 formal corpus fine-tuning，例如 AlphaProof、DeepSeek Prover V2、Seed Prover、Goedel-Prover-V2。
+        LEAP 的立场更激进：通用 LLM 虽然 one-shot 很弱，但它具备 informal planning、compiler error interpretation、tool interaction 和 self-refinement；
+        如果 scaffold 正确，不必把所有能力都压进一个 specialized prover。
+      </p>
+
+      <h3>为什么需要 Lean-IMO-Bench</h3>
+      <p>
+        MiniF2F、PutnamBench 等 benchmark 已经越来越饱和或覆盖侧重点不同。Lean-IMO-Bench 选择短 statement 但证明高度非 routine 的 IMO-style problems，
+        更强调复杂分解、长链依赖和跨数学领域泛化。它包含 60 题：Basic 30 题、Advanced 30 题，并由 Lean experts 手工 formalize 和 verify statements。
+      </p>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>3. 数学表示、建模与算法流程</h2>
+      <p class="lead">
+        LEAP 的核心状态是 AND-OR DAG。OR node 表示一个待证明 theorem / lemma；AND node 表示一种已被 Lean 接受的 decomposition sketch，
+        它把 parent goal 约化为若干 child subgoals。系统持续搜索这个 DAG，直到 root goal 的某条 AND decomposition 下所有 child OR nodes 都被证明。
+      </p>
+
+      <h3>符号与对象</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>符号 / 对象</th><th>含义</th><th>在 LEAP 中的角色</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>$g$</td><td>Lean theorem 或 lemma statement</td><td>一个 proof goal，也是 OR node</td></tr>
+            <tr><td>$p$</td><td>完整 Lean proof</td><td>不依赖新 proposed lemmas；Lean 通过后关闭 goal</td></tr>
+            <tr><td>$s$</td><td>formal proof sketch</td><td>证明当前 goal，但允许 newly proposed lemmas 处保留 `sorry`</td></tr>
+            <tr><td>$L=\{l_i\}_{i=1}^{k}$</td><td>由 blueprint 生成的 subgoals</td><td>成为 child OR nodes；全部证明后 parent sketch 生效</td></tr>
+            <tr><td>$D=(V,E)$</td><td>AND-OR proof DAG</td><td>保存 proof progress、dependency、lemma reuse 和 search memory</td></tr>
+            <tr><td>$R_{\text{Lean}}$</td><td>Lean compiler / verifier</td><td>给出 hard correctness signal：type-check 或 error message</td></tr>
+            <tr><td>$R_{\text{LLM}}$</td><td>LLM reviewer</td><td>判断 decomposition 是否真的变简单、相关、可推进</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>主循环：direct proof 失败后转向 blueprint decomposition</h3>
+      <ol>
+        <li><strong>Register root:</strong> 输入 Lean statement，作为 root OR node 写入 DAG。</li>
+        <li><strong>State reader:</strong> 读取当前 goal、已有依赖、相关 lemmas 和 graph context。</li>
+        <li><strong>Direct formalization:</strong> 先生成 informal proof，再翻译成 Lean proof；失败时用 compiler feedback 与 LeanSearch retrieval 做 revision。</li>
+        <li><strong>Blueprint generation:</strong> direct path 失败后，生成 informal blueprint，提出 intermediate lemmas，并转成 formal sketch。</li>
+        <li><strong>Sketch verification:</strong> Lean 检查 sketch；main theorem body 必须 sorry-free，`sorry` 只允许出现在 newly proposed lemma statements。</li>
+        <li><strong>LLM review:</strong> reviewer 判断 proposed subgoals 是否相关、是否更简单、是否构成 plausible route。</li>
+        <li><strong>State writer:</strong> 通过 acyclicity check 后，把 accepted sketch 写成 AND node，把 subgoals 写成 child OR nodes。</li>
+        <li><strong>DFS with backtracking:</strong> 递归处理 child goals；若 branch 无进展，回溯并尝试 alternative blueprint。</li>
+      </ol>
+
+      <h3>为什么 DAG memory 重要</h3>
+      <p>
+        如果每次 decomposition 都形成独立 tree，重复 subproblem 会被反复发现和证明。DAG 的 memoization 让相同或可复用的 intermediate lemma 成为共享节点，
+        从而把多个 proof branches 汇聚到同一依赖。作者强调两个效果：monotone refinement 保持全局 proof plan 的稳定依赖顺序；
+        anticipatory lemma planning 允许上层 blueprint 提前提出后续可能有用的 auxiliary lemmas。
+      </p>
+
+      <div class="callout">
+        <strong>可验证性的关键不变量：</strong>
+        一个 decomposition 只有在 Lean 已经验证“当前 goal 可由 proposed lemmas 推出”时才进入 DAG。
+        因此 LEAP 的 search 可以失败、回溯、浪费 compute，但不会把未经 Lean 接受的 proof 当作 solved proof。
+      </div>
+
+      <h3>形式化语义的直观表达</h3>
+      <p>
+        设当前 goal 为 $g$，blueprint 提出 subgoals $l_1,\ldots,l_k$。LEAP 不是直接相信自然语言计划，而是要求 Lean 接受一个 sketch：
+      </p>
+      <p>
+        $$\text{LeanAccept}\left(s: l_1,\ldots,l_k \vdash g\right)=1.$$
+      </p>
+      <p>
+        当 $l_1,\ldots,l_k$ 后续分别被完整 Lean proof 关闭时，DAG 中对应 AND node 才能关闭 parent $g$。这使 natural-language blueprint 只负责提出方向，
+        correctness 仍由 Lean kernel 兜底。
+      </p>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>4. 实验设计与复现细节</h2>
+      <h3>评测对象与 baselines</h3>
+      <p>
+        Backend LLM 是 Gemini-3.1-pro。Baselines 包括：Gemini-3.1-pro one-shot proof generation、Goedel-Prover-V2-32B specialized ATP model、
+        Hilbert agentic Lean formalization framework，以及闭源但很强的 Aristotle。论文同时报告 Putnam 2025 和 Lean-IMO-Bench。
+      </p>
+
+      <div class="two-col">
+        <div class="mini-panel">
+          <strong>Putnam 2025</strong>
+          <span>12 道 undergraduate-level competition problems。论文称 2025 年最高分 110/120，平均约 10，中位数 2。</span>
+        </div>
+        <div class="mini-panel">
+          <strong>Lean-IMO-Bench</strong>
+          <span>60 道 Lean statements；Basic / Advanced 各 30 题。Basic: 8 algebra, 8 combinatorics, 8 number theory, 6 geometry；Advanced: 8 algebra, 8 combinatorics, 6 number theory, 8 geometry。</span>
+        </div>
+      </div>
+
+      <h3>Table 1: Lean-IMO-Bench baseline tasks</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Task</th><th>Model / Metric</th><th>Basic Set (%)</th><th>Advanced Set (%)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Natural Language Proof</td><td>Gemini 2.5 Pro (Pass@1)</td><td>55.2</td><td>17.6</td></tr>
+            <tr><td rowspan="2">Formal Theorem Proving</td><td>Gemini 3.1 Pro (Pass@128)</td><td>20.0</td><td>3.3</td></tr>
+            <tr><td>Gemini 3.1 Pro (Avg.@128)</td><td>4.6</td><td>0.2</td></tr>
+            <tr><td rowspan="2">Formal Proof Translation</td><td>Gemini 3.1 Pro (Pass@128)</td><td>20.0</td><td>3.3</td></tr>
+            <tr><td>Gemini 3.1 Pro (Avg.@128)</td><td>4.6</td><td>0.8</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">
+        解释：给模型正确 informal proof 后，formal proof translation 的 Pass@128 仍没有明显改善，说明主要瓶颈在 Lean code generation / proof state handling，
+        而不是纯数学思路。
+      </p>
+
+      <h3>复现实验需要记录的设置</h3>
+      <ul>
+        <li>Pass@128 用于 one-shot direct formalization baselines；LEAP、Hilbert、Aristotle 的主表标注 rollout=2。</li>
+        <li>Direct Formalization ablation 中，iterative setting 是单个初始尝试加最多 20 次 compiler-feedback revision，报告 Pass@1。</li>
+        <li>Hilbert rollout 被作者设置 7-day time limit，因为递归 search 的调用量增长很快。</li>
+        <li>论文没有完整披露 prompt templates、temperature / top-p、exact decoding、hardware、API latency、reviewer prompt 与 LEAP 的全局 timeout policy。</li>
+      </ul>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>5. 实验结果与核心结论</h2>
+      <h3>Table 2: Putnam 2025 results</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Method</th><th>a1</th><th>a2</th><th>a3</th><th>a4</th><th>a5</th><th>a6</th><th>b1</th><th>b2</th><th>b3</th><th>b4</th><th>b5</th><th>b6</th><th>Solve Rate</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Gemini-3.1-pro ⋄</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td>0.0%</td></tr>
+            <tr><td>Goedel-Prover-V2-32B ⋄</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td>0.0%</td></tr>
+            <tr><td>Hilbert †</td><td class="fail">×</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="fail">×</td><td class="ok">✓</td><td>33.3%</td></tr>
+            <tr><td>Aristotle †</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="fail">×</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="fail">×</td><td class="fail">×</td><td>75.0%</td></tr>
+            <tr><td>LEAP †</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td><td class="best">100.0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">⋄ 表示 Pass@128；† 表示 rollout=2。</p>
+
+      <h3>Table 3: LEAP runtime and search efficiency on Putnam 2025</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>a1</th><th>a2</th><th>a3</th><th>a4</th><th>a5</th><th>a6</th><th>b1</th><th>b2</th><th>b3</th><th>b4</th><th>b5</th><th>b6</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>LLM Calls</td><td>71</td><td>304</td><td>963</td><td>1.4k</td><td>3.0k</td><td>1.0k</td><td>116</td><td>46</td><td>98</td><td>87</td><td>239</td><td>161</td></tr>
+            <tr><td>Active Nodes</td><td>8</td><td>26</td><td>55</td><td>105</td><td>170</td><td>62</td><td>12</td><td>8</td><td>10</td><td>9</td><td>211</td><td>24</td></tr>
+            <tr><td>Proof Length</td><td>405</td><td>591</td><td>713</td><td>1.0k</td><td>2.0k</td><td>581</td><td>752</td><td>300</td><td>326</td><td>556</td><td>1.9k</td><td>848</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        这张表同时显示 LEAP 的强度和成本：Putnam A5 需要约 3.0k 次 LLM calls、170 个 active nodes 和约 2.0k 行 Lean proof。
+        因此“agentic framework”不是免费午餐，它把 one-shot 成功率换成了 verifier-guided search compute。
+      </p>
+
+      <h3>Table 4: Lean-IMO-Bench results</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Split</th><th>Method</th><th>Algebra</th><th>Comb.</th><th>Num. Theory</th><th>Geometry</th><th>Overall</th></tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="5">Basic</td><td>Gemini-3.1-Pro ⋄</td><td>37.5</td><td>12.5</td><td>25.0</td><td>0</td><td>20.0</td></tr>
+            <tr><td>Goedel-V2-32B ⋄</td><td>37.5</td><td>0</td><td>0</td><td>0</td><td>10.0</td></tr>
+            <tr><td>Hilbert †</td><td>62.5</td><td>25</td><td>50</td><td>0</td><td>36.6</td></tr>
+            <tr><td>Aristotle †</td><td>75</td><td>100</td><td>100</td><td>16.7</td><td>76.7</td></tr>
+            <tr><td>LEAP †</td><td class="best">100</td><td class="best">100</td><td class="best">100</td><td class="best">16.7</td><td class="best">83.3</td></tr>
+            <tr><td rowspan="5">Advanced</td><td>Gemini-3.1-Pro ⋄</td><td>0</td><td>12.5</td><td>0</td><td>0</td><td>3.3</td></tr>
+            <tr><td>Goedel-V2-32B ⋄</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+            <tr><td>Hilbert †</td><td>12.5</td><td>0</td><td>16.6</td><td>0</td><td>6.6</td></tr>
+            <tr><td>Aristotle †</td><td>37.5</td><td>12.5</td><td>33.3</td><td>0</td><td>20.0</td></tr>
+            <tr><td>LEAP †</td><td class="best">100</td><td class="best">25</td><td class="best">100</td><td class="best">12.5</td><td class="best">56.7</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        关键结论不是“LEAP 对所有数学领域都解决了”，而是它在 Algebra 和 Number Theory 上非常强，但 Geometry 仍接近 0。
+        这说明 general-purpose Lean proving 仍然缺少适合 olympiad geometry 的 domain-specific formal library / tactic support。
+      </p>
+
+      <h3>Table 5: one-shot vs iterative formalization</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Model</th><th>One-shot (Pass@128)</th><th>Iterative (Pass@1)</th><th>读法</th></tr></thead>
+          <tbody>
+            <tr><td>Goedel-Prover-V2-32B</td><td>10.0</td><td>6.6</td><td>specialized prover 不一定会利用 compiler feedback loop</td></tr>
+            <tr><td>Gemini-3.1-Pro</td><td>20.0</td><td>36.6</td><td>通用 LLM 更擅长解释错误并自我修正</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Table 6: DAG memoization ablation</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Config</th><th>Alg. B</th><th>Alg. A</th><th>Comb. B</th><th>Comb. A</th><th>NT B</th><th>NT A</th><th>Geo. B</th><th>Geo. A</th><th>Overall B</th><th>Overall A</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>w/o DAG (Naive Tree)</td><td>100</td><td>75</td><td>75</td><td>25</td><td>100</td><td>66.6</td><td>0</td><td>0</td><td>73.3</td><td>40.0</td></tr>
+            <tr><td>Full DAG</td><td class="best">100</td><td class="best">100</td><td class="best">100</td><td>25</td><td class="best">100</td><td class="best">100</td><td class="best">16.7</td><td class="best">12.5</td><td class="best">83.3</td><td class="best">56.7</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        DAG 的增益主要体现在 Advanced split：Overall 从 40.0% 到 56.7%。这支持论文的核心机制假设：复杂证明里 shared lemmas 和 graph context 会减少重复推导。
+      </p>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>6. Figure / Table 导航</h2>
+      <p class="lead">PDF 中的图像已从本地 page render 裁剪；表格在上文以 HTML 重建，便于检索和复制。</p>
+
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/crops/figure_1_leap_workflow.png" alt="Figure 1: LEAP workflow showing direct formalization and blueprint generation paths" />
+          <figcaption><strong>Figure 1.</strong> LEAP workflow：左侧是 AND-OR DAG state，direct formalization 失败后进入 blueprint generation；Lean verifier 负责 formal correctness，LLM reviewer 负责 decomposition quality。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure_2_putnam_a6_dag.png" alt="Figure 2: DAG example for Putnam 2025 Problem A6" />
+          <figcaption><strong>Figure 2.</strong> Putnam 2025 A6 的 proof DAG 示例：绿色节点表示已证明节点，虚线边体现 anticipatory lemma planning。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/crops/figure_3_unproductive_decomposition.png" alt="Figure 3: Unproductive decomposition without LLM review" />
+          <figcaption><strong>Figure 3.</strong> 去掉 LLM reviewer 后的失败样例：proposed subgoal 在语义上几乎复述 grandparent goal，Lean 可接受 sketch 但搜索没有真正前进。</figcaption>
+        </figure>
+      </div>
+
+      <h3>表格地图</h3>
+      <ul>
+        <li><strong>Table 1:</strong> Lean-IMO-Bench 三类任务 baseline，证明 informal reasoning 与 formal proving 之间的落差。</li>
+        <li><strong>Table 2:</strong> Putnam 2025 逐题结果，LEAP 12/12。</li>
+        <li><strong>Table 3:</strong> Putnam 2025 的 LLM calls、active nodes、proof length，显示 compute cost。</li>
+        <li><strong>Table 4:</strong> Lean-IMO-Bench 分领域结果，Geometry 是最明显弱项。</li>
+        <li><strong>Table 5:</strong> compiler-feedback iterative revision 对 Gemini-3.1-Pro 有显著帮助。</li>
+        <li><strong>Table 6:</strong> DAG memoization ablation，Full DAG 明显优于 Naive Tree。</li>
+      </ul>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>7. 复现清单</h2>
+      <p class="lead">
+        复现难度为 medium-to-high：Lean proof artifacts 和 benchmark 入口公开，但 exact prompts、decoding、hardware、timeout、model access 没有完整披露。
+        如果只能访问不同版本的 Gemini 或开源 LLM，结果很可能无法直接对齐论文数字。
+      </p>
+
+      <div class="check-grid">
+        <div>
+          <h3>必需资源</h3>
+          <ul class="check-list">
+            <li>Lean 4 与 Mathlib 环境。</li>
+            <li>LEAP Lean solutions / code: `google-deepmind/superhuman/tree/main/leap`。</li>
+            <li>Lean-IMO-Bench statements: `https://imobench.github.io`。</li>
+            <li>LeanSearch retrieval，论文 Figure 1 中 direct / blueprint paths 都连接了 Lean Search。</li>
+            <li>可调用 Gemini-3.1-pro 或可替代的 general-purpose LLM。</li>
+          </ul>
+        </div>
+        <div>
+          <h3>实验日志要记录</h3>
+          <ul class="check-list">
+            <li>每题 LLM calls、active DAG nodes、最终 proof line count。</li>
+            <li>每个 accepted sketch 的 proposed lemmas、Lean errors、revision history。</li>
+            <li>LLM reviewer 的 reject reasons 与 backtracking branches。</li>
+            <li>Pass@128 sampling config、rollout=2 的 budget 定义、per-problem timeout。</li>
+            <li>所有最终 `.lean` 文件必须由 Lean kernel 重新验证。</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>最小复现路线</h3>
+      <ol>
+        <li>先复现 Table 5 的 Direct Formalization：对 Lean-IMO-Bench Basic set 跑 one-shot Pass@128，再跑最多 20 轮 compiler feedback revision。</li>
+        <li>实现 state reader / writer，把 root theorem 注册为 OR node，保存 dependencies、proof attempts 和 compiler messages。</li>
+        <li>实现 direct path：informal proof generation → Lean code generation → Lean verify → revise。</li>
+        <li>实现 decomposition path：informal blueprint → formal sketch → Lean verify sketch；只允许 proposed lemma 处保留 `sorry`。</li>
+        <li>加入 LLM reviewer，拒绝与 parent goal 等价、过难、无关或无法推进的 subgoals。</li>
+        <li>加入 DAG memoization 与 acyclicity check，再复现 Table 6 的 Naive Tree vs Full DAG。</li>
+        <li>最后扩展到 Putnam 2025，按 Table 3 记录 calls / nodes / proof length。</li>
+      </ol>
+
+      <h3>附录中对复现最有用的细节</h3>
+      <p>
+        Appendix B 给出两个 research-level case 的 Lean statements：Knuth directed Cayley graph even-case 中 Color 2 round map 的 single-cycle goal，
+        以及 Erdős Problem 457 的 asymptotic prime divisibility statement。Appendix C 给出 proof goal、formal proof、formal sketch、informal proof 和 informal blueprint 的样例，
+        尤其展示了 LEAP 如何从自然语言 blueprint 提出 Mathlib-oriented smaller lemmas。
+      </p>
+      <p class="note">
+        可核对点：正文 case study 段落把 Erdős Problem 457 描述为 triangle-free graph density 相关问题；Appendix B 的 formal statement 则是 prime divisibility
+        条件。本页在复现清单中按 Appendix B 的 Lean statement 记录，因为它是可直接执行和验证的对象。
+      </p>
+
+      <pre><code>theorem color2_singleCycle_unrolled (h6 : 6 ≤ h) :
+  (∀ p : Fin (2 * h) × Fin (2 * h), (r2Map h hh)^[(2 * h) * (2 * h)] p = p) ∧
+  (∀ (p : Fin (2 * h) × Fin (2 * h)) (k : ℕ), 0 < k → k < (2 * h) * (2 * h) →
+    (r2Map h hh)^[k] p ≠ p) := by
+  sorry</code></pre>
+
+      <p class="note">
+        论文称 LEAP 为 Knuth 子问题生成超过 5000 行 Lean 4 code，并验证 Color 2 routing dynamics 形成长度 $m^2$ 的单一 cycle。
+        这是 research-level utility 的重要证据，但它验证的是关键子问题，不等同于完整开放问题的全部 formalization。
+      </p>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>8. Reviewer Critique</h2>
+      <h3>优点</h3>
+      <ul>
+        <li><strong>问题定位准确：</strong> 把 formal proving 的难点从“模型是否会数学”细化为“长 proof 的 decomposition、state management、compiler feedback use”。</li>
+        <li><strong>系统设计有可验证不变量：</strong> accepted sketch 必须通过 Lean，避免纯自然语言 reviewer 直接决定 correctness。</li>
+        <li><strong>证据强：</strong> Putnam 2025 逐题、Lean-IMO-Bench 分领域、DAG ablation、LLM reviewer failure case 都支撑主要 claim。</li>
+        <li><strong>benchmark 有价值：</strong> Lean-IMO-Bench 填补短 statement、长非 routine proof 的评测空缺。</li>
+      </ul>
+
+      <h3>主要弱点与威胁</h3>
+      <ul>
+        <li><strong>复现细节不足：</strong> prompt、decoding、hardware、timeout、reviewer criteria、branch priority 都不够完整；对 agentic system 来说这些会显著影响结果。</li>
+        <li><strong>compute 可比性不足：</strong> Pass@128、rollout=2、7-day Hilbert cap 和 LEAP 的 per-problem budget 并不完全等价。</li>
+        <li><strong>backend 依赖强：</strong> Gemini-3.1-pro 的可用性和版本差异会影响 external reproducibility。</li>
+        <li><strong>Geometry 弱项明显：</strong> Lean-IMO-Bench Geometry 几乎仍未解决，说明 framework 不能替代 domain-specific libraries / tactics。</li>
+        <li><strong>LLM reviewer 仍可能误判：</strong> Figure 3 证明 reviewer 很重要，但还没有大规模 reviewer precision / recall 或错误 taxonomy。</li>
+      </ul>
+
+      <h3>我会要求补的实验</h3>
+      <ul>
+        <li>在更多 Putnam / Lean-IMO problems 上系统移除 LLM reviewer，而不只聚焦 A5。</li>
+        <li>报告 Full DAG 相比 Naive Tree 的 LLM call reduction、wall-clock、重复 lemma reuse rate。</li>
+        <li>做 model swap：同一 LEAP scaffold 下比较 Gemini、OpenAI、Claude、开源 reasoning model。</li>
+        <li>给出 prompt templates、sampling params、branch budget 和 failure logs，以便第三方复现。</li>
+        <li>尝试 hybrid architecture：foundation model 做 planner/reviewer，specialized prover 做 local Lean proof generation。</li>
+      </ul>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>9. 对我的研究方向的启发</h2>
+      <p class="lead">
+        LEAP 最值得迁移的不是“Lean 专用技巧”，而是 verifier-grounded agent design：把任务拆成可验证子目标，用 graph memory 保存中间状态，
+        再让 reviewer 判断“是否真的推进了问题”。
+      </p>
+
+      <div class="two-col">
+        <div class="mini-panel">
+          <strong>RLVR / self-evolution</strong>
+          <p>Lean compiler 给 binary reward，但 DAG 中的 accepted sketch、open-goal reduction、lemma reuse 可作为 process reward。失败 traces 可进入 replay buffer 训练 reviewer 或 proposer。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Questioner-solver 分工</strong>
+          <p>Blueprint generator 像 questioner，提出 subgoals；formal prover 像 solver；LLM reviewer / Lean verifier 组成 evaluator。这个三方结构比单模型 self-consistency 更可控。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Diversity 不是盲采样</strong>
+          <p>OR nodes 允许多种 proof strategy，但 DAG memoization 把有用 lemmas 汇聚复用。多样性应该围绕 reusable subgoals，而不是只增加 complete proof samples。</p>
+        </div>
+        <div class="mini-panel">
+          <strong>Evaluation design</strong>
+          <p>Lean-IMO-Bench 的启发是：短 statement、长 proof、hard-to-search 的任务更能区分 scaffold 能力。对 agent benchmark 来说，应避免只测容易被 one-shot 或 memorization 覆盖的任务。</p>
+        </div>
+      </div>
+
+      <h3>最终判断</h3>
+      <p>
+        这是一篇值得精读的 agentic formal reasoning paper。它的强 claim 主要成立：通用 LLM 在 verifier-guided scaffold 中能显著缩小与 specialized prover 的差距。
+        但结论不应解读为 specialized prover 不重要；更可能的下一步是 hybrid system，把 LEAP 的 global planning / reviewer / memory 与 specialized local prover 结合。
+      </p>
+    </section>
+  </main>
+</body>
+</html>

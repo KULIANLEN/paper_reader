@@ -1,0 +1,42 @@
+{
+  "id": "2605.29682",
+  "slug": "scaling-laws-agent-harnesses-efc",
+  "title": "Scaling Laws for Agent Harnesses via Effective Feedback Compute",
+  "titleZh": "用 Effective Feedback Compute 刻画 Agent Harness 的扩展律",
+  "authors": [
+    "Xuanliang Zhang",
+    "Dingzirui Wang",
+    "Keyan Xu",
+    "Qingfu Zhu",
+    "Wanxiang Che"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "evaluation",
+    "test-time-scaling",
+    "feedback"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "论文提出 Effective Feedback Compute (EFC)，把 agent harness 的 test-time scaling 从 raw tokens、tool calls、cost 转向有效反馈量。EFC 只奖励 informative、valid、non-redundant、retained 的反馈，并用任务需求 D_task 归一化。跨 synthetic、executable code、real traces、held-out 和 prospective batch，EFC/NRS-EFC 坐标比 raw compute 与 SAS 更能预测 failure rate。",
+  "takeaways": [
+    "agent 扩展的关键不是花更多 raw compute，而是提高 raw budget 到 durable feedback 的转换效率 eta。",
+    "评估 harness 时应同时报告 feedback quality、task demand normalization 和 slice-specific efficiency，避免把工具调用数量误读为能力。"
+  ],
+  "arxivId": "2605.29682",
+  "paperUrl": "https://arxiv.org/abs/2605.29682",
+  "pdfUrl": "https://arxiv.org/pdf/2605.29682.pdf",
+  "pageUrl": "papers/scaling-laws-agent-harnesses-efc/index.html",
+  "codeUrl": "",
+  "repro": {
+    "available": false,
+    "level": "low",
+    "notes": "PDF 给出 EFC/NRS-EFC/D_task 公式、任务层、harness roles 与主要结果，但未提供代码链接、完整 prompts、预算网格、task IDs、random seeds 或 estimator 训练超参数；可复现实验框架，逐数值复现需要作者实现细节。"
+  }
+}

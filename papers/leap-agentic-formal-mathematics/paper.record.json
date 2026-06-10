@@ -1,0 +1,53 @@
+{
+  "id": "2606.03303",
+  "slug": "leap-agentic-formal-mathematics",
+  "title": "LEAP: Supercharging LLMs for Formal Mathematics with Agentic Frameworks",
+  "titleZh": "LEAP：用 Agentic Framework 增强通用 LLM 的形式化数学证明",
+  "authors": [
+    "Po-Nien Kung",
+    "Linfeng Song",
+    "Dawsen Hwang",
+    "Jinsung Yoon",
+    "Chun-Liang Li",
+    "Simone Severini",
+    "Mirek Olšák",
+    "Edward Lockhart",
+    "Quoc V Le",
+    "Burak Gokturk",
+    "Thang Luong",
+    "Tomas Pfister",
+    "Nanyun Peng"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "reasoning",
+    "formal-math",
+    "lean",
+    "tool-use",
+    "planning",
+    "benchmark"
+  ],
+  "status": "精读",
+  "priority": 5,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "LEAP 将通用 LLM 放入 Lean compiler 驱动的 agentic proof loop：先 direct formalization，失败后生成 informal blueprint 与 verified sketch，并用 AND-OR DAG memoization 复用 lemmas。它在 Putnam 2025 上解决 12/12，在 Lean-IMO-Bench 上达到 Basic 83.3% 和 Advanced 56.7%，但复现依赖 Gemini-3.1-pro、prompt/decoding/budget 细节仍不完整。",
+  "takeaways": [
+    "形式化证明的关键 scaffold 是 verifier-grounded decomposition：LLM 负责提出 blueprint，Lean 负责 correctness，reviewer 负责过滤无效 subgoals。",
+    "DAG memory 比 naive proof tree 更适合长证明搜索，因为 reusable lemmas 和 graph context 能减少重复推导。",
+    "对 RLVR / agent 自进化，compiler feedback、accepted sketch 和 lemma reuse 都可以转化为过程奖励与 replay 数据。"
+  ],
+  "arxivId": "2606.03303",
+  "paperUrl": "https://arxiv.org/abs/2606.03303",
+  "pdfUrl": "https://arxiv.org/pdf/2606.03303",
+  "pageUrl": "papers/leap-agentic-formal-mathematics/index.html",
+  "codeUrl": "https://github.com/google-deepmind/superhuman/tree/main/leap",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "Lean solutions/code and Lean-IMO-Bench links are available, but exact prompts, decoding settings, model access, hardware, global timeouts, and reviewer criteria are not fully disclosed."
+  }
+}

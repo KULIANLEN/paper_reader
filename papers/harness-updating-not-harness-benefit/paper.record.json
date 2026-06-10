@@ -1,0 +1,54 @@
+{
+  "id": "2605.30621",
+  "slug": "harness-updating-not-harness-benefit",
+  "title": "Harness Updating Is Not Harness Benefit: Disentangling Evolution Capabilities in Self-Evolving LLM Agents",
+  "titleZh": "Harness 更新不等于 Harness 受益：拆解自进化 LLM Agent 的进化能力",
+  "authors": [
+    "Minhua Lin",
+    "Juncheng Wu",
+    "Zijun Wang",
+    "Zhan Shi",
+    "Yisi Sang",
+    "Bing He",
+    "Zewen Liu",
+    "Tianxin Wei",
+    "Zongyu Wu",
+    "Zhiwei Zhang",
+    "Dakuo Wang",
+    "Xiang Zhang",
+    "Benoit Dumoulin",
+    "Cihang Xie",
+    "Yuyin Zhou",
+    "Suhang Wang",
+    "Hanqing Lu"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "self-evolution",
+    "harness",
+    "tool-use",
+    "evaluation"
+  ],
+  "status": "精读",
+  "priority": 4,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "论文把 harness self-evolution 拆成 harness-updating 与 harness-benefit 两个能力，并在 SWE-bench Verified、MCP-Atlas、SkillsBench 上独立改变 solver 与 evolver。结果显示 evolver 写出有用 harness updates 的能力与 base capability 近似解耦，而 solver 从更新中获益呈非单调；弱模型主要失败在 harness activation 和 long-horizon adherence。",
+  "takeaways": [
+    "自进化 agent 的预算应优先投给 task-solving agent 的 harness invocation 与 instruction following，而不是默认升级 evolver。",
+    "评估 self-evolution 时需要分开报告 update quality、benefit ability、SLR/HFR/LPR 与 phase-level adherence，否则 final pass rate 会掩盖瓶颈。"
+  ],
+  "arxivId": "2605.30621",
+  "paperUrl": "https://arxiv.org/abs/2605.30621",
+  "pdfUrl": "https://arxiv.org/pdf/2605.30621",
+  "pageUrl": "papers/harness-updating-not-harness-benefit/index.html",
+  "codeUrl": "https://github.com/A-EVO-Lab/a-evolve/tree/release/harness-evolution",
+  "repro": {
+    "available": true,
+    "level": "medium",
+    "notes": "论文给出代码链接、benchmark 设置、prompt 模板、editable harness scope、完整结果矩阵和 HFR judge prompt；精确复现仍依赖模型 API 版本、task stream/order、evolution budget、MCP 服务状态和 runner 配置。"
+  }
+}

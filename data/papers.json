@@ -550,6 +550,155 @@
         "level": "medium",
         "notes": "论文给出 Builder/Breaker、ScienceClaw、CategoryScienceClaw mechanics branch 与 Infinite 仓库链接，并报告 generated artifacts/logs/figures；但严格复现依赖论文所述 GPT-5.5/GPT-5.2 后端、artifact export tree、MDL/AIC gate 实现、PDB/GNM 数据处理和 Kan audit 后处理脚本。"
       }
+    },
+    {
+      "id": "2605.30621",
+      "slug": "harness-updating-not-harness-benefit",
+      "title": "Harness Updating Is Not Harness Benefit: Disentangling Evolution Capabilities in Self-Evolving LLM Agents",
+      "titleZh": "Harness 更新不等于 Harness 受益：拆解自进化 LLM Agent 的进化能力",
+      "authors": [
+        "Minhua Lin",
+        "Juncheng Wu",
+        "Zijun Wang",
+        "Zhan Shi",
+        "Yisi Sang",
+        "Bing He",
+        "Zewen Liu",
+        "Tianxin Wei",
+        "Zongyu Wu",
+        "Zhiwei Zhang",
+        "Dakuo Wang",
+        "Xiang Zhang",
+        "Benoit Dumoulin",
+        "Cihang Xie",
+        "Yuyin Zhou",
+        "Suhang Wang",
+        "Hanqing Lu"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "self-evolution",
+        "harness",
+        "tool-use",
+        "evaluation"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "论文把 harness self-evolution 拆成 harness-updating 与 harness-benefit 两个能力，并在 SWE-bench Verified、MCP-Atlas、SkillsBench 上独立改变 solver 与 evolver。结果显示 evolver 写出有用 harness updates 的能力与 base capability 近似解耦，而 solver 从更新中获益呈非单调；弱模型主要失败在 harness activation 和 long-horizon adherence。",
+      "takeaways": [
+        "自进化 agent 的预算应优先投给 task-solving agent 的 harness invocation 与 instruction following，而不是默认升级 evolver。",
+        "评估 self-evolution 时需要分开报告 update quality、benefit ability、SLR/HFR/LPR 与 phase-level adherence，否则 final pass rate 会掩盖瓶颈。"
+      ],
+      "arxivId": "2605.30621",
+      "paperUrl": "https://arxiv.org/abs/2605.30621",
+      "pdfUrl": "https://arxiv.org/pdf/2605.30621",
+      "pageUrl": "papers/harness-updating-not-harness-benefit/index.html",
+      "codeUrl": "https://github.com/A-EVO-Lab/a-evolve/tree/release/harness-evolution",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "论文给出代码链接、benchmark 设置、prompt 模板、editable harness scope、完整结果矩阵和 HFR judge prompt；精确复现仍依赖模型 API 版本、task stream/order、evolution budget、MCP 服务状态和 runner 配置。"
+      }
+    },
+    {
+      "id": "2606.03303",
+      "slug": "leap-agentic-formal-mathematics",
+      "title": "LEAP: Supercharging LLMs for Formal Mathematics with Agentic Frameworks",
+      "titleZh": "LEAP：用 Agentic Framework 增强通用 LLM 的形式化数学证明",
+      "authors": [
+        "Po-Nien Kung",
+        "Linfeng Song",
+        "Dawsen Hwang",
+        "Jinsung Yoon",
+        "Chun-Liang Li",
+        "Simone Severini",
+        "Mirek Olšák",
+        "Edward Lockhart",
+        "Quoc V Le",
+        "Burak Gokturk",
+        "Thang Luong",
+        "Tomas Pfister",
+        "Nanyun Peng"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "reasoning",
+        "formal-math",
+        "lean",
+        "tool-use",
+        "planning",
+        "benchmark"
+      ],
+      "status": "精读",
+      "priority": 5,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "LEAP 将通用 LLM 放入 Lean compiler 驱动的 agentic proof loop：先 direct formalization，失败后生成 informal blueprint 与 verified sketch，并用 AND-OR DAG memoization 复用 lemmas。它在 Putnam 2025 上解决 12/12，在 Lean-IMO-Bench 上达到 Basic 83.3% 和 Advanced 56.7%，但复现依赖 Gemini-3.1-pro、prompt/decoding/budget 细节仍不完整。",
+      "takeaways": [
+        "形式化证明的关键 scaffold 是 verifier-grounded decomposition：LLM 负责提出 blueprint，Lean 负责 correctness，reviewer 负责过滤无效 subgoals。",
+        "DAG memory 比 naive proof tree 更适合长证明搜索，因为 reusable lemmas 和 graph context 能减少重复推导。",
+        "对 RLVR / agent 自进化，compiler feedback、accepted sketch 和 lemma reuse 都可以转化为过程奖励与 replay 数据。"
+      ],
+      "arxivId": "2606.03303",
+      "paperUrl": "https://arxiv.org/abs/2606.03303",
+      "pdfUrl": "https://arxiv.org/pdf/2606.03303",
+      "pageUrl": "papers/leap-agentic-formal-mathematics/index.html",
+      "codeUrl": "https://github.com/google-deepmind/superhuman/tree/main/leap",
+      "repro": {
+        "available": true,
+        "level": "medium",
+        "notes": "Lean solutions/code and Lean-IMO-Bench links are available, but exact prompts, decoding settings, model access, hardware, global timeouts, and reviewer criteria are not fully disclosed."
+      }
+    },
+    {
+      "id": "2605.29682",
+      "slug": "scaling-laws-agent-harnesses-efc",
+      "title": "Scaling Laws for Agent Harnesses via Effective Feedback Compute",
+      "titleZh": "用 Effective Feedback Compute 刻画 Agent Harness 的扩展律",
+      "authors": [
+        "Xuanliang Zhang",
+        "Dingzirui Wang",
+        "Keyan Xu",
+        "Qingfu Zhu",
+        "Wanxiang Che"
+      ],
+      "year": 2026,
+      "venue": "arXiv",
+      "category": "Agent / Tool Use",
+      "tags": [
+        "agent",
+        "tool-use",
+        "evaluation",
+        "test-time-scaling",
+        "feedback"
+      ],
+      "status": "精读",
+      "priority": 4,
+      "readingDate": "2026-06-10",
+      "updatedAt": "2026-06-10",
+      "summary": "论文提出 Effective Feedback Compute (EFC)，把 agent harness 的 test-time scaling 从 raw tokens、tool calls、cost 转向有效反馈量。EFC 只奖励 informative、valid、non-redundant、retained 的反馈，并用任务需求 D_task 归一化。跨 synthetic、executable code、real traces、held-out 和 prospective batch，EFC/NRS-EFC 坐标比 raw compute 与 SAS 更能预测 failure rate。",
+      "takeaways": [
+        "agent 扩展的关键不是花更多 raw compute，而是提高 raw budget 到 durable feedback 的转换效率 eta。",
+        "评估 harness 时应同时报告 feedback quality、task demand normalization 和 slice-specific efficiency，避免把工具调用数量误读为能力。"
+      ],
+      "arxivId": "2605.29682",
+      "paperUrl": "https://arxiv.org/abs/2605.29682",
+      "pdfUrl": "https://arxiv.org/pdf/2605.29682.pdf",
+      "pageUrl": "papers/scaling-laws-agent-harnesses-efc/index.html",
+      "codeUrl": "",
+      "repro": {
+        "available": false,
+        "level": "low",
+        "notes": "PDF 给出 EFC/NRS-EFC/D_task 公式、任务层、harness roles 与主要结果，但未提供代码链接、完整 prompts、预算网格、task IDs、random seeds 或 estimator 训练超参数；可复现实验框架，逐数值复现需要作者实现细节。"
+      }
     }
   ]
 }

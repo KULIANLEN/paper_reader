@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Scaling Laws for Agent Harnesses via Effective Feedback Compute · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --page-max: 1180px;
+      --paper-ink: #17202a;
+      --paper-muted: #5a6676;
+      --paper-line: rgba(23, 32, 42, 0.12);
+      --paper-card: rgba(255, 255, 255, 0.86);
+      --paper-card-strong: #ffffff;
+      --paper-tint: #eff6ff;
+      --paper-accent: #0f766e;
+      --paper-accent-2: #b45309;
+      --paper-accent-3: #4338ca;
+      --paper-soft: #f8fafc;
+      --paper-shadow: 0 18px 54px rgba(15, 23, 42, 0.10);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper-ink: #e5edf7;
+        --paper-muted: #a9b7c7;
+        --paper-line: rgba(226, 232, 240, 0.15);
+        --paper-card: rgba(15, 23, 42, 0.78);
+        --paper-card-strong: #101826;
+        --paper-tint: rgba(37, 99, 235, 0.14);
+        --paper-soft: #0b1120;
+        --paper-shadow: 0 20px 70px rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body.paper-page {
+      margin: 0;
+      color: var(--paper-ink);
+      background:
+        linear-gradient(180deg, rgba(240, 249, 255, 0.92), rgba(248, 250, 252, 0.98) 42%, rgba(255, 255, 255, 1));
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body.paper-page {
+        background:
+          linear-gradient(180deg, rgba(12, 18, 32, 1), rgba(9, 13, 24, 1) 48%, rgba(5, 8, 15, 1));
+      }
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px max(24px, calc((100vw - var(--page-max)) / 2));
+      border-bottom: 1px solid var(--paper-line);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(18px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .topbar {
+        background: rgba(10, 15, 28, 0.82);
+      }
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: max-content;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      color: white;
+      background: linear-gradient(135deg, #0f766e, #2563eb);
+      font-weight: 800;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--paper-muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      font-size: 14px;
+    }
+
+    .topnav a,
+    .ghost-button {
+      color: var(--paper-muted);
+      text-decoration: none;
+    }
+
+    .topnav a:hover,
+    .ghost-button:hover {
+      color: var(--paper-ink);
+    }
+
+    .ghost-button {
+      min-width: max-content;
+      padding: 8px 12px;
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      background: var(--paper-card);
+    }
+
+    .paper-article {
+      width: min(var(--page-max), calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 38px 0 80px;
+    }
+
+    .paper-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: 28px;
+      align-items: stretch;
+      padding: 42px 0 28px;
+    }
+
+    .hero-copy,
+    .hero-panel,
+    .content-card {
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      background: var(--paper-card);
+      box-shadow: var(--paper-shadow);
+    }
+
+    .hero-copy {
+      padding: clamp(24px, 4vw, 44px);
+      background:
+        linear-gradient(135deg, rgba(14, 116, 144, 0.12), transparent 42%),
+        linear-gradient(180deg, var(--paper-card-strong), var(--paper-card));
+    }
+
+    .hero-panel {
+      padding: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      color: var(--paper-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .eyebrow span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--paper-accent);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      max-width: 860px;
+      margin: 22px 0 0;
+      color: var(--paper-muted);
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.62;
+    }
+
+    .paper-tags,
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .tag,
+    .metric-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--paper-line);
+      border-radius: 999px;
+      color: var(--paper-muted);
+      background: rgba(255, 255, 255, 0.62);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .tag,
+      .metric-chip {
+        background: rgba(15, 23, 42, 0.58);
+      }
+    }
+
+    .hero-panel h2,
+    .content-card h2 {
+      margin: 0 0 16px;
+      font-size: clamp(24px, 3vw, 34px);
+      letter-spacing: 0;
+    }
+
+    .meta-list {
+      display: grid;
+      gap: 14px;
+      margin: 0;
+    }
+
+    .meta-list div {
+      padding-bottom: 13px;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .meta-list dt {
+      color: var(--paper-muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .meta-list dd {
+      margin: 5px 0 0;
+      line-height: 1.5;
+    }
+
+    .quick-grid,
+    .contrib-grid,
+    .two-col,
+    .three-col,
+    .figure-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .quick-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 0 0 18px;
+    }
+
+    .contrib-grid,
+    .three-col {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .two-col {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .figure-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mini-card,
+    .note-card,
+    .figure-card,
+    .check-card {
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .mini-card,
+      .note-card,
+      .figure-card,
+      .check-card {
+        background: rgba(15, 23, 42, 0.54);
+      }
+    }
+
+    .mini-card {
+      padding: 18px;
+    }
+
+    .mini-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 22px;
+    }
+
+    .mini-card span,
+    .note-card p,
+    .check-card p,
+    figcaption {
+      color: var(--paper-muted);
+    }
+
+    .content-card {
+      margin-top: 18px;
+      padding: clamp(22px, 3.5vw, 38px);
+    }
+
+    .content-card h3 {
+      margin: 28px 0 12px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    .content-card h4 {
+      margin: 20px 0 10px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .content-card p,
+    .content-card li {
+      color: var(--paper-ink);
+      font-size: 16px;
+      line-height: 1.78;
+    }
+
+    .content-card p {
+      margin: 0 0 14px;
+    }
+
+    .content-card ul,
+    .content-card ol {
+      padding-left: 22px;
+      margin: 10px 0 16px;
+    }
+
+    .note-card,
+    .check-card {
+      padding: 16px;
+    }
+
+    .note-card strong,
+    .check-card strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .formula-box {
+      overflow-x: auto;
+      margin: 18px 0;
+      padding: 18px;
+      border: 1px solid rgba(15, 118, 110, 0.24);
+      border-radius: 8px;
+      background: rgba(15, 118, 110, 0.07);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .flow-step {
+      position: relative;
+      padding: 14px;
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      background: var(--paper-soft);
+      min-height: 104px;
+    }
+
+    .flow-step b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--paper-accent-3);
+    }
+
+    .flow-step span {
+      color: var(--paper-muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      background: var(--paper-card-strong);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--paper-line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--paper-muted);
+      background: var(--paper-soft);
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .figure-card {
+      overflow: hidden;
+    }
+
+    .figure-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+    }
+
+    .figure-card figcaption {
+      padding: 14px 16px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--paper-accent-2);
+      border-radius: 8px;
+      background: rgba(180, 83, 9, 0.08);
+    }
+
+    .status-ok {
+      color: var(--paper-accent);
+      font-weight: 700;
+    }
+
+    .status-warn {
+      color: var(--paper-accent-2);
+      font-weight: 700;
+    }
+
+    code {
+      padding: 0.12em 0.32em;
+      border-radius: 6px;
+      background: rgba(148, 163, 184, 0.16);
+      font-size: 0.92em;
+    }
+
+    a {
+      color: #2563eb;
+    }
+
+    @media (max-width: 980px) {
+      .paper-hero,
+      .quick-grid,
+      .contrib-grid,
+      .two-col,
+      .three-col,
+      .figure-grid,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .topnav {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body class="paper-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>arXiv:2605.29682</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#figures">图表</a>
+      <a href="#reproduction">复现</a>
+      <a href="#critique">评价</a>
+      <a href="#takeaways">启发</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> Agent / Tool Use · 2026 · 精读</div>
+        <h1>Scaling Laws for Agent Harnesses via Effective Feedback Compute</h1>
+        <p>
+          论文提出 <strong>Effective Feedback Compute (EFC)</strong>：agent harness 的 test-time scaling 不应只按 token、tool call 或成本计量，而应按“有效、可靠、非冗余、会被后续决策保留”的反馈量计量，并用任务需求 $D_{\mathrm{task}}$ 做归一化。
+        </p>
+        <div class="paper-tags">
+          <span class="tag">agent harness</span>
+          <span class="tag">test-time scaling</span>
+          <span class="tag">Effective Feedback Compute</span>
+          <span class="tag">NRS-EFC</span>
+          <span class="tag">evaluation</span>
+        </div>
+      </div>
+      <aside class="hero-panel" aria-label="论文元信息">
+        <h2>论文信息</h2>
+        <dl class="meta-list">
+          <div>
+            <dt>作者</dt>
+            <dd>Xuanliang Zhang, Dingzirui Wang, Keyan Xu, Qingfu Zhu, Wanxiang Che</dd>
+          </div>
+          <div>
+            <dt>机构</dt>
+            <dd>Harbin Institute of Technology</dd>
+          </div>
+          <div>
+            <dt>版本</dt>
+            <dd>arXiv:2605.29682v1, 2026-05-28, cs.CL</dd>
+          </div>
+          <div>
+            <dt>链接</dt>
+            <dd><a href="https://arxiv.org/abs/2605.29682">abs</a> · <a href="https://arxiv.org/pdf/2605.29682.pdf">pdf</a></dd>
+          </div>
+          <div>
+            <dt>一句话</dt>
+            <dd>agent 扩展的关键不是多花多少 raw compute，而是 raw budget 被转换成 durable feedback 的效率。</dd>
+          </div>
+        </dl>
+      </aside>
+    </section>
+
+    <div class="quick-grid" aria-label="核心贡献">
+      <div class="mini-card"><strong>0.99</strong><span>controlled scaling 中 Oracle-EFC/$D_{\mathrm{task}}$ 的 $R^2$。</span></div>
+      <div class="mini-card"><strong>0.27 → 0.90</strong><span>matched-budget 下提升反馈质量带来的 success rate 变化。</span></div>
+      <div class="mini-card"><strong>0.92</strong><span>mixed real traces 中 NRS-EFC/$D_{\mathrm{task}}$ 的 pooled $R^2$。</span></div>
+      <div class="mini-card"><strong>0.85</strong><span>prospective holdout 中预先指定指标的 held-out $R^2$。</span></div>
+    </div>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机</h2>
+      <p>
+        大模型从 single-turn prediction 走向 interactive problem solving 后，性能越来越由外部 <strong>agent harness</strong> 决定：它负责工具调用、环境反馈、验证、中间状态保存、错误修复和停止策略。传统 test-time scaling 常用 raw tokens、tool calls、operations、wall time 或 cost 当作横轴，但这些量无法区分“有用反馈”和“重复、噪声、无效、被遗忘的交互”。
+      </p>
+      <p>
+        本文的核心问题是：对于 closed-loop agent harness，什么标量最能解释额外 test-time compute 何时会变成更高成功率？作者的回答是 EFC。它把 harness scaling 分解成两件事：第一，harness efficiency $\eta$ 表示 raw budget 转成有效反馈的效率；第二，$EFC/D_{\mathrm{task}}$ 表示反馈是否足够覆盖任务需求。
+      </p>
+
+      <div class="contrib-grid">
+        <div class="note-card">
+          <strong>贡献 1：定义 trace-level EFC</strong>
+          <p>每个反馈事件只有同时具备 informativeness、validity、non-redundant relevance、memory update 才获得高分。</p>
+        </div>
+        <div class="note-card">
+          <strong>贡献 2：给出 estimated 与 real-trace 版本</strong>
+          <p>Oracle-EFC 只能在 synthetic hidden-state 可见时使用；Estimated-EFC 和 NRS-EFC 用 trace-time features 近似。</p>
+        </div>
+        <div class="note-card">
+          <strong>贡献 3：跨设置验证 scaling coordinate</strong>
+          <p>覆盖 synthetic controllable tasks、HumanEval-like executable tasks、真实 benchmark traces、held-out splits 与 prospective batch。</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        重要边界：本文目标不是提出新 agent 架构，也不是刷 benchmark leaderboard，而是提出一个解释 harness scaling 的测量坐标。结论强依赖 trace logging、任务可验证性和 EFC estimator 的校准质量。
+      </div>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 数学表示、建模与算法流程</h2>
+      <h3>2.1 Closed-loop agent harness 表示</h3>
+      <p>
+        对任务分布 $\mathcal{T}$，任务实例 $x \sim \mathcal{T}$ 包含初始状态、指令、环境接口和 evaluation function。base model $m$ 与 harness $h$ 生成轨迹：
+      </p>
+      <div class="formula-box">
+        $$\tau = \{(s_t, a_t, o_t, u_t)\}_{t=1}^{T}.$$
+      </div>
+      <p>
+        其中 $s_t$ 是 step $t$ 前的 agent state，$a_t$ 是 model action 或 tool call，$o_t$ 是 observation，$u_t$ 是对 state、memory、plan 或 candidate solution 的更新。最终答案 $\hat{y}$ 由 checker $g_x(\hat{y}) \in \{0,1\}$ 评估：
+      </p>
+      <div class="formula-box">
+        $$S(x,h,m,b)=\mathbb{E}[g_x(\hat{y})], \qquad E(x,h,m,b)=1-S(x,h,m,b).$$
+      </div>
+
+      <h3>2.2 EFC 的事件级定义</h3>
+      <p>
+        论文把轨迹拆成 feedback events $E(\tau)=\{e_t\}_{t=1}^{T_{\mathrm{fb}}}$。每个 event 有四个 $[0,1]$ 因子：$I_t$ 表示信息量，$V_t$ 表示可靠性，$R_t$ 表示对当前 subgoal 的非冗余相关性，$M_t$ 表示是否进入后续 plan/state/memory。
+      </p>
+      <div class="formula-box">
+        $$EFC_t=\kappa I_tV_tR_tM_t,\qquad EFC(\tau)=\kappa\sum_{t=1}^{T_{\mathrm{fb}}}I_tV_tR_tM_t.$$
+      </div>
+      <p>
+        作者在所有实验中使用 $\kappa=10$。乘积形式很关键：任一因子接近 0 都会让事件贡献塌缩，因此“有观察但无效”“有效但重复”“有用但未保留”的交互不会被高估。
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>符号</th><th>含义</th><th>论文中的用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>$C_{\mathrm{raw}}$</td><td>raw cost，综合 token、tool call、operation、runtime 等。</td><td>作为 raw-compute baseline，也用于 $\eta=EFC/C_{\mathrm{raw}}$。</td></tr>
+            <tr><td>$D_{\mathrm{task}}$</td><td>任务需求尺度。</td><td>将不同任务族的 EFC 放到可比较的尺度上。</td></tr>
+            <tr><td>$\eta$</td><td>harness efficiency。</td><td>衡量同样 raw budget 下 harness 把预算转成有效反馈的能力。</td></tr>
+            <tr><td>$\widehat{EFC}$</td><td>Estimated-EFC。</td><td>不使用最终 success label，只从 trace-time features 估计 EFC。</td></tr>
+            <tr><td>NRS-EFC</td><td>non-redundant stable EFC。</td><td>真实 traces 中过滤重复失败、不稳定 observation 和无持久进展的反馈。</td></tr>
+            <tr><td>$E(z)$</td><td>基于标量 $z$ 的 failure rate。</td><td>所有标量都放进同一个 power-law failure model 比较。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>2.3 Estimated-EFC 与 NRS-EFC</h3>
+      <p>
+        合成任务中可以用 hidden state 计算 Oracle-EFC；真实任务无法观察 latent progress，因此作者用 trace-observable features 估计：
+      </p>
+      <div class="formula-box">
+        $$\phi(e_t)=[c_t,h_t,z_t,p_t,m_t,a_t,q_t,\Delta_t,\rho_t],$$
+        $$\widehat{EFC}_t=\max\left(0,\exp(\theta_0+\theta^\top\phi(e_t))-1\right),\qquad \widehat{EFC}(\tau)=\sum_{t=1}^{T_{\mathrm{fb}}}\widehat{EFC}_t.$$
+      </div>
+      <p>
+        这里 $c_t$ 是 checker 是否触发，$h_t$ 是 checker scope，$z_t$ 是 tool result 是否被后续引用，$p_t$ 是 plan 是否改变，$m_t$ 是 memory retention，$a_t$ 是 repeated-error avoidance，$q_t$ 是 observation consistency，$\Delta_t$ 是 subgoal progress，$\rho_t$ 是 trace position。最终 success label 只用于评估 fit，不作为 estimator 输入。
+      </p>
+      <p>
+        在 real benchmark traces 中，作者又引入 status-aware gates。稳定版本为：
+      </p>
+      <div class="formula-box">
+        $$\widehat{EFC}^{\mathrm{stable}}_t=\widehat{EFC}_tQ_tG_t\Lambda_t,\qquad
+        \widehat{EFC}^{\mathrm{nr}}_t=\frac{\widehat{EFC}_tQ_tG^{\mathrm{nr}}_t\Lambda^{\mathrm{nr}}_t}{1+0.35A_t}.$$
+      </div>
+      <p>
+        $Q_t$ 来自执行状态质量，例如 passed、assertion error、runtime error、timeout、API error；$G_t$ 和 $\Lambda_t$ 对是否产生进展、是否陷入重复 repair loop 做门控；$A_t$ 是 attempt index。
+      </p>
+
+      <h3>2.4 任务需求归一化与 scaling law</h3>
+      <p>
+        同样的 EFC 在简单任务和复杂任务中含义不同。论文用任务需求尺度：
+      </p>
+      <div class="formula-box">
+        $$D_{\mathrm{task}}=L\cdot H_{\mathrm{tool}}\cdot S_{\mathrm{state}}\cdot (1+N_{\mathrm{obs}})\cdot(1-V_{\mathrm{oracle}}).$$
+      </div>
+      <p>
+        $L$ 是最小 reasoning/action steps，$H_{\mathrm{tool}}$ 是 tool-selection ambiguity，$S_{\mathrm{state}}$ 是 state tracking demand，$N_{\mathrm{obs}}$ 是 observation noise，$V_{\mathrm{oracle}}$ 是 verifier-signal visibility。注意 $V_{\mathrm{oracle}}$ 不是给 agent 泄漏答案，而是描述任务层面可用验证信号的覆盖度。
+      </p>
+      <div class="formula-box">
+        $$X=\frac{EFC}{D_{\mathrm{task}}},\qquad \widehat{X}=\frac{\widehat{EFC}}{D_{\mathrm{task}}},\qquad \eta=\frac{EFC}{C_{\mathrm{raw}}}.$$
+        $$E(z)=E_\infty+Az^{-\alpha}.$$
+      </div>
+      <p>
+        所有 scalar predictors 都放入相同的 power-law failure model，用 $R^2$ 和 MAE 比较。SAS 是多变量 system-level baseline，因此作者直接评估其 predicted failure rate。
+      </p>
+
+      <h3>2.5 方法流水线</h3>
+      <div class="flow">
+        <div class="flow-step"><b>1. Run trace</b><span>收集 harness 轨迹、raw compute、checker outputs、tool observations、memory updates。</span></div>
+        <div class="flow-step"><b>2. Event split</b><span>把 action-observation-update 片段转成 feedback events。</span></div>
+        <div class="flow-step"><b>3. Score feedback</b><span>oracle 场景用 latent progress；真实场景用 trace-time estimator 和 status gates。</span></div>
+        <div class="flow-step"><b>4. Normalize</b><span>按 $D_{\mathrm{task}}$ 归一化，并计算 $\eta$。</span></div>
+        <div class="flow-step"><b>5. Fit law</b><span>用 $E(z)=E_\infty+Az^{-\alpha}$ 拟合/预测 failure rate。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <h3>3.1 任务层与 benchmark</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>层级</th><th>任务/数据</th><th>为什么需要这一层</th><th>可观测信号</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Synthetic controllable tasks</td><td>Needle Lookup, State Tracking, Rule Filter</td><td>可观察 hidden state，可直接计算 Oracle-EFC，并控制 $D_{\mathrm{task}}$。</td><td>latent progress、deterministic checks、task demand factors。</td></tr>
+            <tr><td>Semi-realistic executable tasks</td><td>HumanEval-like function completion、小型 repair/analysis/tool-use tasks</td><td>引入真实代码执行错误、unit tests 和 repair behavior，检验 Estimated-EFC 是否保持预测力。</td><td>syntax/runtime/test failures、partial correctness、tool result references。</td></tr>
+            <tr><td>Real benchmark subsets</td><td>HumanEval, Terminal-Bench 2.0, SWE-bench Verified</td><td>测试 heterogeneous real traces 上 raw compute 与 NRS-EFC 的差距。</td><td>自动 final evaluator、一致 trace schema、命令输出、test results、tool responses。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>3.2 Harness families</h3>
+      <p>
+        作者比较 H0-H6 七类 harness。它们不是简单的 raw compute 单调递增，而是刻意拆开预算、路由、验证、记忆、噪声和 closed-loop depth。
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Harness</th><th>机制</th><th>在 EFC 框架中的作用</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>H0 Direct Answer</td><td>单次生成，无显式工具反馈、verification、repair 或 memory。</td><td>低反馈质量的 base reference。</td></tr>
+            <tr><td>H1 Checklist Verify</td><td>增加轻量 checklist 或 self-check。</td><td>隔离弱 verification 的收益。</td></tr>
+            <tr><td>H2 Routed Tools</td><td>按当前 state/subgoal 路由工具或观察。</td><td>提高 relevance 与 informativeness，但 memory/repair 较弱。</td></tr>
+            <tr><td>H3 Stateful Memory</td><td>保留 verified facts、failed attempts、constraints。</td><td>提高 $M_t$，减少重复错误。</td></tr>
+            <tr><td>H4 High Budget Noisy</td><td>高预算但弱 routing/verification/memory，高噪声与 state pressure。</td><td>raw-budget negative control。</td></tr>
+            <tr><td>H5 Closed Loop</td><td>routing、verification、structured memory 结合 iterative loop。</td><td>标准闭环，高 raw-to-EFC conversion。</td></tr>
+            <tr><td>H6 Deep Closed Loop</td><td>更深 interaction depth，更强反馈机制。</td><td>测试高效率 harness 上继续增加闭环深度是否有效。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>3.3 Baselines、指标与 split</h3>
+      <div class="two-col">
+        <div class="note-card">
+          <strong>Baseline predictors</strong>
+          <p>Raw Tokens、Tool calls、Wall time、Operations、Raw cost，以及多变量 agent-system scaling baseline SAS。</p>
+        </div>
+        <div class="note-card">
+          <strong>Evaluation metrics</strong>
+          <p>所有 run-level quantities 先按实验 group 聚合，再报告 $R^2$ 与 MAE。负 $R^2$ 表示比预测平均 failure rate 更差。</p>
+        </div>
+        <div class="note-card">
+          <strong>Held-out axes</strong>
+          <p>task family、harness variant、model、combined configuration，并额外做 prospective real-trace batch。</p>
+        </div>
+        <div class="note-card">
+          <strong>Models</strong>
+          <p>正文列出 DeepSeek-V4-Flash、gpt-5.4-nano、Claude-Haiku-4.5。论文未给出模型 API 参数、prompt 原文和完整预算表，需人工向作者代码/补充材料核对。</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        复现风险：论文说明 H0-H6 的角色、任务层、logging schema 和 EFC 公式，但没有在 PDF 中提供完整 prompts、tool interfaces、budget sweep grid、estimator training hyperparameters、random seeds 或代码链接。因此可复现实验思想，但很难逐数值复现。
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <h3>4.1 Controlled scaling：EFC 比 raw compute 更像 scaling coordinate</h3>
+      <p>
+        在 synthetic controllable tasks 中，raw tokens 和 tool calls 只能解释有限变异，SAS 已经很强，但 EFC 与 $D_{\mathrm{task}}$ 归一化继续显著提升。最强结果是 Oracle-EFC/$D_{\mathrm{task}}$ 达到 $R^2=0.99$、MAE 0.02。
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>实验/设置</th><th>Raw compute 结果</th><th>反馈类坐标结果</th><th>结论</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Figure 1 controlled scaling</td><td>Raw tokens $R^2=0.33$，tool calls $R^2=0.42$，raw cost $R^2=0.38$。</td><td>SAS $R^2=0.88$；Oracle-EFC 与 Estimated-EFC 均为 $0.94$；Oracle-EFC/$D_{\mathrm{task}}$ 为 $0.99$。</td><td>绝对预算不是主坐标，任务需求归一化后的有效反馈给出最干净 curve collapse。</td></tr>
+            <tr><td>Figure 2 matched-budget intervention</td><td>Raw cost delta 为 $0.000\%$，tool-call delta 为 $0.000$。</td><td>高反馈质量把 success 从 0.27 提到 0.90，paired gain 0.635。</td><td>同等预算下质量改变结果，排除“只是花更多计算”的解释。</td></tr>
+            <tr><td>Figure 3 trace-time estimation</td><td>Raw tokens 到 tool calls 的 held-out $R^2$ 为 0.44 到 0.68；SAS 为 0.86。</td><td>Estimated-EFC/$D_{\mathrm{task}}$ 为 0.93，Oracle-EFC/$D_{\mathrm{task}}$ 为 0.95。</td><td>Estimator 不只是 outcome diagnostic，trace-time signal 已接近 oracle 坐标。</td></tr>
+            <tr><td>Figure 4 executable code tasks</td><td>Tool calls 因为常触发 tests，达到 $R^2=0.94$；raw tokens 为 0.78。</td><td>Estimated-EFC/$D_{\mathrm{task}}$ 为 0.97，oracle variants 为 0.99。</td><td>工具调用有效是因为它带来可用、被利用的测试反馈，不是计数本身。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>4.2 分解机制：harness efficiency 与 task demand</h3>
+      <p>
+        Figure 5-8 把 EFC 的解释力拆成两个机制：routing、verification、memory、observation quality 控制 raw-to-EFC conversion；任务长度、tool entropy、state pressure、observation noise、verification coverage 决定需要多少反馈才足够。
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>图</th><th>关键数字</th><th>解释</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Figure 5</td><td>Router quality 对 $\eta$ 的 high-minus-low effect 为 $+0.28$，verifier strength $+0.22$，memory fidelity $+0.20$；observation noise 为 $-0.17$。</td><td>最有价值的 harness 改动是提升反馈选择、可靠性与保留，而不是盲目增加预算。</td></tr>
+            <tr><td>Figure 6</td><td>Across module settings，success 与 mean $\eta$ 的 $R^2=0.97$，与 raw cost 的 $R^2=0.01$。</td><td>模块收益通过 $\eta$ 中介，而不是 raw cost 中介。</td></tr>
+            <tr><td>Figure 7</td><td>Raw Oracle-EFC $R^2=0.90$；Oracle-EFC/$D_{\mathrm{task}}$ hand 和 fit 均为 $0.96$。</td><td>跨 Needle Lookup、Rule Filter、State Tracking 时，绝对 EFC 仍有任务族 scale mismatch。</td></tr>
+            <tr><td>Figure 8</td><td>Mixed held-out 中 raw baselines $R^2=-0.42$，SAS $0.10$，NRS-EFC $0.70$，fitted NRS-EFC/$D_{\mathrm{task}}$ $0.83$。</td><td>异构任务需要校准 $D_{\mathrm{task}}$ 权重，hand-designed denominator 不一定最优。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>4.3 Held-out 与 prospective validation</h3>
+      <p>
+        Figure 9-11 是最能支撑论文主张的外推实验：在 unseen task/harness/model/combo 上，task-demand-normalized EFC 保持较低 MAE；在 mixed real traces 中 raw compute 近乎失效；在 prospective batch 上，预先指定的 NRS-EFC/$D_{\mathrm{task}}$ 仍最好。
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>验证</th><th>主要发现</th><th>我的解读</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Held-out configurations</td><td>task、harness、model、combo split 上，task-demand-normalized EFC 组的 MAE 最低。</td><td>不是只在 pooled correlation 上好看，而是能预测未见配置的 absolute success。</td></tr>
+            <tr><td>Mixed real traces</td><td>NRS-EFC/$D_{\mathrm{task}}$ $R^2=0.92$，NRS-EFC $0.89$，SAS $0.43$；raw compute baselines 为负或接近 0。</td><td>真实 traces 中必须过滤重复/不稳定反馈，slice-specific $\eta$ 说明没有全局最优 harness。</td></tr>
+            <tr><td>Prospective holdout</td><td>NRS-EFC/$D_{\mathrm{task}}$ held-out $R^2=0.85$，NRS-EFC $0.77$，SAS $0.26$，raw baselines 为负。</td><td>对 post hoc metric tuning 的担忧有所缓解，但仍需更大规模、公开 trace 数据复验。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        论文没有独立 Table；正文所有核心结果来自 Figure 1-11 和段落数值。上面的 HTML 表格是按论文正文和图注重建的结果摘要，不是原论文表格。
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p>
+        自动图像抽取未能切出 PDF 内嵌图，因此这里使用 PDF page render 后的本地 crop。每张图均来自构建目录中的 `assets/pages/page_XXX.png`，crop 需要人工核对边界，但数值解释已与正文文本交叉检查。
+      </p>
+      <div class="figure-grid">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-01-controlled-scaling.png" alt="Figure 1 controlled scaling comparison on synthetic tasks" loading="lazy" />
+          <figcaption><strong>Figure 1.</strong> Controlled scaling comparison：raw tokens/tool calls 等弱于 SAS，Oracle-EFC 与 Estimated-EFC 更强，Oracle-EFC/$D_{\mathrm{task}}$ 达 $R^2=0.99$。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-02-matched-budget.png" alt="Figure 2 matched-budget feedback quality control" loading="lazy" />
+          <figcaption><strong>Figure 2.</strong> Matched-budget control：raw budget 完全匹配时，反馈质量提升使 success 从 0.27 到 0.90。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-03-trace-time.png" alt="Figure 3 trace-time Estimated-EFC on held-out tasks" loading="lazy" />
+          <figcaption><strong>Figure 3.</strong> Trace-time Estimated-EFC：不使用最终 outcome，Estimated-EFC/$D_{\mathrm{task}}$ 接近 oracle curve。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-04-code-tasks.png" alt="Figure 4 executable code tasks preserve the EFC signal" loading="lazy" />
+          <figcaption><strong>Figure 4.</strong> Executable code tasks：tool calls 因为承载 test feedback 变强，但 EFC 坐标仍更好。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-05-harness-factors.png" alt="Figure 5 harness factors control raw-to-EFC conversion" loading="lazy" />
+          <figcaption><strong>Figure 5.</strong> Harness factors：router quality、verifier strength、memory fidelity 提高 $\eta$；observation noise、tool entropy、state pressure 降低 $\eta$。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-06-module-ablations.png" alt="Figure 6 module ablations localize raw-to-EFC conversion gains" loading="lazy" />
+          <figcaption><strong>Figure 6.</strong> Module ablations：success 几乎由 mean $\eta$ 解释，raw cost 基本不能解释。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-07-task-demand.png" alt="Figure 7 task demand sets the required EFC scale" loading="lazy" />
+          <figcaption><strong>Figure 7.</strong> Task demand：$D_{\mathrm{task}}$ 消除跨任务族 scale mismatch，hand 与 fitted denominator 都提升拟合。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-08-demand-calibration.png" alt="Figure 8 task-demand calibration transfers to mixed held-out tasks" loading="lazy" />
+          <figcaption><strong>Figure 8.</strong> Demand calibration：mixed held-out 中 fitted $D_{\mathrm{task}}$ 最好，hand denominator 可能过于粗糙。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-09-heldout-configs.png" alt="Figure 9 task-demand-normalized EFC predicts unseen configurations" loading="lazy" />
+          <figcaption><strong>Figure 9.</strong> Held-out configurations：task/harness/model/combo split 上，normalized EFC 均是最低误差组。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-10-real-traces.png" alt="Figure 10 nonredundant stable EFC reveals slice-specific harness efficiency" loading="lazy" />
+          <figcaption><strong>Figure 10.</strong> Mixed real traces：NRS-EFC/$D_{\mathrm{task}}$ $R^2=0.92$；HumanEval、Terminal、SWE 的 harness efficiency 排序不同。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-11-prospective.png" alt="Figure 11 prospective holdout prediction" loading="lazy" />
+          <figcaption><strong>Figure 11.</strong> Prospective holdout：预先指定 metric/protocol 后，NRS-EFC/$D_{\mathrm{task}}$ 仍取得最高 held-out $R^2=0.85$。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p>
+        论文给出了公式、任务层、harness roles、logging schema 和主要对比，但缺少完整代码与 prompts。因此这里区分“可直接从论文恢复”和“必须向作者实现/补充材料核对”的部分。
+      </p>
+      <div class="two-col">
+        <div class="check-card">
+          <strong class="status-ok">可从论文恢复</strong>
+          <ul>
+            <li>EFC、Estimated-EFC、stable/NRS-EFC、$D_{\mathrm{task}}$ 和 power-law failure model 的数学形式。</li>
+            <li>三层任务结构：synthetic controllable、semi-realistic executable、real benchmark subsets。</li>
+            <li>H0-H6 的机制定义与停止规则。</li>
+            <li>主要 comparison metrics：$R^2$、MAE、held-out prediction。</li>
+          </ul>
+        </div>
+        <div class="check-card">
+          <strong class="status-warn">需人工核对/补全</strong>
+          <ul>
+            <li>Exact prompts、tool interface、memory format、routing policy、checker implementation。</li>
+            <li>Budget sweep grid、token/tool/runtime limits、replicate count、random seeds。</li>
+            <li>Estimated-EFC estimator 的训练数据、优化器、正则化、feature preprocessing。</li>
+            <li>真实 benchmark subset 列表、过滤后的 task IDs、prospective batch 构成。</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>建议复现步骤</h3>
+      <ol>
+        <li>先实现合成任务三族，显式记录 latent state、candidate set、tool ambiguity、noise、verifier coverage，并计算 Oracle-EFC。</li>
+        <li>实现统一 trace schema：每个 event 至少记录 action type、observation type、checker status、tool name、memory update、是否引用过去 observation、attempt index。</li>
+        <li>在 synthetic calibration split 上拟合 $\widehat{EFC}_t$，确保 final success label 不进入 event-level estimator。</li>
+        <li>复现 Figure 1-3 的 controlled/held-out curves，再迁移到 HumanEval-like executable tasks。</li>
+        <li>最后进入 real benchmark subsets，并优先验证 Figure 10/11 中 raw compute 为负或接近 0、NRS-EFC 显著更强这一方向性结论。</li>
+      </ol>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <div class="three-col">
+        <div class="note-card">
+          <strong>优点</strong>
+          <p>论文抓住了 agent harness scaling 中 raw budget 与 useful feedback 的核心混淆，并用 matched-budget intervention、held-out splits、prospective holdout 降低了纯相关分析的说服力问题。</p>
+        </div>
+        <div class="note-card">
+          <strong>主要风险</strong>
+          <p>EFC estimator 与 $D_{\mathrm{task}}$ 都需要人工设计和校准。若 trace schema、checker coverage 或任务过滤改变，指标可能失去可迁移性。</p>
+        </div>
+        <div class="note-card">
+          <strong>复现不足</strong>
+          <p>PDF 没有代码链接，也没有完整 prompts、task IDs、budget grids、estimator hyperparameters。作为 scaling-law 论文，这会影响独立复验。</p>
+        </div>
+      </div>
+
+      <h3>更尖锐的审稿意见</h3>
+      <ul>
+        <li><strong>Metric circularity 风险：</strong>Estimated-EFC 的 features 包含 checker fired、plan update、subgoal progress 等高层 proxy，这些本来就接近成功机制。论文强调不使用 final success label，但仍需要证明 estimator 不只是把人类设计的成功相关特征重新加权。</li>
+        <li><strong>$D_{\mathrm{task}}$ 的可移植性：</strong>Figure 8 已显示 hand-designed denominator 在 mixed holdout 反而弱于 raw NRS-EFC。实际使用中，任务需求建模可能是最难迁移的部分。</li>
+        <li><strong>Harness family 抽象较粗：</strong>H0-H6 是机制角色而非公开实现。真实 agent 系统中的 planner、memory、retriever、tool router、verifier 组合更多，$\eta$ 可能高度依赖工程细节。</li>
+        <li><strong>真实 benchmark 覆盖有限：</strong>HumanEval、Terminal、SWE 都是可自动验证任务。open-ended research、web agents、long-horizon multi-agent collaboration 是否也服从 NRS-EFC，需要额外证据。</li>
+        <li><strong>缺少成本优化实验：</strong>既然 EFC 可做 scaling coordinate，下一步自然是 adaptive budget allocation：按 $\widehat{EFC}/C_{\mathrm{raw}}$ 动态停止或重路由。论文主要做解释，未充分展示控制策略收益。</li>
+      </ul>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究方向的启发</h2>
+      <div class="two-col">
+        <div class="note-card">
+          <strong>Agent / tool-use 设计</strong>
+          <p>不要把 tool-call count 当作能力本身。工具必须产生可验证、可复用、非重复的信息，并显式进入 memory/plan，才算真正扩展了 agent。</p>
+        </div>
+        <div class="note-card">
+          <strong>RLVR / self-evolution</strong>
+          <p>EFC 可作为 replay 选择或 curriculum 信号：优先保留高 $I_tV_tR_tM_t$ 的反馈片段，而不是保留所有失败轨迹。</p>
+        </div>
+        <div class="note-card">
+          <strong>Questioner-solver / diversity</strong>
+          <p>多样性不应只按 action diversity 衡量，还应看反馈是否覆盖不同 subgoal、是否减少 uncertainty、是否避免重复错误。</p>
+        </div>
+        <div class="note-card">
+          <strong>Evaluation</strong>
+          <p>benchmark report 可以加入 $\eta=\widehat{EFC}/C_{\mathrm{raw}}$ 与 $\widehat{EFC}/D_{\mathrm{task}}$，把“更贵”和“更会用反馈”拆开。</p>
+        </div>
+      </div>
+
+      <h3>可以立即借鉴的实验</h3>
+      <ul>
+        <li><strong>Matched-budget feedback intervention：</strong>固定 tokens/tool calls/runtime，只改变 verifier quality、memory retention 或 observation noise，看成功率是否变化。</li>
+        <li><strong>Failure replay scoring：</strong>把失败轨迹按 NRS-EFC 分桶，检查高 NRS-EFC 失败是否集中在 task demand 不足、verifier coverage 不足或 final synthesis 错误。</li>
+        <li><strong>Slice-specific $\eta$：</strong>不要全局比较 harness；按任务 slice 画 $\eta$，找出 router/verification/memory 在不同环境中的最优组合。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
