@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Self-Harness: Harnesses That Improve Themselves · Paper Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    .selfh-page * { letter-spacing: 0 !important; }
+    .selfh-page .paper-article { width: min(calc(100% - 36px), 1180px); }
+    .selfh-page .paper-hero { padding: 3.35rem 0 2.3rem; border-bottom: 1px solid var(--line); }
+    .selfh-page .paper-hero h1 { max-width: 1100px; font-size: clamp(2.05rem, 4.6vw, 4.05rem); line-height: 1.05; }
+    .selfh-page .hero-subtitle { max-width: 980px; margin: 1.05rem 0 0; font-size: clamp(1.02rem, 2vw, 1.22rem); line-height: 1.78; }
+    .selfh-page .content-card { margin: 0; padding: clamp(2.1rem, 5vw, 4.2rem) 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; box-shadow: none; }
+    .selfh-page .content-card h2 { margin: 0 0 1rem; font-size: clamp(1.58rem, 3.2vw, 2.48rem); line-height: 1.16; }
+    .selfh-page .content-card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; line-height: 1.35; }
+    .selfh-page .section-lead { max-width: 960px; margin: 0 0 1.35rem; color: var(--text-soft); font-size: 1.03rem; line-height: 1.86; }
+    .selfh-page .meta-row, .selfh-page .link-row, .selfh-page .paper-tags { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+    .selfh-page .meta-row { margin-top: 1.2rem; color: var(--muted); font-size: 0.93rem; }
+    .selfh-page .paper-tags, .selfh-page .link-row { margin-top: 1rem; }
+    .selfh-page .tag-pill, .selfh-page .link-row a, .selfh-page .chip { display: inline-flex; align-items: center; min-height: 2rem; padding: 0.32rem 0.66rem; border: 1px solid var(--line); border-radius: 999px; color: var(--text-soft); background: rgba(127, 127, 140, 0.08); font-size: 0.88rem; }
+    .selfh-page .grid-2, .selfh-page .grid-3, .selfh-page .metric-grid, .selfh-page .figure-grid, .selfh-page .flow-grid { display: grid; gap: 1rem; }
+    .selfh-page .grid-2, .selfh-page .figure-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .selfh-page .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .selfh-page .metric-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.25rem; }
+    .selfh-page .flow-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 1rem; }
+    .selfh-page .note-box, .selfh-page .metric, .selfh-page .table-wrap, .selfh-page .figure-card, .selfh-page .formula-box, .selfh-page .flow-step, .selfh-page .critique-box, .selfh-page .quote-box, .selfh-page .algo-box { border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--surface-strong) 88%, transparent); box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06); }
+    .selfh-page .note-box, .selfh-page .formula-box, .selfh-page .flow-step, .selfh-page .critique-box, .selfh-page .quote-box, .selfh-page .algo-box { padding: 1rem; }
+    .selfh-page .note-box p, .selfh-page .formula-box p, .selfh-page .flow-step p, .selfh-page .critique-box p, .selfh-page .quote-box p, .selfh-page .algo-box p { margin: 0.45rem 0 0; }
+    .selfh-page .metric { padding: 1rem; }
+    .selfh-page .metric strong { display: block; font-size: 1.5rem; line-height: 1.15; }
+    .selfh-page .metric span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+    .selfh-page .flow-step b { display: inline-grid; width: 1.72rem; height: 1.72rem; place-items: center; margin-bottom: 0.55rem; border-radius: 999px; color: white; background: #0f766e; }
+    .selfh-page .flow-step:nth-child(2) b { background: #6d5dfc; }
+    .selfh-page .flow-step:nth-child(3) b { background: #c2410c; }
+    .selfh-page .formula-box { margin: 1rem 0; overflow-x: auto; }
+    .selfh-page .formula-box .MathJax, .selfh-page .formula-box mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+    .selfh-page .algo-box ol { margin: 0.5rem 0 0; padding-left: 1.3rem; }
+    .selfh-page .algo-box li { margin: 0.28rem 0; color: var(--text-soft); line-height: 1.65; }
+    .selfh-page .table-wrap { margin: 1rem 0 1.35rem; overflow-x: auto; }
+    .selfh-page table { width: 100%; min-width: 790px; border-collapse: collapse; font-size: 0.88rem; }
+    .selfh-page th, .selfh-page td { padding: 0.68rem 0.72rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .selfh-page th { color: var(--text); background: rgba(127, 127, 140, 0.09); font-weight: 700; }
+    .selfh-page td { color: var(--text-soft); }
+    .selfh-page .tight-table { min-width: 680px; }
+    .selfh-page .wide-table { min-width: 980px; }
+    .selfh-page .table-caption { margin: 0.75rem 0 0; padding: 0 0.8rem 0.85rem; color: var(--muted); font-size: 0.88rem; line-height: 1.65; }
+    .selfh-page .figure-card { margin: 0; overflow: hidden; }
+    .selfh-page .figure-card img { display: block; width: 100%; height: auto; background: white; }
+    .selfh-page .figure-card figcaption { padding: 0.9rem 1rem 1rem; color: var(--text-soft); line-height: 1.65; }
+    .selfh-page .figure-card figcaption strong { color: var(--text); }
+    .selfh-page .compact-list { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+    .selfh-page .compact-list li { margin: 0.28rem 0; }
+    .selfh-page .good { border-color: color-mix(in srgb, var(--success) 35%, var(--line)); background: color-mix(in srgb, var(--success) 8%, var(--surface-strong)); }
+    .selfh-page .warn { border-color: color-mix(in srgb, var(--warning) 42%, var(--line)); background: color-mix(in srgb, var(--warning) 9%, var(--surface-strong)); }
+    .selfh-page .danger { border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); background: color-mix(in srgb, var(--danger) 7%, var(--surface-strong)); }
+    .selfh-page code { word-break: break-word; }
+    @media (max-width: 980px) {
+      .selfh-page .grid-2, .selfh-page .grid-3, .selfh-page .metric-grid, .selfh-page .figure-grid, .selfh-page .flow-grid { grid-template-columns: 1fr; }
+      .selfh-page .paper-hero { padding-top: 2.4rem; }
+      .selfh-page table { min-width: 720px; }
+      .selfh-page .wide-table { min-width: 940px; }
+    }
+  </style>
+</head>
+<body class="paper-page selfh-page">
+  <header class="topbar">
+    <a class="brand" href="../../"><span class="brand-mark">∫</span><span><strong>Paper Atlas</strong><small>2606.09498v1</small></span></a>
+    <nav class="topnav" aria-label="论文页导航">
+      <a href="#overview">速览</a>
+      <a href="#motivation">动机</a>
+      <a href="#method">方法</a>
+      <a href="#experiments">实验</a>
+      <a href="#results">结果</a>
+      <a href="#critique">评价</a>
+    </nav>
+    <a class="ghost-button" href="../../">回到首页</a>
+  </header>
+
+  <main class="paper-article">
+    <section class="paper-hero" id="overview">
+      <div class="eyebrow"><span></span> Agent / Tool Use · arXiv 2026</div>
+      <h1>Self-Harness: Harnesses That Improve Themselves</h1>
+      <p class="hero-subtitle">Self-Harness 把 agent 的“harness”也纳入自进化对象：固定 base model 和 evaluator，不改模型参数，让 agent 根据自己的失败 execution traces 挖掘 recurring weakness，提出小而明确的 harness edits，再用 held-in 与 held-out regression gate 决定是否接受。论文在 Terminal-Bench-2.0 上用同一套 minimal DeepAgent harness 起步，对 MiniMax M2.5、Qwen3.5-35B-A3B、GLM-5 都取得 held-out pass rate 提升。</p>
+      <div class="meta-row">
+        <span>Hangfan Zhang, Shao Zhang, Kangcong Li, Chen Zhang, Yang Chen, Yiqun Zhang, Lei Bai, Shuyue Hu</span>
+        <span>Shanghai Artificial Intelligence Laboratory</span>
+        <span>Published: 2026-06-08</span>
+        <span>Updated: 2026-06-08</span>
+        <span>19-page PDF extraction</span>
+      </div>
+      <div class="paper-tags" aria-label="tags">
+        <span class="tag-pill">agent</span>
+        <span class="tag-pill">tool-use</span>
+        <span class="tag-pill">self-evolution</span>
+        <span class="tag-pill">harness</span>
+        <span class="tag-pill">evaluation</span>
+      </div>
+      <div class="link-row">
+        <a href="https://arxiv.org/abs/2606.09498">arXiv</a>
+        <a href="https://arxiv.org/pdf/2606.09498">PDF</a>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><strong>61.9%</strong><span>MiniMax M2.5 held-out Pass，从 40.5% 提升到 61.9%。</span></div>
+        <div class="metric"><strong>38.1%</strong><span>Qwen3.5-35B-A3B held-out Pass，从 23.8% 提升到 38.1%。</span></div>
+        <div class="metric"><strong>57.1%</strong><span>GLM-5 held-out Pass，从 42.9% 提升到 57.1%。</span></div>
+        <div class="metric"><strong>64</strong><span>Terminal-Bench-2.0 固定 64-case subset，排除不稳定外部资源和 unsupported multimodal tasks。</span></div>
+      </div>
+    </section>
+
+    <section class="content-card" id="motivation">
+      <h2>1. 研究动机：agent 能力不只来自 base model</h2>
+      <p class="section-lead">LLM-based agent 的表现由 base model 与 harness 共同决定。这里的 harness 指系统提示、工具、runtime policy、memory、verification rules、failure recovery、orchestration logic 等围绕模型的非参数执行层。论文的出发点是：不同模型有不同 tool-use habits、错误模式和 prompt sensitivity，因此人工为每个模型调 harness 的成本会随模型多样化快速上升。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Human Harness Engineering</h3>
+          <p>人工专家根据经验修 prompt、工具和流程，效果强但扩展性差；每个新模型或新任务都要重新诊断。</p>
+        </div>
+        <div class="note-box">
+          <h3>Meta-Harness</h3>
+          <p>用更强的外部 agent 或优化器改弱 agent 的 harness，但外部 agent 可能昂贵、不可用，且不一定匹配目标模型的 failure modes。</p>
+        </div>
+        <div class="note-box good">
+          <h3>Self-Harness</h3>
+          <p>同一个固定模型在当前 harness 下运行、观察失败、提出 bounded edit，并通过回归测试决定是否把 edit 写入下一版 harness。</p>
+        </div>
+      </div>
+
+      <figure class="figure-card" style="margin-top:1rem;">
+        <img src="assets/figures/figure-01-harness-paradigms.png" alt="Three paradigms of harness improvement" />
+        <figcaption><strong>Figure 1.</strong> 论文区分三种 harness 改进范式：human engineers 手工改、stronger external agent 指导改、target agent 自己基于执行证据改。Self-Harness 的关键限制是“不依赖更强外部 agent，不改模型参数”。</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-card" id="method">
+      <h2>2. 方法：把 harness 改进变成可审计状态转移</h2>
+      <p class="section-lead">Self-Harness 的核心不是让模型自由重写自己，而是一个保守的 propose-evaluate-accept loop。每一轮只允许修改声明过的 harness surfaces；候选改动必须有 failure evidence、目标行为、风险记录，并通过 held-in/held-out 非退化规则。</p>
+
+      <div class="formula-box">
+        <h3>2.1 基本对象</h3>
+        <p>固定语言模型为 $M$，当前 harness 为 $h_t$。给定 task instance $x_i$，运行 $M$ under $h_t$ 产生 execution trace $\tau_i$ 和输出 $y_i$，evaluator $E$ 给出结果 $z_i=E(x_i,\tau_i,y_i)$。一轮记录为：</p>
+        $$r_i=(x_i,\tau_i,y_i,z_i),\qquad R_t=\{r_i\}_{i=1}^{|D_{\mathrm{in}}|}.$$
+        <p>由于 $M$、benchmark 和 evaluator 固定，跨轮行为变化可归因于 harness lineage $h_0,h_1,\ldots$ 的变化，而不是模型权重或评估协议变化。</p>
+      </div>
+
+      <div class="flow-grid">
+        <div class="flow-step"><b>1</b><h3>Weakness Mining</h3><p>在 held-in tasks 上运行当前 harness，收集 failed traces，按 verifier-grounded failure signature 聚类。</p></div>
+        <div class="flow-step"><b>2</b><h3>Harness Proposal</h3><p>同一个模型作为 proposer，基于 failure patterns 生成 $K$ 个互相不同、最小化的 harness modifications。</p></div>
+        <div class="flow-step"><b>3</b><h3>Proposal Validation</h3><p>每个候选 harness 都重新评估；只有至少提升一个 split 且不伤害另一个 split 的 edit 才能进入下一版。</p></div>
+      </div>
+
+      <figure class="figure-card" style="margin-top:1rem;">
+        <img src="assets/figures/figure-02-self-harness-loop.png" alt="Self-Harness optimization loop" />
+        <figcaption><strong>Figure 2.</strong> 一轮 Self-Harness：当前 harness 产生 traces，失败被聚类成 weakness evidence；同一 fixed model 以 proposer 角色产生候选 edits；候选通过 regression test 后被 accept/merge，否则仅记录不生效。</figcaption>
+      </figure>
+
+      <div class="formula-box">
+        <h3>2.2 Weakness Mining：失败签名不是简单错误类型</h3>
+        <p>失败集合为：</p>
+        $$F_t=\{r_i\in R_t\mid z_i=\mathrm{fail}\}.$$
+        <p>对每个失败记录，evaluation system 抽取 failure signature：</p>
+        $$\varphi(r_i)=(c_i,q_i,m_i),$$
+        <p>其中 $c_i$ 是 verifier-level terminal cause，$q_i$ 是 agent 行为与失败的 causal status，$m_i$ 是 trace 暴露出的 reusable agent mechanism。聚类使用 exact agreement：</p>
+        $$C_{\varphi}=\{r_i\in F_t\mid \varphi(r_i)=\varphi\}.$$
+        <p>这个设计避免把“timeout”“missing artifact”这类表面结果直接当成改动目标。两个 timeout 可能一个来自无效重复命令，另一个来自外部下载过慢；所需 harness edit 不同。</p>
+      </div>
+
+      <div class="formula-box">
+        <h3>2.3 Proposal 与接受规则</h3>
+        <p>proposer 生成 $K$ 个 proposal bundles：</p>
+        $$P_t=\{(\Delta_j,a_j)\}_{j=1}^{K},\qquad h_t^{(j)}=\Delta_j(h_t),$$
+        <p>$a_j$ 是 audit record，记录目标 failure pattern、修改 surface、预期行为影响和 regression risk。对候选 $h_t^{(j)}$，记 held-in / held-out 通过任务数为 $P_{\mathrm{in}}(h)$ 与 $P_{\mathrm{ho}}(h)$，则：</p>
+        $$\Delta_{\mathrm{in}}^{(j)}=P_{\mathrm{in}}(h_t^{(j)})-P_{\mathrm{in}}(h_t),\qquad \Delta_{\mathrm{ho}}^{(j)}=P_{\mathrm{ho}}(h_t^{(j)})-P_{\mathrm{ho}}(h_t).$$
+        <p>候选被接受当且仅当：</p>
+        $$\Delta_{\mathrm{in}}^{(j)}\ge0,\qquad \Delta_{\mathrm{ho}}^{(j)}\ge0,\qquad \max(\Delta_{\mathrm{in}}^{(j)},\Delta_{\mathrm{ho}}^{(j)})>0.$$
+        <p>这条规则比“总分提高”更保守：如果候选只是在 held-in 上过拟合并伤害 held-out，即使总通过数增加也会被拒绝。</p>
+      </div>
+
+      <div class="algo-box">
+        <h3>Algorithm 1 的工程语义</h3>
+        <ol>
+          <li>评估当前 harness，收集 held-in 与 held-out pass counts 以及 traces。</li>
+          <li>从 held-in verifier-grounded failures 构建 evidence bundle。</li>
+          <li>并行生成 $K$ 个 bounded candidate edits。</li>
+          <li>逐个应用 edit，得到 candidate harness，并重新跑同一 evaluator。</li>
+          <li>按非退化规则 accept/reject；多个兼容 accepted edits 可以合并成 $h_{t+1}$。</li>
+          <li>如果没有候选通过，下一轮保持 $h_{t+1}=h_t$。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="content-card" id="experiments">
+      <h2>3. 实验设计与复现细节</h2>
+      <p class="section-lead">实验目标是隔离 harness 的贡献：模型、工具集、budget、benchmark environment、evaluator 不变，只允许 harness definition file 改变。起点是最小 DeepAgent harness：短系统提示 + 默认文件/编辑/shell 工具 + 若干可编辑接口。</p>
+
+      <div class="grid-2">
+        <div class="note-box">
+          <h3>Benchmark</h3>
+          <ul class="compact-list">
+            <li>Terminal-Bench-2.0，共 89 个 containerized terminal tasks。</li>
+            <li>主实验使用固定 64-case subset。</li>
+            <li>排除依赖不稳定外部 web resources 或 initial harness 不支持的 multimodal tasks。</li>
+            <li>每个 task 从 fresh benchmark environment 开始。</li>
+          </ul>
+        </div>
+        <div class="note-box">
+          <h3>Models</h3>
+          <ul class="compact-list">
+            <li>MiniMax M2.5：hosted MiniMax API。</li>
+            <li>Qwen3.5-35B-A3B：4 x NVIDIA H200 本地部署，基于 SGLang Docker image。</li>
+            <li>GLM-5：OpenRouter hosted endpoint。</li>
+            <li>同一模型也用于 proposer role，没有更强外部模型参与。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>配置项</th><th>论文设置</th><th>复现含义</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Execution environment</td><td>Harbor for Terminal-Bench-2.0 tasks</td><td>需要能隔离运行 containerized terminal tasks，并保留 verifier over final container state。</td></tr>
+            <tr><td>Evaluation host</td><td>64 CPU cores, 256GB memory, 2 MB/s outbound network cap</td><td>网络带宽上限会影响外部下载任务；论文还镜像了部分稳定但慢的外部资源。</td></tr>
+            <tr><td>Concurrency</td><td>32 tasks for MiniMax M2.5 / GLM-5, 48 tasks for Qwen3.5</td><td>并发会影响 wall-clock 和外部服务稳定性，但不应改变单任务 verifier 规则。</td></tr>
+            <tr><td>Metric</td><td>Pass (%) over two repeated attempts per harness candidate unless otherwise specified</td><td>报告的是固定 harness 下平均 single-attempt task success。</td></tr>
+            <tr><td>Editable surfaces</td><td>Harness definition file: instructions, tools, verification guidance, runtime control policy, middleware-like mechanisms</td><td>Self-Harness 的搜索空间是显式声明的 harness surface，不是任意改代码库。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="quote-box">
+        <h3>初始 harness 的关键形态</h3>
+        <p>初始 harness 故意很弱：只告诉 agent 在 Terminal-Bench 环境中用 filesystem 与 shell 工具检查 workspace、做具体编辑、运行最相关验证；默认 memory source 是 <code>/AGENTS.md</code>，subagents 和 skills 为空，runtime control policy 默认关闭。这使得后续提升更能归因于 Self-Harness 发现的 edit。</p>
+      </div>
+    </section>
+
+    <section class="content-card" id="results">
+      <h2>4. 实验结果与核心结论</h2>
+      <p class="section-lead">主结果说明三个模型都能从自我 harness 改进中受益，且提升不只出现在 proposer 看过 failure evidence 的 held-in split，也出现在 held-out split。这是论文最关键的 evidence：accepted edits 不是单纯 memorizing observed failures，而是在修 reusable execution mechanisms。</p>
+
+      <figure class="figure-card">
+        <img src="assets/figures/figure-04-main-results.jpeg" alt="Pass rates on Terminal-Bench-2.0 for initial and Self-Harness" />
+        <figcaption><strong>Figure 4.</strong> Terminal-Bench-2.0 pass rates。绿色为 Self-Harness final harness，灰色为 initial harness。Qwen3.5 的相对提升最大，因为 initial harness 下分数低；MiniMax M2.5 held-out 提升最大，达到 61.9%。</figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table class="wide-table">
+          <thead>
+            <tr><th>Model</th><th>Split</th><th>Initial Harness</th><th>Self-Harness</th><th>Absolute Gain</th><th>Relative Gain</th><th>解读</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>MiniMax M2.5</td><td>held-in</td><td>43.0</td><td>50.0</td><td>+7.0</td><td>+16%</td><td>修复 missing artifacts、schema-invalid content、stalled tool loops。</td></tr>
+            <tr><td>MiniMax M2.5</td><td>held-out</td><td>40.5</td><td>61.9</td><td>+21.4</td><td>+53%</td><td>最大 held-out absolute gain，说明 output artifact discipline 泛化明显。</td></tr>
+            <tr><td>MiniMax M2.5</td><td>overall</td><td>42.2</td><td>53.9</td><td>+11.7</td><td>+28%</td><td>最终 retained edits 合并为 artifacts + schemas + loops。</td></tr>
+            <tr><td>Qwen3.5-35B-A3B</td><td>held-in</td><td>15.1</td><td>36.0</td><td>+20.9</td><td>+138%</td><td>initial harness 对该模型不适配；dependency 与 artifact recovery 的收益很大。</td></tr>
+            <tr><td>Qwen3.5-35B-A3B</td><td>held-out</td><td>23.8</td><td>38.1</td><td>+14.3</td><td>+60%</td><td>回归门没有牺牲 unseen tasks。</td></tr>
+            <tr><td>Qwen3.5-35B-A3B</td><td>overall</td><td>18.0</td><td>36.7</td><td>+18.7</td><td>+104%</td><td>最终保留 precheck imports、loop breaker、artifact creation、middleware guard。</td></tr>
+            <tr><td>GLM-5</td><td>held-in</td><td>47.7</td><td>57.0</td><td>+9.3</td><td>+20%</td><td>改善 late artifacts、external compute、session-scoped tools。</td></tr>
+            <tr><td>GLM-5</td><td>held-out</td><td>42.9</td><td>57.1</td><td>+14.2</td><td>+33%</td><td>环境持久化和从探索转向实现的规则泛化到 held-out。</td></tr>
+            <tr><td>GLM-5</td><td>overall</td><td>46.1</td><td>57.0</td><td>+10.9</td><td>+24%</td><td>最终 trajectory 在少量 accepted edits 后稳定上升。</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">论文没有单独给 HTML 表格；这里根据 Figure 4 和正文重建主结果。</p>
+      </div>
+
+      <div class="grid-3">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-05-minimax-trajectory.png" alt="MiniMax M2.5 harness evolution trajectory" />
+          <figcaption><strong>Figure 5a.</strong> MiniMax M2.5 从 42.2% 到 53.9%，accepted edits 指向早写 output、正确 structured content tags、50 tool calls 后 redirect。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-06-qwen-trajectory.png" alt="Qwen3.5 harness evolution trajectory" />
+          <figcaption><strong>Figure 6a.</strong> Qwen3.5 从 20.3% 到 36.7%，最终保留 artifact recovery、dependency/import precheck、retry discipline、middleware guard。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-10-glm-trajectory.png" alt="GLM-5 harness evolution trajectory" />
+          <figcaption><strong>Figure 10a.</strong> GLM-5 从 46.1% 到 57.0%，重点是 early artifacts、bounded external compute、persistent PATH、从 exploration 转向 build/test。</figcaption>
+        </figure>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-05-minimax-retained-edits.jpeg" alt="MiniMax M2.5 retained harness edits" />
+          <figcaption><strong>Figure 5b.</strong> MiniMax retained code-level edits：bootstrap instruction 从“找最小 edit surface”转为先识别并创建 required output artifact；runtime policy 打开并限制总 tool messages。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-06-qwen-retained-edits.jpeg" alt="Qwen3.5 retained harness edits" />
+          <figcaption><strong>Figure 6b.</strong> Qwen retained edits：预检查依赖、避免连续 explore、不重复同一失败命令、在 missing file/tool error 后强制恢复 required artifact。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="figures">
+      <h2>5. Figure / Table 导航</h2>
+      <p class="section-lead">论文几乎没有传统实验表，核心证据集中在算法图、结果图、trajectory 图和 before-after trace cases。下面列出页面已嵌入或总结的图。</p>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>编号</th><th>PDF 位置</th><th>内容</th><th>页面处理</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Figure 1</td><td>Page 2</td><td>Human / Meta / Self Harness paradigms。</td><td>已抽取原图并嵌入。</td></tr>
+            <tr><td>Algorithm 1</td><td>Page 4</td><td>Self-Harness loop 伪代码。</td><td>用数学符号和工程语义重写。</td></tr>
+            <tr><td>Figure 2</td><td>Page 5</td><td>Weakness Mining、Harness Proposal、Proposal Validation 的一轮 loop。</td><td>页面裁剪图。</td></tr>
+            <tr><td>Figure 3</td><td>Page 8</td><td>Initial harness 和 editable interface。</td><td>文字总结，避免大段代码复刻。</td></tr>
+            <tr><td>Figure 4</td><td>Page 9</td><td>三种模型在 held-in/held-out/overall 的 Pass (%) 对比。</td><td>已抽取原图并重建主结果表。</td></tr>
+            <tr><td>Figure 5/6/10</td><td>Page 10/11/19</td><td>MiniMax、Qwen、GLM 的 evolution trajectories 与 retained edits。</td><td>嵌入 trajectory 裁剪图和 retained edit 图。</td></tr>
+            <tr><td>Figure 7/8/9</td><td>Page 12/13/18</td><td>三个 before-after trace case studies。</td><td>抽取为本地图片；在结果和 critique 中总结。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2">
+        <figure class="figure-card">
+          <img src="assets/figures/figure-07-minimax-case.jpeg" alt="MiniMax case study on count-dataset-tokens" />
+          <figcaption><strong>Figure 7.</strong> MiniMax 在 <code>count-dataset-tokens</code> 中从反复探索数据集导致超时，变成识别 metadata split、计算 token total、写入并读回 <code>/app/answer.txt</code>。</figcaption>
+        </figure>
+        <figure class="figure-card">
+          <img src="assets/figures/figure-08-qwen-case.jpeg" alt="Qwen case study on extract-elf" />
+          <figcaption><strong>Figure 8.</strong> Qwen 在 <code>extract-elf</code> 中原先删除 required artifact 后失败；edited harness 触发 tool-error artifact prompt，重新创建 extractor 并验证 JSON 输出。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-card" id="reproduction">
+      <h2>6. 复现清单</h2>
+      <p class="section-lead">这篇论文的复现难度中等偏高：方法本身清楚，但需要可控的 Terminal-Bench-2.0/Harbor 执行环境、多个模型后端、稳定的并发评估和一套自动 failure signature builder。论文没有公开代码链接；因此复现应先从最小可运行闭环开始，而不是直接追求全部数值。</p>
+
+      <div class="grid-3">
+        <div class="critique-box good">
+          <h3>最小复现</h3>
+          <ul class="compact-list">
+            <li>固定一个 model backend 和一个 10-20 task subset。</li>
+            <li>实现 minimal DeepAgent-like harness。</li>
+            <li>记录 messages、tool calls、verifier outcomes。</li>
+            <li>手工或半自动聚类失败 signature。</li>
+            <li>每轮生成 3-5 个 candidate edits 并回归测试。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>严格复现依赖</h3>
+          <ul class="compact-list">
+            <li>Terminal-Bench-2.0 64-case filtered split。</li>
+            <li>Harbor execution environment。</li>
+            <li>MiniMax hosted API、OpenRouter GLM-5、Qwen3.5 local SGLang deployment。</li>
+            <li>64 CPU / 256GB evaluation host 和 2 MB/s outbound cap。</li>
+            <li>两次 repeated attempts 的统计协议。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>关键日志</h3>
+          <ul class="compact-list">
+            <li>每个 candidate 的 diff surface。</li>
+            <li>目标 failure cluster 与 support。</li>
+            <li>held-in / held-out pass counts before-after。</li>
+            <li>reject 原因和 abandoned branch。</li>
+            <li>accepted edit merge 后是否互相冲突。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tight-table">
+          <thead>
+            <tr><th>复现实验</th><th>目的</th><th>成功判据</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Acceptance rule ablation</td><td>比较“只看总分提升”和“held-in/held-out 非退化”两种 gate。</td><td>证明非退化 gate 降低 overfit to held-in failures。</td></tr>
+            <tr><td>Failure signature granularity</td><td>比较粗粒度 verifier outcome cluster 与三元 signature cluster。</td><td>三元 signature 产生的 edits 更少、更可解释、更少伤害 held-out。</td></tr>
+            <tr><td>Proposal width $K$ sweep</td><td>分析并行候选数对发现有效 edit 的影响。</td><td>$K$ 增大带来更多 accepted edits，但评估成本线性增加。</td></tr>
+            <tr><td>Model-specific transfer</td><td>把 MiniMax edits 直接移植到 Qwen/GLM，或反向移植。</td><td>若直接移植效果弱，说明 Self-Harness 的 model-specific diagnosis 是必要的。</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-card" id="critique">
+      <h2>7. Reviewer Critique</h2>
+      <p class="section-lead">这篇论文的价值在于把“agent harness 怎么自动变好”做成了一个可审计、可回归测试的状态转移问题。作为 reviewer，我认为方向很重要，但还需要更强的 baseline、开放实现和统计可靠性分析来支撑“self-improvement paradigm”的外推。</p>
+
+      <div class="grid-2">
+        <div class="critique-box good">
+          <h3>Strengths</h3>
+          <ul class="compact-list">
+            <li>清楚区分 base model capability 与 harness scaffold 的贡献。</li>
+            <li>接受规则保守，要求 held-in 和 held-out 都不退化，降低 overfitting 风险。</li>
+            <li>三种模型的 retained edits 明显不同，支持 model-specific harness design 的论点。</li>
+            <li>case studies 不是泛泛 prompt 变长，而是指向具体 failure mechanism：missing artifact、retry loop、session-scoped tools。</li>
+          </ul>
+        </div>
+        <div class="critique-box warn">
+          <h3>Weaknesses</h3>
+          <ul class="compact-list">
+            <li>论文未给出公开代码仓库，复现自动 failure signature builder 和 proposer context 仍有不确定性。</li>
+            <li>64-case subset 是过滤后的 Terminal-Bench-2.0，过滤规则合理但可能影响外推到完整 benchmark。</li>
+            <li>Pass (%) over two attempts 对 stochastic agent 来说仍偏少，统计置信区间没有系统报告。</li>
+            <li>和人类专家调优、Meta-Harness、random/edit search 的直接对比不够充分。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <div class="critique-box danger">
+          <h3>Missing Ablations</h3>
+          <ul class="compact-list">
+            <li>去掉 held-out gate，只用 held-in gate。</li>
+            <li>不同 proposal width $K$ 与不同 iteration budget。</li>
+            <li>同一 accepted edit 跨模型迁移，量化 model-specific 程度。</li>
+            <li>人工专家 edits、random prompt edits、stronger external proposer 的 baseline。</li>
+            <li>failure signature builder 的错误率和人工一致性。</li>
+          </ul>
+        </div>
+        <div class="critique-box">
+          <h3>Possible Failure Modes</h3>
+          <ul class="compact-list">
+            <li>回归 gate 只覆盖当前 split，accepted edits 仍可能学习 benchmark-specific habits。</li>
+            <li>proposer 可能提出“看起来合理”的宽泛规则，长期累积后让 harness 变臃肿或相互冲突。</li>
+            <li>如果 verifier 不够细，Weakness Mining 会把 evaluator blind spot 变成 harness policy。</li>
+            <li>更高风险环境中，pass-rate 非退化不足以保证 safety、permission、data integrity 不退化。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-card" id="takeaways">
+      <h2>8. 对我的研究方向的启发</h2>
+      <p class="section-lead">Self-Harness 对 agent、tool-use、self-evolution、evaluation 都有直接启发：不要只训练模型或调 prompt，而要把 harness 作为可版本化、可测试、可回滚的状态对象。</p>
+
+      <div class="grid-3">
+        <div class="note-box">
+          <h3>Agent 自进化</h3>
+          <p>自进化不一定先从权重更新开始。harness edits 更便宜、更可审计，也更适合接入 regression testing。</p>
+        </div>
+        <div class="note-box">
+          <h3>Questioner-Solver</h3>
+          <p>可以把 questioner 的失败模式转为 solver harness changes：例如 artifact discipline、verification discipline、retry policy。</p>
+        </div>
+        <div class="note-box">
+          <h3>Replay / Regression</h3>
+          <p>held-out regression gate 本质上是 harness-level replay buffer，防止新规则只修当前失败集。</p>
+        </div>
+        <div class="note-box">
+          <h3>Evaluation</h3>
+          <p>评价不只输出 pass/fail，还要输出可聚类 failure signature，才能把失败转成可操作的改进证据。</p>
+        </div>
+        <div class="note-box">
+          <h3>Harness as Memory</h3>
+          <p>accepted edits 是长期 procedural memory：它们把一次失败经验固化为未来所有任务的运行规则。</p>
+        </div>
+        <div class="note-box">
+          <h3>工程落地</h3>
+          <p>真实 agent 平台可以维护 harness lineage：每次改动都有 evidence bundle、diff、acceptance result 和 rollback path。</p>
+        </div>
+      </div>
+
+      <div class="quote-box" style="margin-top:1rem;">
+        <h3>一句话总结</h3>
+        <p>Self-Harness 的核心 lesson 是：agent 的可进化对象不只有模型和 prompt，还包括整个执行协议；但真正可靠的自我改进必须由 behavioral evidence 和 regression gate 约束，而不能只相信模型提出的改动理由。</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

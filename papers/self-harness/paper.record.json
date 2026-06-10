@@ -1,0 +1,45 @@
+{
+  "id": "2606.09498",
+  "slug": "self-harness",
+  "title": "Self-Harness: Harnesses That Improve Themselves",
+  "titleZh": "Self-Harness：能够自我改进的智能体运行框架",
+  "authors": [
+    "Hangfan Zhang",
+    "Shao Zhang",
+    "Kangcong Li",
+    "Chen Zhang",
+    "Yang Chen",
+    "Yiqun Zhang",
+    "Lei Bai",
+    "Shuyue Hu"
+  ],
+  "year": 2026,
+  "venue": "arXiv",
+  "category": "Agent / Tool Use",
+  "tags": [
+    "agent",
+    "tool-use",
+    "self-evolution",
+    "harness",
+    "evaluation"
+  ],
+  "status": "精读",
+  "priority": 5,
+  "readingDate": "2026-06-10",
+  "updatedAt": "2026-06-10",
+  "summary": "Self-Harness 把 agent harness 作为可自我改进的对象：固定 base model 和 evaluator，通过 Weakness Mining 从执行轨迹中发现模型特定失败模式，再让同一模型提出小而明确的 harness edits，并用 held-in/held-out regression gate 接受或拒绝。论文在 Terminal-Bench-2.0 上验证 MiniMax M2.5、Qwen3.5-35B-A3B 和 GLM-5 都获得 held-out pass rate 提升。",
+  "takeaways": [
+    "agent 自进化可以先从 harness edits 入手，比直接更新权重更便宜、更可审计、更容易接 regression testing。",
+    "失败评估要输出可聚类的 failure signature，而不只是 pass/fail，才能把轨迹证据转化为可操作的 harness 改进。"
+  ],
+  "arxivId": "2606.09498",
+  "paperUrl": "https://arxiv.org/abs/2606.09498",
+  "pdfUrl": "https://arxiv.org/pdf/2606.09498",
+  "pageUrl": "papers/self-harness/index.html",
+  "codeUrl": "",
+  "repro": {
+    "available": false,
+    "level": "medium",
+    "notes": "论文给出 Terminal-Bench-2.0/Harbor 环境、模型后端、64-case subset 过滤原则、评估硬件、并发和接受规则；但未提供代码仓库，严格复现自动 failure signature builder、proposal context、具体 split 和完整 harness lineage 仍需要作者实现细节。"
+  }
+}
